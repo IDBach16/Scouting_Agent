@@ -359,6 +359,7 @@ function routeQuestion(question) {
   const q=question.toLowerCase();
   const ctx={type:'',data:{}};
   const oppP=findBestMatch(q,Object.keys(stats.opponentPitchers));
+  const oppB=findBestMatch(q,Object.keys(stats.opponentBatters));
   const moeP=findBestMatch(q,stats.moellerPitcherList);
   const moeH=findBestMatch(q,stats.moellerHitterList);
   const team=findBestMatch(q,stats.teamList);
@@ -371,13 +372,19 @@ function routeQuestion(question) {
     ctx.type='opponent_batters'; ctx.data.teamSummary=computeTeamSummary(team);
     ctx.data.opponentBatters=getTeamBatterProfiles(team); return ctx;
   }
-  if (team&&!oppP&&!moeP&&!moeH) {
+  if (team&&!oppP&&!oppB&&!moeP&&!moeH) {
     ctx.type='opponent_team'; ctx.data.teamSummary=computeTeamSummary(team);
     ctx.data.opponentPitchers=getTeamPitcherProfiles(team); ctx.data.opponentBatters=getTeamBatterProfiles(team); ctx.data.moellerHitters=getAllMoellerHitterProfiles(); return ctx;
   }
   if (oppP) {
     ctx.type='opponent_pitcher'; const p=stats.opponentPitchers[oppP];
     ctx.data.pitcher=computePitcherProfile(p.pitches,oppP,p.hand,p.team); ctx.data.moellerHitters=getAllMoellerHitterProfiles(); return ctx;
+  }
+  if (oppB) {
+    ctx.type='opponent_batter'; const b=stats.opponentBatters[oppB];
+    ctx.data.batter=computeHitterProfile(b.pitches,oppB,b.hand);
+    ctx.data.batter.team=b.team;
+    ctx.data.moellerPitchers=getAllMoellerPitcherProfiles(); return ctx;
   }
   if (moeP) {
     ctx.type='moeller_pitcher'; const p=stats.moellerPitchers[moeP];
