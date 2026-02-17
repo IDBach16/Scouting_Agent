@@ -450,11 +450,7 @@ function initMenu() {
     card.addEventListener('click', () => {
       selectedReportType = card.dataset.type;
       if (selectedReportType === 'direct') {
-        // Skip step 2, just focus the input
-        document.getElementById('menu-step1').classList.add('hidden');
-        document.getElementById('welcome-title').textContent = 'Ask anything';
-        document.getElementById('welcome-subtitle').textContent = 'Type your question below';
-        userInput.focus();
+        showPrompts();
         return;
       }
       showStep2(selectedReportType);
@@ -464,6 +460,14 @@ function initMenu() {
   document.getElementById('menu-back').addEventListener('click', () => {
     document.getElementById('menu-step1').classList.remove('hidden');
     document.getElementById('menu-step2').classList.add('hidden');
+    document.getElementById('welcome-title').textContent = 'What do you need?';
+    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
+    selectedReportType = null;
+  });
+
+  document.getElementById('prompts-back').addEventListener('click', () => {
+    document.getElementById('menu-step1').classList.remove('hidden');
+    document.getElementById('menu-prompts').classList.add('hidden');
     document.getElementById('welcome-title').textContent = 'What do you need?';
     document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
     selectedReportType = null;
@@ -534,6 +538,74 @@ function filterStep2List(query) {
   if (!query) { renderStep2List(window._menuItems); return; }
   const filtered = window._menuItems.filter(i => i.name.toLowerCase().includes(query));
   renderStep2List(filtered);
+}
+
+function showPrompts() {
+  document.getElementById('menu-step1').classList.add('hidden');
+  document.getElementById('menu-prompts').classList.remove('hidden');
+  document.getElementById('welcome-title').textContent = 'Ask a Question';
+  document.getElementById('welcome-subtitle').textContent = 'Tap a question or type your own below';
+
+  const grid = document.getElementById('prompts-grid');
+  grid.innerHTML = '';
+
+  // Build dynamic prompts using actual team/player names
+  const teams = stats.teamList.slice(0, 5);
+  const sampleTeam = teams.length > 0 ? teams[Math.floor(Math.random()*teams.length)] : 'the opponent';
+  const sampleTeam2 = teams.length > 1 ? teams.filter(t=>t!==sampleTeam)[0] : sampleTeam;
+
+  const prompts = [
+    // Game plan & strategy
+    { cat: 'Game Plan', q: `What's the game plan for facing ${sampleTeam}?` },
+    { cat: 'Game Plan', q: `How should we prepare for ${sampleTeam2}?` },
+    { cat: 'Game Plan', q: `What's our best lineup against a lefty starter?` },
+
+    // Opponent pitching
+    { cat: 'Opp Pitching', q: `Who is ${sampleTeam}'s best pitcher and what does he throw?` },
+    { cat: 'Opp Pitching', q: `What does ${sampleTeam}'s staff throw first pitch?` },
+    { cat: 'Opp Pitching', q: `Which ${sampleTeam} pitcher has the best put-away pitch?` },
+
+    // Our hitters
+    { cat: 'Our Hitters', q: `Which of our hitters struggle with breaking balls?` },
+    { cat: 'Our Hitters', q: `Who on our team has the best chase rate?` },
+    { cat: 'Our Hitters', q: `Which of our guys hit lefties the best?` },
+    { cat: 'Our Hitters', q: `Who's our best hitter with 2 strikes?` },
+    { cat: 'Our Hitters', q: `Which Moeller hitters are most aggressive early in counts?` },
+
+    // Our pitchers
+    { cat: 'Our Pitchers', q: `Compare our pitching staff's strikeout rates` },
+    { cat: 'Our Pitchers', q: `Which of our pitchers has the best first pitch strike rate?` },
+    { cat: 'Our Pitchers', q: `Who on our staff is best against left-handed hitters?` },
+
+    // Matchups & splits
+    { cat: 'Matchups', q: `How does our lineup stack up against right-handed pitching?` },
+    { cat: 'Matchups', q: `Who should we pinch hit vs a lefty reliever?` },
+    { cat: 'Matchups', q: `Which of our hitters have the best wOBA?` },
+
+    // Opponent hitters
+    { cat: 'Opp Hitters', q: `What are ${sampleTeam}'s lineup weaknesses?` },
+    { cat: 'Opp Hitters', q: `Which ${sampleTeam} hitters chase the most?` },
+    { cat: 'Opp Hitters', q: `How should we pitch to ${sampleTeam}'s lefties?` },
+
+    // Tendencies
+    { cat: 'Tendencies', q: `What does ${sampleTeam} throw when they're behind in the count?` },
+    { cat: 'Tendencies', q: `Which teams throw the most off-speed?` },
+    { cat: 'Tendencies', q: `Who on our team gets behind in counts the most?` },
+  ];
+
+  prompts.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'prompt-btn';
+    btn.innerHTML = `<span class="prompt-cat">${p.cat}</span><span class="prompt-text">${p.q}</span>`;
+    btn.addEventListener('click', () => {
+      userInput.value = p.q;
+      document.getElementById('menu-prompts').classList.add('hidden');
+      sendMessage();
+    });
+    grid.appendChild(btn);
+  });
+
+  userInput.focus();
 }
 
 function executeMenuReport(type, item) {
@@ -1532,6 +1604,7 @@ function buildNewAnalysisBar() {
     welcomeEl.classList.remove('hidden');
     document.getElementById('menu-step1').classList.remove('hidden');
     document.getElementById('menu-step2').classList.add('hidden');
+    document.getElementById('menu-prompts').classList.add('hidden');
     document.getElementById('welcome-title').textContent = 'What do you need?';
     document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
     selectedReportType = null;
@@ -1552,6 +1625,7 @@ function buildNewAnalysisBar() {
     welcomeEl.classList.remove('hidden');
     document.getElementById('menu-step1').classList.remove('hidden');
     document.getElementById('menu-step2').classList.add('hidden');
+    document.getElementById('menu-prompts').classList.add('hidden');
     document.getElementById('welcome-title').textContent = 'What do you need?';
     document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
     selectedReportType = null;
