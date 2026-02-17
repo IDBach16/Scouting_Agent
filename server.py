@@ -11,7 +11,7 @@ PORT = 3000
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Instructions-only system prompt (no data — frontend sends relevant data per question)
-SYSTEM_PROMPT = """You are the Moeller Baseball Game Prep Agent — a baseball analytics assistant built for the coaching staff at Archbishop Moeller High School.
+SYSTEM_PROMPT_FULL = """You are the Moeller Baseball Game Prep Agent — a baseball analytics assistant built for the coaching staff at Archbishop Moeller High School.
 
 Your job is to give coaches clear, actionable scouting reports and game plans in plain English. Think like a pro scout talking to a coaching staff in the dugout — be direct, specific, and practical.
 
@@ -45,6 +45,31 @@ FORMAT:
 - Use markdown tables for stat breakdowns
 - Show RHH/LHH splits side by side"""
 
+SYSTEM_PROMPT_DUGOUT = """You are the Moeller Baseball Dugout Scout — a quick-reference tool for coaches DURING GAMES.
+
+Coaches need info they can process in 10 seconds or relay to a hitter walking to the plate. Be extremely concise.
+
+Use ONLY the data provided. Never make up stats.
+
+FORMAT — every response must follow this structure:
+## [Player Name] ([Hand], [Team]) — [Primary Velo] [Primary Pitch]
+
+- **FIRST PITCH:** [What he throws first + strike %]
+- **GETS AHEAD WITH:** [Pitch + tendency]
+- **PUT-AWAY:** [2-strike pitch + whiff rate]
+- **WEAKNESS:** [Exploitable tendency in 1 sentence]
+- **TELL YOUR HITTER:** [1 sentence a coach can yell from the dugout]
+
+RULES:
+- MAX 5-7 bullet points per pitcher. No more.
+- NO tables, NO paragraphs, NO long explanations
+- Use bold for the label, plain text for the data
+- If asked about a team, give 2-3 bullets PER pitcher, not full breakdowns
+- For game plans: organize as "vs RHH" and "vs LHH" with 2-3 bullets each
+- Flag small samples with (small sample) tag
+- Numbers only — no explaining what metrics mean
+- Think like a bench coach filling out a lineup card, not an analyst writing a report"""
+
 
 app = Flask(__name__)
 client = None
@@ -71,6 +96,7 @@ def chat():
         return jsonify({"error": "Missing 'message' in request body."}), 400
     user_message = body["message"]
     session_id = body.get("session_id", "default")
+    mode = body.get("mode", "full")
     if session_id not in conversation_histories:
         conversation_histories[session_id] = []
     history = conversation_histories[session_id]
@@ -78,13 +104,14 @@ def chat():
     if len(history) > 20:
         history = history[-20:]
         conversation_histories[session_id] = history
+    prompt = SYSTEM_PROMPT_DUGOUT if mode == "dugout" else SYSTEM_PROMPT_FULL
     try:
         response = c.messages.create(
             model=MODEL,
-            max_tokens=4096,
+            max_tokens=4096 if mode == "full" else 1024,
             system=[{
                 "type": "text",
-                "text": SYSTEM_PROMPT,
+                "text": prompt,
                 "cache_control": {"type": "ephemeral"}
             }],
             messages=history

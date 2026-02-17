@@ -6,6 +6,7 @@
 let rawData = [];
 let filteredData = [];
 let seasonFilter = 'all';
+let appMode = 'dugout'; // 'dugout' or 'full'
 let stats = { opponentPitchers:{}, moellerHitters:{}, moellerPitchers:{}, opponentTeams:{}, opponentBatters:{}, teamList:[], moellerPitcherList:[], moellerHitterList:[] };
 window.appStats = stats; // expose for charts.js
 let isLoading = false;
@@ -25,6 +26,7 @@ const acList = document.getElementById('autocomplete-list');
 document.addEventListener('DOMContentLoaded', () => {
   loadCSV();
   bindEvents();
+  initMenu();
 });
 
 function bindEvents() {
@@ -49,6 +51,16 @@ function bindEvents() {
       reprocessData();
     });
   });
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      appMode = btn.dataset.mode;
+      updateModeUI();
+    });
+  });
+  // Init mode on load
+  updateModeUI();
   document.addEventListener('click', e => { if (!e.target.closest('#input-area')) hideAC(); });
 }
 
@@ -413,6 +425,1010 @@ function routeQuestion(question) {
   return ctx;
 }
 
+// ===== MODE UI =====
+function updateModeUI() {
+  const title = document.getElementById('welcome-title');
+  const subtitle = document.getElementById('welcome-subtitle');
+  if (appMode === 'dugout') {
+    document.body.classList.add('dugout-mode');
+    if (title) title.textContent = 'Dugout Mode';
+    if (subtitle) subtitle.textContent = 'Quick scout cards for in-game use. Type a pitcher or team name.';
+    userInput.placeholder = 'Pitcher name, team name, or quick question...';
+  } else {
+    document.body.classList.remove('dugout-mode');
+    if (title) title.textContent = 'Ready to Scout';
+    if (subtitle) subtitle.textContent = 'Ask a question about opponents, hitters, pitchers, or game strategy.';
+    userInput.placeholder = 'Ask about an opponent, a hitter, a pitcher, or game strategy...';
+  }
+}
+
+// ===== GUIDED MENU FLOW =====
+let selectedReportType = null;
+
+function initMenu() {
+  document.querySelectorAll('.menu-card').forEach(card => {
+    card.addEventListener('click', () => {
+      selectedReportType = card.dataset.type;
+      if (selectedReportType === 'direct') {
+        // Skip step 2, just focus the input
+        document.getElementById('menu-step1').classList.add('hidden');
+        document.getElementById('welcome-title').textContent = 'Ask anything';
+        document.getElementById('welcome-subtitle').textContent = 'Type your question below';
+        userInput.focus();
+        return;
+      }
+      showStep2(selectedReportType);
+    });
+  });
+
+  document.getElementById('menu-back').addEventListener('click', () => {
+    document.getElementById('menu-step1').classList.remove('hidden');
+    document.getElementById('menu-step2').classList.add('hidden');
+    document.getElementById('welcome-title').textContent = 'What do you need?';
+    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
+    selectedReportType = null;
+  });
+
+  const searchInput = document.getElementById('step2-input');
+  searchInput.addEventListener('input', () => {
+    filterStep2List(searchInput.value.trim().toLowerCase());
+  });
+}
+
+function showStep2(type) {
+  document.getElementById('menu-step1').classList.add('hidden');
+  document.getElementById('menu-step2').classList.remove('hidden');
+
+  const titleEl = document.getElementById('step2-title');
+  const inputEl = document.getElementById('step2-input');
+  const listEl = document.getElementById('step2-list');
+  listEl.innerHTML = '';
+  inputEl.value = '';
+
+  let items = [];
+  if (type === 'hitter_report') {
+    titleEl.textContent = 'Which hitter?';
+    inputEl.placeholder = 'Search hitters...';
+    // Show all hitters: Moeller + opponent
+    stats.moellerHitterList.forEach(n => items.push({ name: n, meta: 'Moeller', source: 'moeller_hitter' }));
+    Object.keys(stats.opponentBatters).forEach(n => items.push({ name: n, meta: stats.opponentBatters[n].team, source: 'opponent_batter' }));
+  } else if (type === 'pitcher_report') {
+    titleEl.textContent = 'Which pitcher?';
+    inputEl.placeholder = 'Search pitchers...';
+    stats.moellerPitcherList.forEach(n => items.push({ name: n, meta: 'Moeller', source: 'moeller_pitcher' }));
+    Object.keys(stats.opponentPitchers).forEach(n => items.push({ name: n, meta: stats.opponentPitchers[n].team, source: 'opponent_pitcher' }));
+  } else if (type === 'team_hitters') {
+    titleEl.textContent = 'Which team\'s lineup?';
+    inputEl.placeholder = 'Search teams...';
+    stats.teamList.forEach(t => items.push({ name: t, meta: '', source: 'team' }));
+    items.push({ name: 'Moeller', meta: 'Our team', source: 'moeller_team' });
+  } else if (type === 'team_pitchers') {
+    titleEl.textContent = 'Which team\'s pitching staff?';
+    inputEl.placeholder = 'Search teams...';
+    stats.teamList.forEach(t => items.push({ name: t, meta: '', source: 'team' }));
+    items.push({ name: 'Moeller', meta: 'Our team', source: 'moeller_team' });
+  }
+
+  items.sort((a, b) => a.name.localeCompare(b.name));
+  window._menuItems = items;
+  renderStep2List(items);
+  inputEl.focus();
+}
+
+function renderStep2List(items) {
+  const listEl = document.getElementById('step2-list');
+  listEl.innerHTML = '';
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'step2-item';
+    el.innerHTML = `<span class="step2-item-name">${item.name}</span><span class="step2-item-meta">${item.meta}</span>`;
+    el.addEventListener('click', () => {
+      executeMenuReport(selectedReportType, item);
+    });
+    listEl.appendChild(el);
+  });
+}
+
+function filterStep2List(query) {
+  if (!window._menuItems) return;
+  if (!query) { renderStep2List(window._menuItems); return; }
+  const filtered = window._menuItems.filter(i => i.name.toLowerCase().includes(query));
+  renderStep2List(filtered);
+}
+
+function executeMenuReport(type, item) {
+  welcomeEl.classList.add('hidden');
+
+  // In dugout mode, try to build Quick Look cards directly (zero tokens)
+  if (appMode === 'dugout') {
+    let card = null;
+    if (type === 'hitter_report') {
+      const src = stats.moellerHitters[item.name] || stats.opponentBatters[item.name];
+      if (src) card = buildHitterQuickLookCard(computeHitterProfile(src.pitches, item.name, src.hand), src.pitches);
+    } else if (type === 'pitcher_report') {
+      const src = stats.moellerPitchers[item.name] || stats.opponentPitchers[item.name];
+      if (src) {
+        const team = stats.opponentPitchers[item.name]?.team || 'Moeller';
+        card = buildQuickLookCard(computePitcherProfile(src.pitches, item.name, src.hand, team), src.pitches);
+      }
+    } else if (type === 'team_hitters') {
+      card = buildTeamHittersQuickLook(item.name);
+    } else if (type === 'team_pitchers') {
+      if (/moeller/i.test(item.name)) {
+        const container = document.createElement('div');
+        const moePitcherData = {};
+        stats.moellerPitcherList.forEach(n => { moePitcherData[n] = stats.moellerPitchers[n]; });
+        const summary = buildTeamPitchersSummaryCard('Moeller', moePitcherData);
+        if (summary) container.appendChild(summary);
+        stats.moellerPitcherList.forEach(n => {
+          const p = stats.moellerPitchers[n];
+          const c = buildQuickLookCard(computePitcherProfile(p.pitches, n, p.hand, 'Moeller'), p.pitches);
+          if (c) container.appendChild(c);
+        });
+        card = container.children.length > 0 ? container : null;
+      } else {
+        card = buildTeamQuickLook(item.name);
+      }
+    }
+    if (card) {
+      appendMessage('user', `${type.replace('_',' ')} — ${item.name}`);
+      appendQuickLook(card);
+      return;
+    }
+  }
+
+  // Full mode or no card available — use API
+  let query = '';
+  if (type === 'hitter_report') query = `Give me a full scouting report on ${item.name} as a hitter`;
+  else if (type === 'pitcher_report') query = `Give me a full scouting report on ${item.name} as a pitcher`;
+  else if (type === 'team_hitters') query = item.name === 'Moeller' ? 'Give me a scouting report on all Moeller hitters in the lineup' : `Give me a scouting report on ${item.name}'s hitters and lineup`;
+  else if (type === 'team_pitchers') query = item.name === 'Moeller' ? 'Give me a scouting report on our Moeller pitching staff' : `Give me a scouting report on ${item.name}'s pitching staff`;
+  userInput.value = query;
+  sendMessage();
+}
+
+// ===== QUICK LOOK CARDS (Dugout Mode - no API call) =====
+function buildQuickLookCard(profile, pitches) {
+  if (!profile) return null;
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  const hand = (profile.hand || '').toUpperCase();
+  const handLabel = hand === 'R' ? 'RHP' : hand === 'L' ? 'LHP' : hand;
+  header.innerHTML = `<span class="quick-look-name">${profile.name}</span>
+    <span class="quick-look-meta">${handLabel} | ${profile.team || ''} | ${profile.totalPitches} pitches</span>`;
+  card.appendChild(header);
+
+  const mix = profile.pitchMix || {};
+  const types = Object.keys(mix);
+  const primary = types[0] || 'N/A';
+  const primaryVelo = mix[primary]?.avgVelo || '?';
+
+  // ====== RELAY SECTION (top — what a coach reads in 10 seconds) ======
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">RELAY TO HITTER</div>';
+  const relayList = document.createElement('ul');
+  relayList.className = 'ql-relay-bullets';
+
+  // 1. What to sit on first pitch
+  const fpMix = profile.pitchMixByCount?.first_pitch;
+  if (fpMix) {
+    const fpTypes = Object.keys(fpMix).sort((a,b) => parseFloat(fpMix[b]) - parseFloat(fpMix[a]));
+    const top = fpTypes[0];
+    const fpPct = fpMix[top];
+    relayList.innerHTML += `<li>Sit <strong>${top}</strong> first pitch — throws it <strong>${fpPct}</strong> of the time</li>`;
+  }
+
+  // 2. Put-away pitch — what to protect against
+  const tsMix = profile.pitchMixByCount?.two_strikes;
+  if (tsMix) {
+    const tsTypes = Object.keys(tsMix).sort((a,b) => parseFloat(tsMix[b]) - parseFloat(tsMix[a]));
+    const putaway = tsTypes[0];
+    const whiff = mix[putaway]?.whiffRate || '?';
+    relayList.innerHTML += `<li>With 2 strikes, protect against the <strong>${putaway}</strong> (${tsMix[putaway]}) — <strong>${whiff} whiff rate</strong></li>`;
+  }
+
+  // 3. When he's behind — be patient or attack
+  const behindMix = profile.pitchMixByCount?.behind;
+  if (behindMix) {
+    const behTypes = Object.keys(behindMix).sort((a,b) => parseFloat(behindMix[b]) - parseFloat(behindMix[a]));
+    relayList.innerHTML += `<li>When behind in count, he goes <strong>${behTypes[0]}</strong> (${behindMix[behTypes[0]]}) — be ready to drive it</li>`;
+  }
+
+  // 4. Best pitch to attack
+  const bestToHit = types.filter(t => mix[t]?.whiffRate && mix[t].whiffRate !== 'N/A')
+    .sort((a,b) => parseFloat(mix[a].whiffRate) - parseFloat(mix[b].whiffRate));
+  if (bestToHit.length > 0) {
+    const easiest = bestToHit[0];
+    relayList.innerHTML += `<li>Most hittable pitch: <strong>${easiest}</strong> (only ${mix[easiest].whiffRate} whiff rate)</li>`;
+  }
+
+  // 5. Key split
+  if (profile.vsRHH && profile.vsLHH) {
+    const rAvg = profile.vsRHH.AVG || '?';
+    const lAvg = profile.vsLHH.AVG || '?';
+    const rNum = parseFloat(rAvg) || 0;
+    const lNum = parseFloat(lAvg) || 0;
+    if (rNum > 0 && lNum > 0) {
+      if (rNum > lNum + 0.05) relayList.innerHTML += `<li>Hitters hit <strong>${rAvg}</strong> vs him from the right side — RHH have the edge</li>`;
+      else if (lNum > rNum + 0.05) relayList.innerHTML += `<li>Hitters hit <strong>${lAvg}</strong> vs him from the left side — LHH have the edge</li>`;
+    }
+  }
+
+  relay.appendChild(relayList);
+  card.appendChild(relay);
+
+  // ====== STAT ROW ======
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [{val:`${primaryVelo}`,lbl:`${primary} Velo`},{val:profile.K_rate||'N/A',lbl:'K Rate'},{val:profile.BB_rate||'N/A',lbl:'BB Rate'},{val:profile.firstPitchStrike||'N/A',lbl:'1st Pitch K%'}].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // ====== PITCH TYPE TABLE ======
+  if (types.length > 0) {
+    const pitchTable = document.createElement('div');
+    pitchTable.className = 'ql-pitch-table';
+    let tableHTML = '<div class="ql-pitch-header"><span>Pitch</span><span>Usage</span><span>Velo</span><span>Whiff%</span></div>';
+    types.forEach(t => {
+      const m = mix[t];
+      tableHTML += `<div class="ql-pitch-row">
+        <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
+        <span class="ql-pitch-val">${m.pct}</span>
+        <span class="ql-pitch-val">${m.avgVelo || '-'}</span>
+        <span class="ql-pitch-val">${m.whiffRate || '-'}</span>
+      </div>`;
+    });
+    pitchTable.innerHTML = tableHTML;
+    card.appendChild(pitchTable);
+  }
+
+  // ====== PITCH USAGE BY COUNT TABLE ======
+  const byCount = profile.pitchMixByCount || {};
+  const countKeys = ['first_pitch','ahead','even','behind','two_strikes'];
+  const countLabels = ['1st Pitch','Ahead','Even','Behind','2 Strikes'];
+  const availCounts = countKeys.filter(k => byCount[k]);
+  if (availCounts.length > 0 && types.length > 0) {
+    const countTable = document.createElement('div');
+    countTable.className = 'ql-pitch-table';
+    let ctHTML = '<div class="ql-count-header"><span>Count</span>';
+    types.forEach(t => { ctHTML += `<span><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>`; });
+    ctHTML += '</div>';
+    availCounts.forEach((k, i) => {
+      const label = countLabels[countKeys.indexOf(k)];
+      ctHTML += `<div class="ql-count-row"><span class="ql-count-label">${label}</span>`;
+      types.forEach(t => {
+        const val = byCount[k]?.[t] || '-';
+        ctHTML += `<span class="ql-pitch-val">${val}</span>`;
+      });
+      ctHTML += '</div>';
+    });
+    countTable.innerHTML = ctHTML;
+    card.appendChild(countTable);
+  }
+
+  // Sample size warning
+  if (profile.sampleSizeWarning) {
+    const warn = document.createElement('div');
+    warn.className = 'quick-look-bullets';
+    warn.innerHTML = `<li><strong>NOTE:</strong> ${profile.sampleSizeWarning} <span class="ql-tag small">small sample</span></li>`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildTeamQuickLook(teamName) {
+  const pitcherProfiles = {};
+  const pitcherData = {};
+  Object.keys(stats.opponentPitchers).forEach(n => {
+    if (stats.opponentPitchers[n].team.toLowerCase() === teamName.toLowerCase()) {
+      pitcherProfiles[n] = computePitcherProfile(stats.opponentPitchers[n].pitches, n, stats.opponentPitchers[n].hand, stats.opponentPitchers[n].team);
+      pitcherData[n] = stats.opponentPitchers[n];
+    }
+  });
+  const names = Object.keys(pitcherProfiles).sort((a,b) => (pitcherProfiles[b]?.totalPitches||0) - (pitcherProfiles[a]?.totalPitches||0));
+  if (names.length === 0) return null;
+  const container = document.createElement('div');
+
+  // Team pitching summary card first
+  const summary = buildTeamPitchersSummaryCard(teamName, pitcherData);
+  if (summary) container.appendChild(summary);
+
+  // Individual cards
+  names.forEach(n => {
+    const card = buildQuickLookCard(pitcherProfiles[n], stats.opponentPitchers[n]?.pitches);
+    if (card) container.appendChild(card);
+  });
+  return container;
+}
+
+// ===== HITTER QUICK LOOK CARD =====
+function computeHitterDugoutStats(pitches) {
+  // Outcome by specific count
+  const counts = ['0-0','0-1','0-2','1-0','1-1','1-2','2-0','2-1','2-2','3-0','3-1','3-2'];
+  const outcomeByCount = {};
+  counts.forEach(c => { outcomeByCount[c] = {total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0}; });
+  // vs RHP / LHP detailed
+  const vsRHP = {pitches:0,abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
+  const vsLHP = {pitches:0,abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
+  // Zone stats (1-9 for strike zone)
+  const zoneStats = {};
+  for (let i = 1; i <= 9; i++) zoneStats[i] = {abs:0,hits:0};
+  const seenPA = new Set();
+
+  pitches.forEach(row => {
+    const result = (row.PitchResult||'').trim();
+    const abResult = (row.AtBatResult||'').trim();
+    const b = parseInt(row.Balls)||0, s = parseInt(row.Strikes)||0;
+    const countKey = `${b}-${s}`;
+    const pH = (row.PitcherHand||'').trim().toUpperCase();
+    const loc = parseInt(row.Location);
+
+    // Outcome by count
+    if (outcomeByCount[countKey]) {
+      const oc = outcomeByCount[countKey];
+      oc.total++;
+      if (result.includes('Looking')) oc.looking++;
+      else if (result.includes('Swing and Miss')) oc.whiff++;
+      else if (result.includes('Foul')) oc.foul++;
+      else if (result.includes('In Play')) oc.inPlay++;
+      else if (result === 'Ball' || result.includes('Ball')) oc.ball++;
+    }
+
+    // PA-level stats
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Pitcher}-${row.PAofInning}`;
+    const sp = pH === 'R' ? vsRHP : vsLHP;
+    sp.pitches++;
+    if (abResult && !seenPA.has(paKey)) {
+      seenPA.add(paKey);
+      const isHit = ['1B','2B','3B','HR'].includes(abResult);
+      const isAB = !['BB','HBP','IBB','Sacrifice','Catchers Interference'].includes(abResult);
+      if (isAB) sp.abs++;
+      if (isHit) sp.hits++;
+      if (abResult === 'Strike Out') sp.ks++;
+      if (['BB','HBP','IBB'].includes(abResult)) sp.bbs++;
+      if (abResult === 'HBP') sp.hbp++;
+      if (abResult === '1B') sp.singles++;
+      if (abResult === '2B') sp.doubles++;
+      if (abResult === '3B') sp.triples++;
+      if (abResult === 'HR') sp.hrs++;
+      if (['Ground Out','Fly Out','Line Out','Double Play','Infield Fly','Fielders Choice'].includes(abResult) || abResult === 'Strike Out') sp.outs++;
+
+      // Zone stats
+      if (loc >= 1 && loc <= 9 && isAB) {
+        zoneStats[loc].abs++;
+        if (isHit) zoneStats[loc].hits++;
+      }
+    }
+  });
+
+  // Compute wOBA
+  function calcWOBA(s) {
+    const num = (0.69*s.bbs) + (0.72*s.hbp) + (0.89*s.singles) + (1.27*s.doubles) + (1.62*s.triples) + (2.10*s.hrs);
+    const den = s.bbs + s.hbp + s.singles + s.doubles + s.triples + s.hrs + s.outs;
+    return den > 0 ? (num/den).toFixed(3) : 'N/A';
+  }
+
+  return {
+    outcomeByCount,
+    vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,vsRHP.abs||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
+    vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,vsLHP.abs||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
+    zoneStats,
+  };
+}
+
+function buildHitterQuickLookCard(profile, pitches) {
+  if (!profile) return null;
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+  const dugout = computeHitterDugoutStats(pitches);
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  const hand = (profile.hand||'').toUpperCase();
+  const handLabel = hand === 'R' ? 'RHH' : hand === 'L' ? 'LHH' : hand || '?';
+  header.innerHTML = `<span class="quick-look-name">${profile.name}</span>
+    <span class="quick-look-meta">${handLabel} | ${profile.totalPitchesSeen} pitches seen | ${profile.totalPA} PA</span>`;
+  card.appendChild(header);
+
+  // ====== COACH'S NOTES (top — what a coach processes in 10 seconds) ======
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">COACH\'S NOTES</div>';
+  const relayList = document.createElement('ul');
+  relayList.className = 'ql-relay-bullets';
+
+  // 1. Strength — best pitch type to hit
+  const rbt = profile.resultsByPitchType || {};
+  const hittable = Object.keys(rbt).filter(t => rbt[t].pitchesSeen >= 5 && rbt[t].AVG !== 'N/A')
+    .sort((a,b) => parseFloat(rbt[b].AVG) - parseFloat(rbt[a].AVG));
+  if (hittable.length > 0) {
+    const best = hittable[0];
+    relayList.innerHTML += `<li>Hits <strong>${rbt[best].AVG}</strong> against <strong>${best}</strong> — look to attack it</li>`;
+  }
+
+  // 2. Weakness — worst pitch type / highest chase
+  const struggles = Object.keys(rbt).filter(t => rbt[t].pitchesSeen >= 5 && rbt[t].whiffRate && rbt[t].whiffRate !== 'N/A')
+    .sort((a,b) => parseFloat(rbt[b].whiffRate) - parseFloat(rbt[a].whiffRate));
+  if (struggles.length > 0) {
+    const worst = struggles[0];
+    relayList.innerHTML += `<li>Struggles with <strong>${worst}</strong> — <strong>${rbt[worst].whiffRate} whiff rate</strong>, shorten up</li>`;
+  }
+
+  // 3. Chase rate callout
+  const chaseNum = parseFloat(profile.overallChaseRate) || 0;
+  if (chaseNum > 30) {
+    relayList.innerHTML += `<li>Chasing <strong>${profile.overallChaseRate}</strong> of pitches out of zone — be more selective</li>`;
+  } else if (chaseNum > 0 && chaseNum <= 20) {
+    relayList.innerHTML += `<li>Disciplined eye — only chasing <strong>${profile.overallChaseRate}</strong> out of zone</li>`;
+  }
+
+  // 4. RHP vs LHP edge
+  const rAvg = parseFloat(dugout.vsRHP.AVG) || 0;
+  const lAvg = parseFloat(dugout.vsLHP.AVG) || 0;
+  if (rAvg > 0 && lAvg > 0) {
+    if (rAvg > lAvg + 0.05) relayList.innerHTML += `<li>Better vs RHP (<strong>${dugout.vsRHP.AVG}</strong>) than LHP (<strong>${dugout.vsLHP.AVG}</strong>)</li>`;
+    else if (lAvg > rAvg + 0.05) relayList.innerHTML += `<li>Better vs LHP (<strong>${dugout.vsLHP.AVG}</strong>) than RHP (<strong>${dugout.vsRHP.AVG}</strong>)</li>`;
+  }
+
+  // 5. Hot zone callout
+  const zs = dugout.zoneStats;
+  const hotZones = [];
+  const coldZones = [];
+  const zoneNames = {1:'up-in',2:'up-mid',3:'up-away',4:'mid-in',5:'middle',6:'mid-away',7:'low-in',8:'low-mid',9:'low-away'};
+  for (let i = 1; i <= 9; i++) {
+    if (zs[i].abs >= 3) {
+      const avg = zs[i].hits / zs[i].abs;
+      if (avg >= .300) hotZones.push(zoneNames[i]);
+      else if (avg < .150) coldZones.push(zoneNames[i]);
+    }
+  }
+  if (hotZones.length > 0) relayList.innerHTML += `<li>Hot zones: <strong>${hotZones.join(', ')}</strong></li>`;
+  if (coldZones.length > 0) relayList.innerHTML += `<li>Cold zones: <strong>${coldZones.join(', ')}</strong></li>`;
+
+  relay.appendChild(relayList);
+  card.appendChild(relay);
+
+  // ====== STAT ROW ======
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [{val:profile.AVG,lbl:'AVG'},{val:profile.K_rate,lbl:'K Rate'},{val:profile.BB_rate,lbl:'BB Rate'},{val:profile.overallChaseRate,lbl:'Chase Rate'}].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val||'N/A'}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // vs RHP / vs LHP split boxes
+  const splitRow = document.createElement('div');
+  splitRow.className = 'ql-splits-row';
+  ['RHP','LHP'].forEach(side => {
+    const d = side === 'RHP' ? dugout.vsRHP : dugout.vsLHP;
+    const box = document.createElement('div');
+    box.className = 'ql-split-box';
+    box.innerHTML = `<div class="ql-split-title">vs ${side}</div>
+      <div class="ql-split-stats">
+        <span><strong>${d.AVG}</strong> AVG</span>
+        <span><strong>${d.K_rate}</strong> K%</span>
+        <span><strong>${d.wOBA}</strong> wOBA</span>
+        <span><strong>${d.H}</strong> H</span>
+        <span><strong>${d.XBH}</strong> XBH</span>
+      </div>`;
+    splitRow.appendChild(box);
+  });
+  card.appendChild(splitRow);
+
+  // Pitch results by type table
+  const rbt2 = profile.resultsByPitchType || {};
+  const ptypes = Object.keys(rbt2).sort((a,b) => (rbt2[b].pitchesSeen||0) - (rbt2[a].pitchesSeen||0));
+  if (ptypes.length > 0) {
+    const ptTable = document.createElement('div');
+    ptTable.className = 'ql-pitch-table';
+    let ptHTML = '<div class="ql-pitch-header"><span>Pitch</span><span>Seen</span><span>AVG</span><span>Whiff%</span><span>Chase%</span></div>';
+    ptypes.forEach(t => {
+      const d = rbt2[t];
+      ptHTML += `<div class="ql-pitch-row">
+        <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
+        <span class="ql-pitch-val">${d.pitchesSeen}</span>
+        <span class="ql-pitch-val">${d.AVG}</span>
+        <span class="ql-pitch-val">${d.whiffRate||'-'}</span>
+        <span class="ql-pitch-val">${d.chaseRate||'-'}</span>
+      </div>`;
+    });
+    ptTable.innerHTML = ptHTML;
+    card.appendChild(ptTable);
+  }
+
+  // Outcome by count table
+  const obc = dugout.outcomeByCount;
+  const countKeys = ['0-0','0-1','0-2','1-0','1-1','1-2','2-0','2-1','2-2','3-0','3-1','3-2'];
+  const hasCounts = countKeys.some(k => obc[k]?.total > 0);
+  if (hasCounts) {
+    const ocTable = document.createElement('div');
+    ocTable.className = 'ql-pitch-table';
+    let ocHTML = '<div class="ql-count-header"><span>Count</span><span>N</span><span>Look%</span><span>Whiff%</span><span>Foul%</span><span>InPlay%</span><span>Ball%</span></div>';
+    countKeys.forEach(k => {
+      const d = obc[k];
+      if (d.total === 0) return;
+      const p = v => d.total > 0 ? ((v/d.total)*100).toFixed(0)+'%' : '-';
+      ocHTML += `<div class="ql-count-row">
+        <span class="ql-count-label">${k}</span>
+        <span class="ql-pitch-val">${d.total}</span>
+        <span class="ql-pitch-val">${p(d.looking)}</span>
+        <span class="ql-pitch-val">${p(d.whiff)}</span>
+        <span class="ql-pitch-val">${p(d.foul)}</span>
+        <span class="ql-pitch-val">${p(d.inPlay)}</span>
+        <span class="ql-pitch-val">${p(d.ball)}</span>
+      </div>`;
+    });
+    ocTable.innerHTML = ocHTML;
+    card.appendChild(ocTable);
+  }
+
+  // Hot/Cold zone 3x3 grid
+  const zs2 = dugout.zoneStats;
+  const hasZones = Object.values(zs2).some(z => z.abs > 0);
+  if (hasZones) {
+    const zoneDiv = document.createElement('div');
+    zoneDiv.className = 'ql-zone-section';
+    zoneDiv.innerHTML = '<div class="ql-zone-title">Hot/Cold Zone (AVG by zone)</div>';
+    const grid = document.createElement('div');
+    grid.className = 'ql-zone-grid';
+    for (let i = 1; i <= 9; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'ql-zone-cell';
+      const z = zs2[i];
+      const avg = z.abs > 0 ? z.hits / z.abs : -1;
+      if (avg < 0) { cell.style.background = 'rgba(255,255,255,0.05)'; cell.textContent = '-'; cell.style.color = '#666'; }
+      else if (avg >= .300) { cell.style.background = 'rgba(46,204,113,0.6)'; cell.style.color = '#fff'; }
+      else if (avg >= .200) { cell.style.background = 'rgba(241,196,15,0.5)'; cell.style.color = '#fff'; }
+      else { cell.style.background = 'rgba(230,57,70,0.5)'; cell.style.color = '#fff'; }
+      if (avg >= 0) cell.innerHTML = `<span class="ql-zone-avg">${avg.toFixed(3)}</span><span class="ql-zone-ab">${z.abs} AB</span>`;
+      grid.appendChild(cell);
+    }
+    zoneDiv.appendChild(grid);
+    const legend = document.createElement('div');
+    legend.className = 'ql-zone-legend';
+    legend.innerHTML = '<span style="color:#2ECC71">Hot .300+</span> <span style="color:#F1C40F">.200-.299</span> <span style="color:#E63946">Cold &lt;.200</span>';
+    zoneDiv.appendChild(legend);
+    card.appendChild(zoneDiv);
+  }
+
+  // Sample size warning
+  if (profile.sampleSizeWarning) {
+    const warn = document.createElement('div');
+    warn.className = 'quick-look-bullets';
+    warn.innerHTML = `<li><strong>NOTE:</strong> ${profile.sampleSizeWarning} <span class="ql-tag small">small sample</span></li>`;
+    card.appendChild(warn);
+  }
+
+  return card;
+}
+
+function buildTeamHittersSummaryCard(teamName, hitters) {
+  const names = Object.keys(hitters);
+  if (names.length === 0) return null;
+  // Aggregate all pitches
+  const allPitches = [];
+  names.forEach(n => { allPitches.push(...(hitters[n].pitches || [])); });
+  const totalPitches = allPitches.length;
+
+  // Aggregate PA-level stats
+  let totalPA=0, totalAB=0, totalHits=0, totalKs=0, totalBBs=0, totalXBH=0;
+  let chaseSwings=0, chasePitches=0;
+  const vsRHP={abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
+  const vsLHP={abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
+  const byPitchType={};
+  const chasePitchesByType={}, chaseSwingsByType={};
+  const seenPA = new Set();
+
+  allPitches.forEach(row => {
+    const pt = normalizePitchType(row.PitchType);
+    const result = (row.PitchResult||'').trim();
+    const abResult = (row.AtBatResult||'').trim();
+    const zone = (row.AttackZone||'').trim();
+    const pH = (row.PitcherHand||'').trim().toUpperCase();
+    if (!byPitchType[pt]) byPitchType[pt]={pitches:0,swings:0,whiffs:0,hits:0,abs:0};
+    byPitchType[pt].pitches++;
+    const isSwing = result.includes('Swing')||result.includes('Foul')||result.includes('In Play');
+    if (isSwing) byPitchType[pt].swings++;
+    if (result.includes('Swing and Miss')) byPitchType[pt].whiffs++;
+    if (zone==='Chase'||zone==='Waste') {
+      chasePitches++;
+      if (isSwing) chaseSwings++;
+      chasePitchesByType[pt]=(chasePitchesByType[pt]||0)+1;
+      if (isSwing) chaseSwingsByType[pt]=(chaseSwingsByType[pt]||0)+1;
+    }
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.Pitcher}-${row.PAofInning}`;
+    if (abResult && !seenPA.has(paKey)) {
+      seenPA.add(paKey); totalPA++;
+      const isHit = ['1B','2B','3B','HR'].includes(abResult);
+      const isAB = !['BB','HBP','IBB','Sacrifice','Catchers Interference'].includes(abResult);
+      if (isHit) totalHits++;
+      if (isAB) totalAB++;
+      if (abResult==='Strike Out') totalKs++;
+      if (['BB','HBP','IBB'].includes(abResult)) totalBBs++;
+      if (['2B','3B','HR'].includes(abResult)) totalXBH++;
+      if (isAB) byPitchType[pt].abs++;
+      if (isHit) byPitchType[pt].hits++;
+      const sp = pH==='R' ? vsRHP : vsLHP;
+      if (isAB) sp.abs++;
+      if (isHit) sp.hits++;
+      if (abResult==='Strike Out') sp.ks++;
+      if (['BB','HBP','IBB'].includes(abResult)) sp.bbs++;
+      if (abResult==='HBP') sp.hbp++;
+      if (abResult==='1B') sp.singles++;
+      if (abResult==='2B') sp.doubles++;
+      if (abResult==='3B') sp.triples++;
+      if (abResult==='HR') sp.hrs++;
+      if (['Ground Out','Fly Out','Line Out','Double Play','Infield Fly','Fielders Choice','Strike Out'].includes(abResult)) sp.outs++;
+    }
+  });
+
+  function calcWOBA(s) {
+    const num = (0.69*s.bbs)+(0.72*s.hbp)+(0.89*s.singles)+(1.27*s.doubles)+(1.62*s.triples)+(2.10*s.hrs);
+    const den = s.bbs+s.hbp+s.singles+s.doubles+s.triples+s.hrs+s.outs;
+    return den>0?(num/den).toFixed(3):'N/A';
+  }
+
+  const teamAVG = totalAB>0?(totalHits/totalAB).toFixed(3):'N/A';
+  const teamKRate = pct(totalKs,totalPA);
+  const teamBBRate = pct(totalBBs,totalPA);
+  const teamChase = pct(chaseSwings,chasePitches);
+
+  // Build card
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+  card.style.borderColor = '#C5A55A';
+  card.style.borderWidth = '3px';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${teamName} — Team Hitting Summary</span>
+    <span class="quick-look-meta">${names.length} hitters | ${totalPA} PA | ${totalPitches} pitches</span>`;
+  card.appendChild(header);
+
+  // Coach's Notes
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">TEAM OVERVIEW</div>';
+  const relayList = document.createElement('ul');
+  relayList.className = 'ql-relay-bullets';
+
+  relayList.innerHTML += `<li>Team batting <strong>${teamAVG}</strong> with <strong>${totalXBH} XBH</strong> across ${totalPA} plate appearances</li>`;
+  relayList.innerHTML += `<li>Strikeout rate: <strong>${teamKRate}</strong> | Walk rate: <strong>${teamBBRate}</strong></li>`;
+
+  const chaseNum = parseFloat(teamChase)||0;
+  if (chaseNum > 30) relayList.innerHTML += `<li>Team chasing <strong>${teamChase}</strong> out of zone — need more discipline</li>`;
+  else if (chaseNum > 0 && chaseNum <= 22) relayList.innerHTML += `<li>Disciplined lineup — only chasing <strong>${teamChase}</strong> out of zone</li>`;
+  else if (chaseNum > 0) relayList.innerHTML += `<li>Team chase rate: <strong>${teamChase}</strong></li>`;
+
+  const rAvg = vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A';
+  const lAvg = vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A';
+  const rW = calcWOBA(vsRHP), lW = calcWOBA(vsLHP);
+  relayList.innerHTML += `<li>vs RHP: <strong>${rAvg}</strong> AVG / <strong>${rW}</strong> wOBA | vs LHP: <strong>${lAvg}</strong> AVG / <strong>${lW}</strong> wOBA</li>`;
+
+  // Best/worst pitch type
+  const ptKeys = Object.keys(byPitchType).filter(t => byPitchType[t].abs >= 5);
+  const bestPT = ptKeys.sort((a,b) => {
+    const aAvg = byPitchType[a].abs>0?byPitchType[a].hits/byPitchType[a].abs:0;
+    const bAvg = byPitchType[b].abs>0?byPitchType[b].hits/byPitchType[b].abs:0;
+    return bAvg - aAvg;
+  });
+  if (bestPT.length > 0) {
+    const best = bestPT[0];
+    const bAvg = (byPitchType[best].hits/byPitchType[best].abs).toFixed(3);
+    relayList.innerHTML += `<li>Best against <strong>${best}</strong> — hitting <strong>${bAvg}</strong></li>`;
+  }
+  if (bestPT.length > 1) {
+    const worst = bestPT[bestPT.length-1];
+    const wAvg = (byPitchType[worst].hits/byPitchType[worst].abs).toFixed(3);
+    const wWhiff = byPitchType[worst].swings>0?pct(byPitchType[worst].whiffs,byPitchType[worst].swings):'?';
+    relayList.innerHTML += `<li>Weakest against <strong>${worst}</strong> — hitting <strong>${wAvg}</strong> (${wWhiff} whiff)</li>`;
+  }
+
+  relay.appendChild(relayList);
+  card.appendChild(relay);
+
+  // Stat row
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [{val:teamAVG,lbl:'Team AVG'},{val:teamKRate,lbl:'K Rate'},{val:teamBBRate,lbl:'BB Rate'},{val:teamChase,lbl:'Chase Rate'},{val:String(totalXBH),lbl:'XBH'}].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val||'N/A'}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // vs RHP / vs LHP splits
+  const splitRow = document.createElement('div');
+  splitRow.className = 'ql-splits-row';
+  [{side:'RHP',d:vsRHP,avg:rAvg,w:rW},{side:'LHP',d:vsLHP,avg:lAvg,w:lW}].forEach(({side,d,avg:a,w}) => {
+    const box = document.createElement('div');
+    box.className = 'ql-split-box';
+    box.innerHTML = `<div class="ql-split-title">vs ${side}</div>
+      <div class="ql-split-stats">
+        <span><strong>${a}</strong> AVG</span>
+        <span><strong>${pct(d.ks,d.abs||1)}</strong> K%</span>
+        <span><strong>${w}</strong> wOBA</span>
+        <span><strong>${d.hits}</strong> H</span>
+        <span><strong>${d.doubles+d.triples+d.hrs}</strong> XBH</span>
+      </div>`;
+    splitRow.appendChild(box);
+  });
+  card.appendChild(splitRow);
+
+  // Pitch results by type
+  const ptSorted = Object.keys(byPitchType).sort((a,b) => byPitchType[b].pitches - byPitchType[a].pitches);
+  if (ptSorted.length > 0) {
+    const ptTable = document.createElement('div');
+    ptTable.className = 'ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Pitch</span><span>Seen</span><span>AVG</span><span>Whiff%</span><span>Chase%</span></div>';
+    ptSorted.forEach(t => {
+      const d = byPitchType[t];
+      const a = d.abs>0?(d.hits/d.abs).toFixed(3):'N/A';
+      const w = d.swings>0?pct(d.whiffs,d.swings):'-';
+      const ch = chasePitchesByType[t]>0?pct(chaseSwingsByType[t]||0,chasePitchesByType[t]):'-';
+      html += `<div class="ql-pitch-row">
+        <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
+        <span class="ql-pitch-val">${d.pitches}</span>
+        <span class="ql-pitch-val">${a}</span>
+        <span class="ql-pitch-val">${w}</span>
+        <span class="ql-pitch-val">${ch}</span>
+      </div>`;
+    });
+    ptTable.innerHTML = html;
+    card.appendChild(ptTable);
+  }
+
+  return card;
+}
+
+function buildTeamPitchersSummaryCard(teamName, pitcherData) {
+  const names = Object.keys(pitcherData);
+  if (names.length === 0) return null;
+  // Aggregate all pitches
+  const allPitches = [];
+  names.forEach(n => { allPitches.push(...(pitcherData[n].pitches || [])); });
+  const totalPitches = allPitches.length;
+
+  let totalPA=0, ks=0, bbs=0, hrs=0, hits=0, firstPitchStrikes=0, firstPitches=0;
+  const pitchTypes={}, veloByType={}, whiffByType={}, swingsByType={};
+  const vsRHH={pitches:0,abs:0,hits:0,ks:0}, vsLHH={pitches:0,abs:0,hits:0,ks:0};
+  const byCount={first_pitch:{},ahead:{},behind:{},even:{},two_strikes:{}};
+  const seenPA = new Set();
+
+  allPitches.forEach(row => {
+    const pt = normalizePitchType(row.PitchType);
+    const result = (row.PitchResult||'').trim();
+    const abResult = (row.AtBatResult||'').trim();
+    const velo = parseFloat(row.PitchVelo);
+    const bHand = (row['Batter Hand']||'').trim().toUpperCase();
+    const b = parseInt(row.Balls)||0, s = parseInt(row.Strikes)||0;
+
+    pitchTypes[pt] = (pitchTypes[pt]||0)+1;
+    if (!isNaN(velo)&&velo>0) { if (!veloByType[pt]) veloByType[pt]=[]; veloByType[pt].push(velo); }
+    const isSwing = result.includes('Swing')||result.includes('Foul')||result.includes('In Play');
+    if (isSwing) swingsByType[pt] = (swingsByType[pt]||0)+1;
+    if (result.includes('Swing and Miss')) whiffByType[pt] = (whiffByType[pt]||0)+1;
+    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')) firstPitchStrikes++; }
+
+    const labels = [];
+    if (b===0&&s===0) labels.push('first_pitch');
+    if (s===2) labels.push('two_strikes');
+    if (s>b) labels.push('ahead'); else if (b>s) labels.push('behind'); else labels.push('even');
+    labels.forEach(l => { if (byCount[l]) byCount[l][pt] = (byCount[l][pt]||0)+1; });
+
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.Pitcher}-${row.PAofInning}`;
+    if (abResult && !seenPA.has(paKey)) {
+      seenPA.add(paKey); totalPA++;
+      const isHit = ['1B','2B','3B','HR'].includes(abResult);
+      const isAB = !['BB','HBP','IBB','Sacrifice','Catchers Interference'].includes(abResult);
+      if (abResult==='Strike Out') ks++;
+      if (['BB','HBP','IBB'].includes(abResult)) bbs++;
+      if (abResult==='HR') hrs++;
+      if (isHit) hits++;
+      const sp = bHand==='R' ? vsRHH : vsLHH;
+      sp.pitches++;
+      if (isAB) sp.abs++;
+      if (isHit) sp.hits++;
+      if (abResult==='Strike Out') sp.ks++;
+    }
+  });
+
+  const types = Object.keys(pitchTypes).sort((a,b)=>pitchTypes[b]-pitchTypes[a]);
+
+  // Build card
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+  card.style.borderColor = '#C5A55A';
+  card.style.borderWidth = '3px';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${teamName} — Team Pitching Summary</span>
+    <span class="quick-look-meta">${names.length} pitchers | ${totalPA} PA | ${totalPitches} pitches</span>`;
+  card.appendChild(header);
+
+  // Staff overview
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">STAFF OVERVIEW</div>';
+  const relayList = document.createElement('ul');
+  relayList.className = 'ql-relay-bullets';
+
+  relayList.innerHTML += `<li>Staff K rate: <strong>${pct(ks,totalPA)}</strong> | BB rate: <strong>${pct(bbs,totalPA)}</strong> | 1st pitch strike: <strong>${pct(firstPitchStrikes,firstPitches)}</strong></li>`;
+
+  // Primary pitch
+  if (types.length > 0) {
+    const primary = types[0];
+    const pPct = pct(pitchTypes[primary], totalPitches);
+    const pVelo = veloByType[primary] ? avg(veloByType[primary]) : '?';
+    relayList.innerHTML += `<li>Staff throws <strong>${primary}</strong> most (${pPct}) at avg <strong>${pVelo} mph</strong></li>`;
+  }
+
+  // vs RHH / LHH
+  const rAvg = vsRHH.abs>0?(vsRHH.hits/vsRHH.abs).toFixed(3):'N/A';
+  const lAvg = vsLHH.abs>0?(vsLHH.hits/vsLHH.abs).toFixed(3):'N/A';
+  relayList.innerHTML += `<li>Hitters vs staff: RHH <strong>${rAvg}</strong> | LHH <strong>${lAvg}</strong></li>`;
+
+  // Best put-away pitch (highest whiff rate)
+  const putaway = types.filter(t => (swingsByType[t]||0) >= 10)
+    .sort((a,b) => ((whiffByType[b]||0)/(swingsByType[b]||1)) - ((whiffByType[a]||0)/(swingsByType[a]||1)));
+  if (putaway.length > 0) {
+    const best = putaway[0];
+    relayList.innerHTML += `<li>Best put-away pitch: <strong>${best}</strong> (${pct(whiffByType[best]||0,swingsByType[best]||0)} whiff rate)</li>`;
+  }
+
+  // Most hittable
+  const hittable = types.filter(t => (swingsByType[t]||0) >= 10)
+    .sort((a,b) => ((whiffByType[a]||0)/(swingsByType[a]||1)) - ((whiffByType[b]||0)/(swingsByType[b]||1)));
+  if (hittable.length > 0 && hittable[0] !== (putaway.length>0?putaway[0]:'')) {
+    const weak = hittable[0];
+    relayList.innerHTML += `<li>Most hittable pitch: <strong>${weak}</strong> (only ${pct(whiffByType[weak]||0,swingsByType[weak]||0)} whiff rate)</li>`;
+  }
+
+  relay.appendChild(relayList);
+  card.appendChild(relay);
+
+  // Stat row
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [{val:pct(ks,totalPA),lbl:'K Rate'},{val:pct(bbs,totalPA),lbl:'BB Rate'},{val:pct(firstPitchStrikes,firstPitches),lbl:'1st Pitch K%'},{val:pct(hrs,totalPA),lbl:'HR Rate'},{val:String(names.length),lbl:'Arms'}].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val||'N/A'}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Pitch mix table
+  if (types.length > 0) {
+    const pitchTable = document.createElement('div');
+    pitchTable.className = 'ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Pitch</span><span>Usage</span><span>Velo</span><span>Whiff%</span></div>';
+    types.forEach(t => {
+      html += `<div class="ql-pitch-row">
+        <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
+        <span class="ql-pitch-val">${pct(pitchTypes[t],totalPitches)}</span>
+        <span class="ql-pitch-val">${veloByType[t]?avg(veloByType[t]):'-'}</span>
+        <span class="ql-pitch-val">${pct(whiffByType[t]||0,swingsByType[t]||0)}</span>
+      </div>`;
+    });
+    pitchTable.innerHTML = html;
+    card.appendChild(pitchTable);
+  }
+
+  // Usage by count
+  const countKeys = ['first_pitch','ahead','even','behind','two_strikes'];
+  const countLabels = ['1st Pitch','Ahead','Even','Behind','2 Strikes'];
+  const availCounts = countKeys.filter(k => Object.keys(byCount[k]||{}).length > 0);
+  if (availCounts.length > 0 && types.length > 0) {
+    const countTable = document.createElement('div');
+    countTable.className = 'ql-pitch-table';
+    let ctHTML = '<div class="ql-count-header"><span>Count</span>';
+    types.forEach(t => { ctHTML += `<span><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>`; });
+    ctHTML += '</div>';
+    availCounts.forEach(k => {
+      const label = countLabels[countKeys.indexOf(k)];
+      const ct = Object.values(byCount[k]).reduce((a,b)=>a+b,0);
+      ctHTML += `<div class="ql-count-row"><span class="ql-count-label">${label}</span>`;
+      types.forEach(t => {
+        const val = byCount[k][t] ? pct(byCount[k][t],ct) : '-';
+        ctHTML += `<span class="ql-pitch-val">${val}</span>`;
+      });
+      ctHTML += '</div>';
+    });
+    countTable.innerHTML = ctHTML;
+    card.appendChild(countTable);
+  }
+
+  return card;
+}
+
+function buildTeamHittersQuickLook(teamName) {
+  const isM = /moeller/i.test(teamName);
+  const hitters = isM ? stats.moellerHitters : {};
+  if (!isM) {
+    Object.keys(stats.opponentBatters).forEach(n => {
+      if (stats.opponentBatters[n].team.toLowerCase() === teamName.toLowerCase()) hitters[n] = stats.opponentBatters[n];
+    });
+  }
+  const names = Object.keys(hitters).sort((a,b) => (hitters[b]?.pitches?.length||0) - (hitters[a]?.pitches?.length||0));
+  if (names.length === 0) return null;
+  const container = document.createElement('div');
+
+  // Team summary card first
+  const summary = buildTeamHittersSummaryCard(teamName, hitters);
+  if (summary) container.appendChild(summary);
+
+  // Individual cards
+  names.forEach(n => {
+    const h = hitters[n];
+    const profile = computeHitterProfile(h.pitches, n, h.hand);
+    const card = buildHitterQuickLookCard(profile, h.pitches);
+    if (card) container.appendChild(card);
+  });
+  return container;
+}
+
+function tryQuickLook(question) {
+  const q = question.toLowerCase();
+  const oppP = findBestMatch(q, Object.keys(stats.opponentPitchers));
+  const moeP = findBestMatch(q, stats.moellerPitcherList);
+  const moeH = findBestMatch(q, stats.moellerHitterList);
+  const oppB = findBestMatch(q, Object.keys(stats.opponentBatters));
+  const team = findBestMatch(q, stats.teamList);
+
+  // Hitter lookups
+  if (q.includes('hitter') || q.includes('batter') || q.includes('lineup') || q.includes('hitting')) {
+    if (moeH) {
+      const h = stats.moellerHitters[moeH];
+      return buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches);
+    }
+    if (oppB) {
+      const h = stats.opponentBatters[oppB];
+      return buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches);
+    }
+    if (team) return buildTeamHittersQuickLook(team);
+    if (q.includes('moeller') || q.includes('our')) return buildTeamHittersQuickLook('Moeller');
+  }
+
+  // Individual hitter by name
+  if (moeH) {
+    const h = stats.moellerHitters[moeH];
+    return buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches);
+  }
+  if (oppB) {
+    const h = stats.opponentBatters[oppB];
+    return buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches);
+  }
+
+  // Pitcher lookups
+  if (oppP) {
+    const p = stats.opponentPitchers[oppP];
+    return buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches);
+  }
+  if (moeP) {
+    const p = stats.moellerPitchers[moeP];
+    return buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches);
+  }
+  if (team) return buildTeamQuickLook(team);
+  return null;
+}
+
 // ===== SEND MESSAGE =====
 async function sendMessage() {
   const text=userInput.value.trim();
@@ -421,6 +1437,17 @@ async function sendMessage() {
   welcomeEl.classList.add('hidden');
   appendMessage('user',text);
   userInput.value=''; userInput.style.height='auto';
+
+  // In dugout mode, show Quick Look card and skip API call (zero tokens)
+  if (appMode === 'dugout') {
+    const quickLook = tryQuickLook(text);
+    if (quickLook) {
+      appendQuickLook(quickLook);
+      userInput.focus();
+      return; // No API call — card has all the data
+    }
+  }
+
   isLoading=true; sendBtn.disabled=true;
   const loadingEl=showLoading();
 
@@ -429,12 +1456,12 @@ async function sendMessage() {
     const dataPayload=JSON.stringify(context.data,null,2);
     const fullMessage=`Here is the relevant data (context type: ${context.type}). Coach's question: "${text}"\n\n${dataPayload}`;
 
-    // Start generating charts while waiting for API
-    const charts = generateCharts(text, context.type, context.data);
+    // Generate charts only in full mode
+    const charts = appMode === 'full' ? generateCharts(text, context.type, context.data) : [];
 
     const res=await fetch('/api/chat',{
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:fullMessage,session_id:sessionId}),
+      body:JSON.stringify({message:fullMessage,session_id:sessionId,mode:appMode}),
     });
     const data=await res.json();
     if (!res.ok) throw new Error(data.error||`Server error (${res.status})`);
@@ -444,7 +1471,8 @@ async function sendMessage() {
     removeLoading(loadingEl);
     showError(err.message);
   } finally {
-    isLoading=false; sendBtn.disabled=false; userInput.focus();
+    isLoading=true; sendBtn.disabled=false; userInput.focus();
+    isLoading=false;
   }
 }
 
@@ -480,10 +1508,73 @@ function appendMessage(role, text, charts) {
       const chartSection = buildChartSection(charts);
       if (chartSection) bubble.appendChild(chartSection);
     }
+    // New Analysis button
+    bubble.appendChild(buildNewAnalysisBar());
   } else {
     bubble.textContent=text;
   }
 
+  msg.appendChild(label);
+  msg.appendChild(bubble);
+  messagesEl.appendChild(msg);
+  scrollToBottom();
+}
+
+function buildNewAnalysisBar() {
+  const bar = document.createElement('div');
+  bar.className = 'new-analysis-bar';
+  const btn = document.createElement('button');
+  btn.className = 'new-analysis-btn';
+  btn.innerHTML = '&larr; New Analysis';
+  btn.onclick = () => {
+    // Reset to welcome menu
+    messagesEl.innerHTML = '';
+    welcomeEl.classList.remove('hidden');
+    document.getElementById('menu-step1').classList.remove('hidden');
+    document.getElementById('menu-step2').classList.add('hidden');
+    document.getElementById('welcome-title').textContent = 'What do you need?';
+    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
+    selectedReportType = null;
+    scrollToBottom();
+  };
+  const switchBtn = document.createElement('button');
+  switchBtn.className = 'new-analysis-btn switch-mode-btn';
+  switchBtn.textContent = appMode === 'dugout' ? 'Switch to Full Analysis' : 'Switch to Dugout';
+  switchBtn.onclick = () => {
+    const newMode = appMode === 'dugout' ? 'full' : 'dugout';
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === newMode);
+    });
+    appMode = newMode;
+    updateModeUI();
+    // Reset to menu
+    messagesEl.innerHTML = '';
+    welcomeEl.classList.remove('hidden');
+    document.getElementById('menu-step1').classList.remove('hidden');
+    document.getElementById('menu-step2').classList.add('hidden');
+    document.getElementById('welcome-title').textContent = 'What do you need?';
+    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
+    selectedReportType = null;
+    scrollToBottom();
+  };
+  bar.appendChild(btn);
+  bar.appendChild(switchBtn);
+  return bar;
+}
+
+function appendQuickLook(cardOrContainer) {
+  const msg = document.createElement('div');
+  msg.className = 'message assistant';
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = 'Quick Look';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.style.padding = '4px';
+  bubble.style.background = 'transparent';
+  bubble.style.border = 'none';
+  bubble.appendChild(cardOrContainer);
+  bubble.appendChild(buildNewAnalysisBar());
   msg.appendChild(label);
   msg.appendChild(bubble);
   messagesEl.appendChild(msg);

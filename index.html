@@ -13,10 +13,7 @@
     <header id="header">
       <div class="header-left">
         <div class="logo">
-          <svg viewBox="0 0 40 40" width="36" height="36">
-            <circle cx="20" cy="20" r="19" fill="#C5A55A" stroke="#1B2A4A" stroke-width="2"/>
-            <text x="20" y="27" text-anchor="middle" font-size="22" font-weight="bold" fill="#1B2A4A" font-family="Georgia,serif">M</text>
-          </svg>
+          <img src="moeller-logo.png" alt="Moeller" width="36" height="36" style="object-fit:contain">
         </div>
         <div class="header-text">
           <h1>Moeller Game Prep Agent</h1>
@@ -24,6 +21,10 @@
         </div>
       </div>
       <div class="header-right">
+        <div id="mode-toggle" class="mode-toggle">
+          <button class="mode-btn" data-mode="full">Full Analysis</button>
+          <button class="mode-btn active" data-mode="dugout">Dugout</button>
+        </div>
         <div id="season-toggle" class="season-toggle">
           <button class="season-btn active" data-season="all">Both</button>
           <button class="season-btn" data-season="2024">2024</button>
@@ -48,17 +49,46 @@
             <path d="M78 40 C78 40,60 38,52 40" stroke="#C5A55A" stroke-width="1" fill="none"/>
           </svg>
         </div>
-        <h2>Ready to Scout</h2>
-        <p>Ask a question about opponents, hitters, pitchers, or game strategy.</p>
-        <div class="example-questions">
-          <button class="example-btn" data-q="What should we know about Elder's pitching staff?">What should we know about Elder's pitching staff?</button>
-          <button class="example-btn" data-q="How should our lefties approach a RHP who throws lots of sliders?">How should our lefties approach a RHP who throws lots of sliders?</button>
-          <button class="example-btn" data-q="What are our hitters' biggest weaknesses against breaking balls?">What are our hitters' biggest weaknesses against breaking balls?</button>
-          <button class="example-btn" data-q="Build me a game plan for facing La Salle">Build me a game plan for facing La Salle</button>
-          <button class="example-btn" data-q="Who on our team has the best chase rate?">Who on our team has the best chase rate?</button>
-          <button class="example-btn" data-q="What does Zion Theophilus' pitch mix look like?">What does Zion Theophilus' pitch mix look like?</button>
-          <button class="example-btn" data-q="Show me the zone heatmap for St. Xavier's pitchers">Show me the zone heatmap for St. Xavier's pitchers</button>
-          <button class="example-btn" data-q="Compare our pitching staff vs Elder's">Compare our pitching staff vs Elder's</button>
+        <h2 id="welcome-title">What do you need?</h2>
+        <p id="welcome-subtitle">Select a report type to get started</p>
+
+        <!-- STEP 1: Report Type Menu -->
+        <div id="menu-step1" class="menu-grid">
+          <button class="menu-card" data-type="hitter_report">
+            <img class="menu-card-logo" src="moeller-logo.png" alt="M">
+            <div class="menu-card-title">Scout a Hitter</div>
+            <div class="menu-card-desc">Individual hitter scouting report</div>
+          </button>
+          <button class="menu-card" data-type="pitcher_report">
+            <img class="menu-card-logo" src="moeller-logo.png" alt="M">
+            <div class="menu-card-title">Scout a Pitcher</div>
+            <div class="menu-card-desc">Individual pitcher scouting report</div>
+          </button>
+          <button class="menu-card" data-type="team_hitters">
+            <img class="menu-card-logo" src="moeller-logo.png" alt="M">
+            <div class="menu-card-title">Team Hitters</div>
+            <div class="menu-card-desc">Scouting report on a team's lineup</div>
+          </button>
+          <button class="menu-card" data-type="team_pitchers">
+            <img class="menu-card-logo" src="moeller-logo.png" alt="M">
+            <div class="menu-card-title">Team Pitchers</div>
+            <div class="menu-card-desc">Scouting report on a team's pitching staff</div>
+          </button>
+          <button class="menu-card menu-card-wide" data-type="direct">
+            <img class="menu-card-logo" src="moeller-logo.png" alt="M">
+            <div class="menu-card-title">Ask a Question</div>
+            <div class="menu-card-desc">Free-form question about any player, team, or strategy</div>
+          </button>
+        </div>
+
+        <!-- STEP 2: Name/Team Picker (hidden initially) -->
+        <div id="menu-step2" class="menu-step2 hidden">
+          <button id="menu-back" class="menu-back-btn">&larr; Back</button>
+          <h3 id="step2-title" class="step2-title">Select a player</h3>
+          <div id="step2-search" class="step2-search">
+            <input id="step2-input" type="text" placeholder="Start typing a name..." autocomplete="off"/>
+          </div>
+          <div id="step2-list" class="step2-list"></div>
         </div>
       </div>
       <div id="messages" class="messages"></div>
