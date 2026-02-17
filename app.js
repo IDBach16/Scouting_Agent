@@ -644,11 +644,7 @@ function executeMenuReport(type, item) {
     }
     if (card) {
       appendMessage('user', `${type.replace('_',' ')} — ${item.name}`);
-      // Pass attack info for individual player reports only
-      let attackInfo = null;
-      if (type === 'pitcher_report') attackInfo = { name: item.name, type: 'pitcher' };
-      else if (type === 'hitter_report') attackInfo = { name: item.name, type: 'hitter' };
-      appendQuickLook(card, attackInfo);
+      appendQuickLook(card);
       return;
     }
   }
@@ -1472,36 +1468,36 @@ function tryQuickLook(question) {
   if (q.includes('hitter') || q.includes('batter') || q.includes('lineup') || q.includes('hitting')) {
     if (moeH) {
       const h = stats.moellerHitters[moeH];
-      return { card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), attackInfo: { name: moeH, type: 'hitter' } };
+      return buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches);
     }
     if (oppB) {
       const h = stats.opponentBatters[oppB];
-      return { card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), attackInfo: { name: oppB, type: 'hitter' } };
+      return buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches);
     }
-    if (team) return { card: buildTeamHittersQuickLook(team) };
-    if (q.includes('moeller') || q.includes('our')) return { card: buildTeamHittersQuickLook('Moeller') };
+    if (team) return buildTeamHittersQuickLook(team);
+    if (q.includes('moeller') || q.includes('our')) return buildTeamHittersQuickLook('Moeller');
   }
 
   // Individual hitter by name
   if (moeH) {
     const h = stats.moellerHitters[moeH];
-    return { card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), attackInfo: { name: moeH, type: 'hitter' } };
+    return buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches);
   }
   if (oppB) {
     const h = stats.opponentBatters[oppB];
-    return { card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), attackInfo: { name: oppB, type: 'hitter' } };
+    return buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches);
   }
 
   // Pitcher lookups
   if (oppP) {
     const p = stats.opponentPitchers[oppP];
-    return { card: buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches), attackInfo: { name: oppP, type: 'pitcher' } };
+    return buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches);
   }
   if (moeP) {
     const p = stats.moellerPitchers[moeP];
-    return { card: buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches), attackInfo: { name: moeP, type: 'pitcher' } };
+    return buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches);
   }
-  if (team) return { card: buildTeamQuickLook(team) };
+  if (team) return buildTeamQuickLook(team);
   return null;
 }
 
@@ -1516,9 +1512,9 @@ async function sendMessage() {
 
   // In dugout mode, show Quick Look card and skip API call (zero tokens)
   if (appMode === 'dugout') {
-    const result = tryQuickLook(text);
-    if (result && result.card) {
-      appendQuickLook(result.card, result.attackInfo || null);
+    const quickLook = tryQuickLook(text);
+    if (quickLook) {
+      appendQuickLook(quickLook);
       userInput.focus();
       return; // No API call — card has all the data
     }
@@ -1640,7 +1636,7 @@ function buildNewAnalysisBar() {
   return bar;
 }
 
-function appendQuickLook(cardOrContainer, attackInfo) {
+function appendQuickLook(cardOrContainer) {
   const msg = document.createElement('div');
   msg.className = 'message assistant';
   const label = document.createElement('div');
@@ -1652,32 +1648,6 @@ function appendQuickLook(cardOrContainer, attackInfo) {
   bubble.style.background = 'transparent';
   bubble.style.border = 'none';
   bubble.appendChild(cardOrContainer);
-
-  // Attack plan button for individual player cards
-  if (attackInfo && attackInfo.name) {
-    const attackBar = document.createElement('div');
-    attackBar.className = 'attack-plan-bar';
-    const attackBtn = document.createElement('button');
-    attackBtn.className = 'attack-plan-btn';
-    if (attackInfo.type === 'pitcher') {
-      attackBtn.innerHTML = `<span class="attack-icon">&#9876;</span> How do we attack <strong>${attackInfo.name}</strong>?`;
-    } else {
-      attackBtn.innerHTML = `<span class="attack-icon">&#9876;</span> How do we pitch to <strong>${attackInfo.name}</strong>?`;
-    }
-    attackBtn.onclick = () => {
-      // Remove the attack button so it can't be clicked twice
-      attackBar.remove();
-      // Build and send the AI query
-      const query = attackInfo.type === 'pitcher'
-        ? `Give me a detailed game plan for how our hitters should attack ${attackInfo.name}. What should we sit on? How do we approach each count? What are his weaknesses we can exploit?`
-        : `Give me a detailed pitching game plan for how to pitch to ${attackInfo.name}. What are his weaknesses? What pitch sequences should we use? How do we get him out?`;
-      userInput.value = query;
-      sendMessage();
-    };
-    attackBar.appendChild(attackBtn);
-    bubble.appendChild(attackBar);
-  }
-
   bubble.appendChild(buildNewAnalysisBar());
   msg.appendChild(label);
   msg.appendChild(bubble);
