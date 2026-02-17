@@ -22,7 +22,8 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;position:relative}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;position:relative;-webkit-tap-highlight-color:transparent}
+button,input,textarea{-webkit-tap-highlight-color:transparent}
 body::before{content:'';position:fixed;inset:0;background:url('bg-field.jpg') center/cover no-repeat fixed;opacity:0.15;z-index:-2;pointer-events:none}
 body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,rgba(13,21,32,0.92) 0%,rgba(13,21,32,0.85) 40%,rgba(13,21,32,0.95) 100%);z-index:-1;pointer-events:none}
 
@@ -280,18 +281,106 @@ body.dugout-mode .dugout-example{display:inline-block}
 body:not(.dugout-mode) .full-example{display:inline-block}
 body:not(.dugout-mode) .dugout-example{display:none}
 
-/* RESPONSIVE */
-@media(max-width:640px){
-  #header{padding:8px 10px}
-  .header-text h1{font-size:.9rem}
+/* RESPONSIVE — iPad / Tablet (768px and below) */
+@media(max-width:768px){
+  #app{max-width:100%}
+  .message{max-width:98%}
+  .quick-look-card{padding:12px 14px}
+  .ql-zone-grid{grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,48px)}
+  .menu-grid{max-width:100%}
+  .menu-prompts{max-width:100%}
+  .prompts-grid{max-height:50vh}
+  .step2-list{max-height:50vh}
+}
+
+/* RESPONSIVE — Phone (480px and below) */
+@media(max-width:480px){
+  /* Header: stack toggles, hide non-essentials */
+  #header{flex-wrap:wrap;padding:8px 10px;gap:6px}
+  .header-left{width:100%;justify-content:space-between}
+  .header-right{width:100%;justify-content:center;gap:6px}
+  .header-text h1{font-size:.88rem}
   .subtitle{display:none}
-  .status-text{display:none}
-  .season-toggle{order:-2}
-  .mode-toggle{order:-1}
-  #chat-area{padding:10px}
-  .message{max-width:95%}
-  .msg-bubble{padding:10px 12px;font-size:.82rem}
-  .example-btn{font-size:.7rem}
-  .chart-card canvas{max-height:260px}
-  .zone-grid{grid-template-columns:repeat(5,38px);grid-template-rows:repeat(5,38px)}
+  .status-badge{display:none}
+  .mode-btn{padding:6px 14px;font-size:.72rem}
+  .season-btn{padding:5px 12px;font-size:.7rem}
+
+  /* Chat area */
+  #chat-area{padding:8px}
+  .message{max-width:100%}
+  .msg-bubble{padding:10px 12px;font-size:.84rem}
+
+  /* Welcome & Menu */
+  .welcome-screen{padding:12px 8px}
+  .welcome-screen h2{font-size:1.05rem}
+  .welcome-screen>p{font-size:.78rem;margin-bottom:16px}
+  .welcome-icon svg{width:56px;height:56px}
+  .menu-grid{grid-template-columns:repeat(2,1fr);gap:8px;max-width:100%}
+  .menu-card{padding:14px 10px;gap:3px}
+  .menu-card-logo{width:32px;height:32px}
+  .menu-card-title{font-size:.82rem}
+  .menu-card-desc{font-size:.64rem}
+
+  /* Step 2 picker — bigger touch targets */
+  .menu-step2{max-width:100%}
+  .step2-item{padding:12px 14px}
+  .step2-item-name{font-size:.88rem}
+  .step2-search input{padding:12px 14px;font-size:.9rem}
+  .menu-back-btn{padding:8px 14px;font-size:.78rem}
+
+  /* Quick Look cards */
+  .quick-look-card{padding:10px 12px;margin-bottom:10px}
+  .quick-look-header{flex-direction:column;align-items:flex-start;gap:2px}
+  .quick-look-name{font-size:.92rem}
+  .quick-look-meta{font-size:.68rem}
+  .quick-look-row{gap:4px}
+  .quick-look-stat{min-width:60px;padding:5px 6px}
+  .quick-look-stat .ql-val{font-size:.88rem}
+  .quick-look-stat .ql-lbl{font-size:.5rem}
+
+  /* Relay / Coach's Notes */
+  .ql-relay-section{padding:8px 10px}
+  .ql-relay-bullets li{font-size:.78rem;padding:4px 0 4px 12px}
+  .ql-relay-bullets li::before{top:9px;width:5px;height:5px}
+
+  /* Tables — horizontal scroll on small screens */
+  .ql-pitch-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ql-pitch-header,.ql-pitch-row{min-width:320px}
+  .ql-pitch-header{font-size:.55rem;padding:5px 8px}
+  .ql-pitch-row{padding:5px 8px;font-size:.72rem}
+  .ql-pitch-dot{width:6px;height:6px}
+  .ql-count-header,.ql-count-row{min-width:320px}
+  .ql-count-header{font-size:.52rem;padding:4px 8px}
+  .ql-count-row{font-size:.68rem;padding:4px 8px}
+  .ql-count-label{flex:0 0 55px!important;font-size:.66rem}
+  .ql-count-header span:first-child{flex:0 0 55px}
+
+  /* Splits */
+  .ql-splits-row{flex-direction:column;gap:6px}
+  .ql-split-box{padding:8px}
+  .ql-split-stats{font-size:.72rem;gap:3px 8px}
+
+  /* Zone grid — slightly smaller */
+  .ql-zone-grid{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,44px)}
+  .ql-zone-avg{font-size:.72rem}
+  .ql-zone-ab{font-size:.45rem}
+
+  /* Example prompts */
+  .prompt-btn{padding:10px 10px;gap:8px}
+  .prompt-cat{font-size:.55rem;min-width:65px;padding:3px 6px}
+  .prompt-text{font-size:.78rem}
+  .prompts-grid{max-height:55vh}
+
+  /* New Analysis buttons — full width stack */
+  .new-analysis-bar{flex-direction:column;gap:6px}
+  .new-analysis-btn{width:100%;padding:10px 16px;font-size:.82rem;text-align:center}
+
+  /* Input area */
+  #input-area{padding:8px 10px 12px}
+  #user-input{font-size:.86rem}
+  #send-btn{width:40px;height:40px}
+
+  /* Charts */
+  .chart-card canvas{max-height:240px}
+  .zone-grid{grid-template-columns:repeat(5,36px);grid-template-rows:repeat(5,36px)}
 }
