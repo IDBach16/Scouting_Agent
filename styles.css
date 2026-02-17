@@ -286,7 +286,7 @@ body:not(.dugout-mode) .dugout-example{display:none}
   .header-text h1{font-size:.9rem}
   .subtitle{display:none}
   .status-text{display:none}
-  .season-toggle{display:none}
+  .season-toggle{order:-2}
   .mode-toggle{order:-1}
   #chat-area{padding:10px}
   .message{max-width:95%}
