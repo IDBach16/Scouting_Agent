@@ -454,6 +454,14 @@ function initMenu() {
     card.addEventListener('click', () => {
       selectedReportType = card.dataset.type;
       if (selectedReportType === 'direct') {
+        // Switch to full analysis mode for free-form questions
+        if (appMode !== 'full') {
+          document.querySelectorAll('.mode-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === 'full');
+          });
+          appMode = 'full';
+          updateModeUI();
+        }
         showPrompts();
         return;
       }
