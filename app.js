@@ -700,7 +700,7 @@ function executeMenuReport(type, item) {
     }
     if (card) {
       appendMessage('user', `${type.replace('_',' ')} — ${item.name}`);
-      appendQuickLook(card, type === 'hitter_report' ? item.name : null);
+      appendQuickLook(card, type === 'hitter_report' ? item.name : null, type === 'pitcher_report' ? item.name : null);
       return;
     }
   }
@@ -1556,36 +1556,36 @@ function tryQuickLook(question) {
   if (q.includes('hitter') || q.includes('batter') || q.includes('lineup') || q.includes('hitting')) {
     if (moeH) {
       const h = stats.moellerHitters[moeH];
-      return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), hitterName: moeH};
+      return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), hitterName: moeH, pitcherName: null};
     }
     if (oppB) {
       const h = stats.opponentBatters[oppB];
-      return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB};
+      return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB, pitcherName: null};
     }
-    if (team) return {card: buildTeamHittersQuickLook(team), hitterName: null};
-    if (q.includes('moeller') || q.includes('our')) return {card: buildTeamHittersQuickLook('Moeller'), hitterName: null};
+    if (team) return {card: buildTeamHittersQuickLook(team), hitterName: null, pitcherName: null};
+    if (q.includes('moeller') || q.includes('our')) return {card: buildTeamHittersQuickLook('Moeller'), hitterName: null, pitcherName: null};
   }
 
   // Individual hitter by name
   if (moeH) {
     const h = stats.moellerHitters[moeH];
-    return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), hitterName: moeH};
+    return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), hitterName: moeH, pitcherName: null};
   }
   if (oppB) {
     const h = stats.opponentBatters[oppB];
-    return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB};
+    return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB, pitcherName: null};
   }
 
   // Pitcher lookups
   if (oppP) {
     const p = stats.opponentPitchers[oppP];
-    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches), hitterName: null};
+    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches), hitterName: null, pitcherName: oppP};
   }
   if (moeP) {
     const p = stats.moellerPitchers[moeP];
-    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches), hitterName: null};
+    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches), hitterName: null, pitcherName: moeP};
   }
-  if (team) return {card: buildTeamQuickLook(team), hitterName: null};
+  if (team) return {card: buildTeamQuickLook(team), hitterName: null, pitcherName: null};
   return null;
 }
 
@@ -1602,7 +1602,7 @@ async function sendMessage() {
   if (appMode === 'dugout') {
     const quickLook = tryQuickLook(text);
     if (quickLook) {
-      appendQuickLook(quickLook.card, quickLook.hitterName);
+      appendQuickLook(quickLook.card, quickLook.hitterName, quickLook.pitcherName);
       userInput.focus();
       return; // No API call — card has all the data
     }
@@ -1772,7 +1772,108 @@ function buildHowToPitchCard(hitterName) {
   return card;
 }
 
-function buildNewAnalysisBar(hitterName) {
+function buildHowToHitCard(pitcherName) {
+  const src = stats.opponentPitchers[pitcherName] || stats.moellerPitchers[pitcherName];
+  if (!src) return null;
+  const profile = computePitcherProfile(src.pitches, pitcherName, src.hand, src.team || 'Moeller');
+
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  const hand = (profile.hand||'').toUpperCase();
+  const handLabel = hand === 'R' ? 'RHP' : hand === 'L' ? 'LHP' : hand || '?';
+  header.innerHTML = `<span class="quick-look-name">How to Hit: ${profile.name}</span>
+    <span class="quick-look-meta">${handLabel} | ${profile.totalPA} PA faced</span>`;
+  card.appendChild(header);
+
+  const notes = document.createElement('div');
+  notes.className = 'ql-relay-section';
+  notes.innerHTML = '<div class="ql-relay-title">HITTING PLAN</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  const mix = profile.pitchMix || {};
+  const types = Object.keys(mix);
+  const byCount = profile.pitchMixByCount || {};
+
+  // 1. What to sit on first pitch
+  const fpMix = byCount.first_pitch;
+  if (fpMix) {
+    const fpTypes = Object.keys(fpMix).sort((a,b) => parseFloat(fpMix[b]) - parseFloat(fpMix[a]));
+    if (fpTypes.length > 0) {
+      list.innerHTML += `<li>Sit <strong>${fpTypes[0]}</strong> first pitch — throws it <strong>${fpMix[fpTypes[0]]}</strong> of the time</li>`;
+    }
+  }
+
+  // 2. Most hittable pitch (lowest whiff rate)
+  const byWhiff = types.filter(t => mix[t]?.whiffRate && mix[t].whiffRate !== 'N/A')
+    .sort((a,b) => parseFloat(mix[a].whiffRate) - parseFloat(mix[b].whiffRate));
+  if (byWhiff.length > 0) {
+    const easiest = byWhiff[0];
+    list.innerHTML += `<li>Most hittable: <strong>${easiest}</strong> — only <strong>${mix[easiest].whiffRate} whiff rate</strong>, look to drive it</li>`;
+  }
+
+  // 3. Pitch to lay off / protect against (highest whiff rate)
+  if (byWhiff.length > 0) {
+    const toughest = byWhiff[byWhiff.length - 1];
+    if (toughest !== byWhiff[0]) {
+      list.innerHTML += `<li>Toughest pitch: <strong>${toughest}</strong> — <strong>${mix[toughest].whiffRate} whiff rate</strong>, shorten up or lay off</li>`;
+    }
+  }
+
+  // 4. When he's behind — what to expect
+  const behindMix = byCount.behind;
+  if (behindMix) {
+    const behTypes = Object.keys(behindMix).sort((a,b) => parseFloat(behindMix[b]) - parseFloat(behindMix[a]));
+    if (behTypes.length > 0) {
+      list.innerHTML += `<li>When behind in count, expect <strong>${behTypes[0]}</strong> (<strong>${behindMix[behTypes[0]]}</strong>) — be ready to attack</li>`;
+    }
+  }
+
+  // 5. Two-strike approach — what's coming
+  const tsMix = byCount.two_strikes;
+  if (tsMix) {
+    const tsTypes = Object.keys(tsMix).sort((a,b) => parseFloat(tsMix[b]) - parseFloat(tsMix[a]));
+    if (tsTypes.length > 0) {
+      const putaway = tsTypes[0];
+      list.innerHTML += `<li>With 2 strikes, protect against <strong>${putaway}</strong> (<strong>${tsMix[putaway]}</strong>) — don't get caught looking</li>`;
+    }
+  }
+
+  // 6. Zone profile — expand or stay tight?
+  const zp = profile.zoneProfile || {};
+  const zoneRate = parseFloat(zp['Zone% (Heart+Shadow)']) || 0;
+  if (zoneRate > 60) {
+    list.innerHTML += `<li>Lives in the zone (<strong>${zp['Zone% (Heart+Shadow)']}</strong>) — be aggressive early</li>`;
+  } else if (zoneRate > 0 && zoneRate < 45) {
+    list.innerHTML += `<li>Works off the plate (<strong>${zp['Chase%']}</strong> chase zone) — be patient and take pitches</li>`;
+  }
+
+  // 7. First pitch strike rate
+  const fps = parseFloat(profile.firstPitchStrike) || 0;
+  if (fps > 65) {
+    list.innerHTML += `<li>Gets ahead often (<strong>${profile.firstPitchStrike}</strong> first pitch strike) — be ready to swing early</li>`;
+  } else if (fps > 0 && fps < 50) {
+    list.innerHTML += `<li>Struggles to get ahead (<strong>${profile.firstPitchStrike}</strong> first pitch strike) — take the first pitch</li>`;
+  }
+
+  // 8. Platoon edge
+  const rAvg = parseFloat(profile.vsRHH?.AVG) || 0;
+  const lAvg = parseFloat(profile.vsLHH?.AVG) || 0;
+  if (rAvg > 0 && lAvg > 0) {
+    if (rAvg > lAvg + 0.05) list.innerHTML += `<li>Hittable from the right side — RHH hit <strong>${profile.vsRHH.AVG}</strong></li>`;
+    else if (lAvg > rAvg + 0.05) list.innerHTML += `<li>Hittable from the left side — LHH hit <strong>${profile.vsLHH.AVG}</strong></li>`;
+  }
+
+  notes.appendChild(list);
+  card.appendChild(notes);
+  return card;
+}
+
+function buildNewAnalysisBar(hitterName, pitcherName) {
   const bar = document.createElement('div');
   bar.className = 'new-analysis-bar';
   const btn = document.createElement('button');
@@ -1829,10 +1930,25 @@ function buildNewAnalysisBar(hitterName) {
     bar.appendChild(pitchBtn);
   }
 
+  // "How to Hit" button — only for individual pitcher cards
+  if (pitcherName) {
+    const hitBtn = document.createElement('button');
+    hitBtn.className = 'new-analysis-btn';
+    hitBtn.textContent = 'How to Hit';
+    hitBtn.onclick = () => {
+      const hitCard = buildHowToHitCard(pitcherName);
+      if (hitCard) {
+        appendMessage('user', `How to hit — ${pitcherName}`);
+        appendQuickLook(hitCard);
+      }
+    };
+    bar.appendChild(hitBtn);
+  }
+
   return bar;
 }
 
-function appendQuickLook(cardOrContainer, hitterName) {
+function appendQuickLook(cardOrContainer, hitterName, pitcherName) {
   const msg = document.createElement('div');
   msg.className = 'message assistant';
   const label = document.createElement('div');
@@ -1844,7 +1960,7 @@ function appendQuickLook(cardOrContainer, hitterName) {
   bubble.style.background = 'transparent';
   bubble.style.border = 'none';
   bubble.appendChild(cardOrContainer);
-  bubble.appendChild(buildNewAnalysisBar(hitterName));
+  bubble.appendChild(buildNewAnalysisBar(hitterName, pitcherName));
   msg.appendChild(label);
   msg.appendChild(bubble);
   messagesEl.appendChild(msg);
