@@ -828,10 +828,14 @@ function buildTeamQuickLook(teamName) {
 
 // ===== HITTER QUICK LOOK CARD =====
 function computeHitterDugoutStats(pitches) {
-  // Outcome by specific count
-  const counts = ['0-0','0-1','0-2','1-0','1-1','1-2','2-0','2-1','2-2','3-0','3-1','3-2'];
-  const outcomeByCount = {};
-  counts.forEach(c => { outcomeByCount[c] = {total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0}; });
+  // Outcome by count group (5 groups)
+  const outcomeByGroup = {
+    first_pitch:{total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0},
+    ahead:{total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0},
+    even:{total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0},
+    behind:{total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0},
+    two_strikes:{total:0,looking:0,whiff:0,foul:0,inPlay:0,ball:0}
+  };
   // vs RHP / LHP detailed
   const vsRHP = {pitches:0,abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
   const vsLHP = {pitches:0,abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
@@ -848,16 +852,22 @@ function computeHitterDugoutStats(pitches) {
     const pH = (row.PitcherHand||'').trim().toUpperCase();
     const loc = parseInt(row.Location);
 
-    // Outcome by count
-    if (outcomeByCount[countKey]) {
-      const oc = outcomeByCount[countKey];
+    // Outcome by count group
+    const groups = [];
+    if (b === 0 && s === 0) groups.push('first_pitch');
+    if (s === 2) groups.push('two_strikes');
+    if (b > s) groups.push('ahead');
+    else if (s > b) groups.push('behind');
+    else groups.push('even');
+    groups.forEach(g => {
+      const oc = outcomeByGroup[g];
       oc.total++;
       if (result.includes('Looking')) oc.looking++;
       else if (result.includes('Swing and Miss')) oc.whiff++;
       else if (result.includes('Foul')) oc.foul++;
       else if (result.includes('In Play')) oc.inPlay++;
       else if (result === 'Ball' || result.includes('Ball')) oc.ball++;
-    }
+    });
 
     // PA-level stats
     const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Pitcher}-${row.PAofInning}`;
@@ -894,7 +904,7 @@ function computeHitterDugoutStats(pitches) {
   }
 
   return {
-    outcomeByCount,
+    outcomeByGroup,
     vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,vsRHP.abs||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
     vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,vsLHP.abs||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
     zoneStats,
@@ -1025,20 +1035,21 @@ function buildHitterQuickLookCard(profile, pitches) {
     card.appendChild(ptTable);
   }
 
-  // Outcome by count table
-  const obc = dugout.outcomeByCount;
-  const countKeys = ['0-0','0-1','0-2','1-0','1-1','1-2','2-0','2-1','2-2','3-0','3-1','3-2'];
-  const hasCounts = countKeys.some(k => obc[k]?.total > 0);
-  if (hasCounts) {
+  // Outcome by count group table
+  const obg = dugout.outcomeByGroup;
+  const groupKeys = ['first_pitch','ahead','even','behind','two_strikes'];
+  const groupLabels = {'first_pitch':'1st Pitch','ahead':'Ahead','even':'Even','behind':'Behind','two_strikes':'2 Strikes'};
+  const hasGroups = groupKeys.some(k => obg[k]?.total > 0);
+  if (hasGroups) {
     const ocTable = document.createElement('div');
     ocTable.className = 'ql-pitch-table';
     let ocHTML = '<div class="ql-count-header"><span>Count</span><span>N</span><span>Look%</span><span>Whiff%</span><span>Foul%</span><span>InPlay%</span><span>Ball%</span></div>';
-    countKeys.forEach(k => {
-      const d = obc[k];
+    groupKeys.forEach(k => {
+      const d = obg[k];
       if (d.total === 0) return;
       const p = v => d.total > 0 ? ((v/d.total)*100).toFixed(0)+'%' : '-';
       ocHTML += `<div class="ql-count-row">
-        <span class="ql-count-label">${k}</span>
+        <span class="ql-count-label">${groupLabels[k]}</span>
         <span class="ql-pitch-val">${d.total}</span>
         <span class="ql-pitch-val">${p(d.looking)}</span>
         <span class="ql-pitch-val">${p(d.whiff)}</span>
