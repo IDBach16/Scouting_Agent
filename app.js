@@ -985,21 +985,42 @@ function buildHitterQuickLookCard(profile, pitches) {
   const relayList = document.createElement('ul');
   relayList.className = 'ql-relay-bullets';
 
-  // 1. Strength — best pitch type to hit
+  // 1 & 2. Strength + weakness — avoid contradicting the same pitch
   const rbt = profile.resultsByPitchType || {};
   const hittable = Object.keys(rbt).filter(t => rbt[t].pitchesSeen >= 5 && rbt[t].AVG !== 'N/A')
     .sort((a,b) => parseFloat(rbt[b].AVG) - parseFloat(rbt[a].AVG));
-  if (hittable.length > 0) {
-    const best = hittable[0];
-    relayList.innerHTML += `<li>Hits <strong>${rbt[best].AVG}</strong> against <strong>${best}</strong> — look to attack it</li>`;
-  }
-
-  // 2. Weakness — worst pitch type / highest chase
   const struggles = Object.keys(rbt).filter(t => rbt[t].pitchesSeen >= 5 && rbt[t].whiffRate && rbt[t].whiffRate !== 'N/A')
     .sort((a,b) => parseFloat(rbt[b].whiffRate) - parseFloat(rbt[a].whiffRate));
-  if (struggles.length > 0) {
-    const worst = struggles[0];
-    relayList.innerHTML += `<li>Struggles with <strong>${worst}</strong> — <strong>${rbt[worst].whiffRate} whiff rate</strong>, shorten up</li>`;
+  const bestPitch = hittable.length > 0 ? hittable[0] : null;
+  const worstPitch = struggles.length > 0 ? struggles[0] : null;
+
+  if (bestPitch && worstPitch && bestPitch === worstPitch) {
+    // Same pitch has high AVG and high whiff — give nuanced advice
+    const avg = parseFloat(rbt[bestPitch].AVG);
+    const whiff = parseFloat(rbt[bestPitch].whiffRate);
+    if (avg >= .300 && whiff >= 30) {
+      relayList.innerHTML += `<li>Swings and misses at <strong>${bestPitch}</strong> often (<strong>${rbt[bestPitch].whiffRate} whiff</strong>) but does damage when contact is made (<strong>${rbt[bestPitch].AVG} AVG</strong>) — shorten up to make contact</li>`;
+    } else if (avg >= .300) {
+      relayList.innerHTML += `<li>Hits <strong>${rbt[bestPitch].AVG}</strong> against <strong>${bestPitch}</strong> — look to attack it</li>`;
+    } else {
+      relayList.innerHTML += `<li>Struggles with <strong>${worstPitch}</strong> — <strong>${rbt[worstPitch].whiffRate} whiff rate</strong>, shorten up</li>`;
+    }
+    // Show next-best for the other note if available
+    if (hittable.length > 1) {
+      const next = hittable[1];
+      relayList.innerHTML += `<li>Hits <strong>${rbt[next].AVG}</strong> against <strong>${next}</strong> — look to attack it</li>`;
+    }
+    if (struggles.length > 1) {
+      const next = struggles[1];
+      relayList.innerHTML += `<li>Struggles with <strong>${next}</strong> — <strong>${rbt[next].whiffRate} whiff rate</strong>, shorten up</li>`;
+    }
+  } else {
+    if (bestPitch) {
+      relayList.innerHTML += `<li>Hits <strong>${rbt[bestPitch].AVG}</strong> against <strong>${bestPitch}</strong> — look to attack it</li>`;
+    }
+    if (worstPitch) {
+      relayList.innerHTML += `<li>Struggles with <strong>${worstPitch}</strong> — <strong>${rbt[worstPitch].whiffRate} whiff rate</strong>, shorten up</li>`;
+    }
   }
 
   // 3. Chase rate callout
