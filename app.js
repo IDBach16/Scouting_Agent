@@ -246,7 +246,7 @@ function computeHitterProfile(pitches, name, hand) {
   const byPitchType={};
   let chaseSwings=0, chasePitches=0;
   const vsRHP={abs:0,hits:0,ks:0}, vsLHP={abs:0,hits:0,ks:0};
-  const byCount={ahead:{abs:0,hits:0,ks:0},behind:{abs:0,hits:0,ks:0},even:{abs:0,hits:0,ks:0}};
+  const byCount={first_pitch:{abs:0,hits:0,ks:0},ahead:{abs:0,hits:0,ks:0},even:{abs:0,hits:0,ks:0},two_strikes:{abs:0,hits:0,ks:0}};
   let totalPA=0, totalHits=0, totalAB=0, totalKs=0, totalBBs=0;
   const seenPA=new Set();
   const chasePitchesByType={}, chaseSwingsByType={};
@@ -280,8 +280,12 @@ function computeHitterProfile(pitches, name, hand) {
       if (isAB) byPitchType[pt].abs++; if (isHit) byPitchType[pt].hits++;
       const sp=pH==='R'?vsRHP:vsLHP;
       if (isAB) sp.abs++; if (isHit) sp.hits++; if (abResult==='Strike Out') sp.ks++;
-      let cc='even'; if (s>b) cc='behind'; else if (b>s) cc='ahead';
-      if (isAB) byCount[cc].abs++; if (isHit) byCount[cc].hits++; if (abResult==='Strike Out') byCount[cc].ks++;
+      const cats=[];
+      if (b===0 && s===0) cats.push('first_pitch');
+      if (s===2) cats.push('two_strikes');
+      if (b>s) cats.push('ahead');
+      if (b===s) cats.push('even');
+      cats.forEach(cc=>{ if (isAB) byCount[cc].abs++; if (isHit) byCount[cc].hits++; if (abResult==='Strike Out') byCount[cc].ks++; });
     }
   });
 
@@ -300,7 +304,7 @@ function computeHitterProfile(pitches, name, hand) {
     resultsByPitchType,
     vsRHP:{AVG:vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A',K_rate:vsRHP.abs>0?pct(vsRHP.ks,vsRHP.abs):'N/A'},
     vsLHP:{AVG:vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A',K_rate:vsLHP.abs>0?pct(vsLHP.ks,vsLHP.abs):'N/A'},
-    byCount:{ahead:fmtCount(byCount.ahead),behind:fmtCount(byCount.behind),even:fmtCount(byCount.even)},
+    byCount:{first_pitch:fmtCount(byCount.first_pitch),ahead:fmtCount(byCount.ahead),even:fmtCount(byCount.even),two_strikes:fmtCount(byCount.two_strikes)},
     sampleSizeWarning:total<30?`Small sample: only ${total} pitches`:'',
   };
 }

@@ -425,8 +425,8 @@ function chartHotColdZone(pitches, name) {
 function chartHitterByCount(hProfile, label) {
   const bc = hProfile.byCount;
   if (!bc) return null;
-  const groups = ['ahead','even','behind'];
-  const display = ['Ahead','Even','Behind'];
+  const groups = ['first_pitch','ahead','even','two_strikes'];
+  const display = ['1st Pitch','Ahead','Even','2 Strikes'];
   const title = `${label || hProfile.name}: Performance by Count`;
   const { card, canvas } = makeCard(title);
   new Chart(canvas, {
