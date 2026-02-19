@@ -700,7 +700,7 @@ function executeMenuReport(type, item) {
     }
     if (card) {
       appendMessage('user', `${type.replace('_',' ')} — ${item.name}`);
-      appendQuickLook(card);
+      appendQuickLook(card, type === 'hitter_report' ? item.name : null);
       return;
     }
   }
@@ -1556,36 +1556,36 @@ function tryQuickLook(question) {
   if (q.includes('hitter') || q.includes('batter') || q.includes('lineup') || q.includes('hitting')) {
     if (moeH) {
       const h = stats.moellerHitters[moeH];
-      return buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches);
+      return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), hitterName: moeH};
     }
     if (oppB) {
       const h = stats.opponentBatters[oppB];
-      return buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches);
+      return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB};
     }
-    if (team) return buildTeamHittersQuickLook(team);
-    if (q.includes('moeller') || q.includes('our')) return buildTeamHittersQuickLook('Moeller');
+    if (team) return {card: buildTeamHittersQuickLook(team), hitterName: null};
+    if (q.includes('moeller') || q.includes('our')) return {card: buildTeamHittersQuickLook('Moeller'), hitterName: null};
   }
 
   // Individual hitter by name
   if (moeH) {
     const h = stats.moellerHitters[moeH];
-    return buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches);
+    return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, moeH, h.hand), h.pitches), hitterName: moeH};
   }
   if (oppB) {
     const h = stats.opponentBatters[oppB];
-    return buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches);
+    return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB};
   }
 
   // Pitcher lookups
   if (oppP) {
     const p = stats.opponentPitchers[oppP];
-    return buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches);
+    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches), hitterName: null};
   }
   if (moeP) {
     const p = stats.moellerPitchers[moeP];
-    return buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches);
+    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches), hitterName: null};
   }
-  if (team) return buildTeamQuickLook(team);
+  if (team) return {card: buildTeamQuickLook(team), hitterName: null};
   return null;
 }
 
@@ -1602,7 +1602,7 @@ async function sendMessage() {
   if (appMode === 'dugout') {
     const quickLook = tryQuickLook(text);
     if (quickLook) {
-      appendQuickLook(quickLook);
+      appendQuickLook(quickLook.card, quickLook.hitterName);
       userInput.focus();
       return; // No API call — card has all the data
     }
@@ -1680,7 +1680,99 @@ function appendMessage(role, text, charts) {
   scrollToBottom();
 }
 
-function buildNewAnalysisBar() {
+function buildHowToPitchCard(hitterName) {
+  const src = stats.moellerHitters[hitterName] || stats.opponentBatters[hitterName];
+  if (!src) return null;
+  const profile = computeHitterProfile(src.pitches, hitterName, src.hand);
+  const dugout = computeHitterDugoutStats(src.pitches);
+
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  const hand = (profile.hand||'').toUpperCase();
+  const handLabel = hand === 'R' ? 'RHH' : hand === 'L' ? 'LHH' : hand || '?';
+  header.innerHTML = `<span class="quick-look-name">How to Pitch: ${profile.name}</span>
+    <span class="quick-look-meta">${handLabel} | ${profile.totalPA} PA</span>`;
+  card.appendChild(header);
+
+  const notes = document.createElement('div');
+  notes.className = 'ql-relay-section';
+  notes.innerHTML = '<div class="ql-relay-title">PITCHING PLAN</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  const rbt = profile.resultsByPitchType || {};
+  const zs = dugout.zoneStats;
+  const zoneNames = {1:'up-in',2:'up-mid',3:'up-away',4:'mid-in',5:'middle',6:'mid-away',7:'low-in',8:'low-mid',9:'low-away'};
+
+  // 1. What pitch to attack him with (highest whiff rate)
+  const pitchByWhiff = Object.keys(rbt).filter(t => rbt[t].pitchesSeen >= 5 && rbt[t].whiffRate && rbt[t].whiffRate !== 'N/A')
+    .sort((a,b) => parseFloat(rbt[b].whiffRate) - parseFloat(rbt[a].whiffRate));
+  if (pitchByWhiff.length > 0) {
+    const best = pitchByWhiff[0];
+    list.innerHTML += `<li>Attack with <strong>${best}</strong> — <strong>${rbt[best].whiffRate} whiff rate</strong></li>`;
+  }
+
+  // 2. What pitch to avoid (lowest whiff / highest AVG against)
+  const pitchByAVG = Object.keys(rbt).filter(t => rbt[t].pitchesSeen >= 5 && rbt[t].AVG !== 'N/A')
+    .sort((a,b) => parseFloat(rbt[b].AVG) - parseFloat(rbt[a].AVG));
+  if (pitchByAVG.length > 0) {
+    const avoid = pitchByAVG[0];
+    if (!pitchByWhiff.length || avoid !== pitchByWhiff[0]) {
+      list.innerHTML += `<li>Avoid <strong>${avoid}</strong> — hits <strong>${rbt[avoid].AVG}</strong> against it</li>`;
+    } else if (pitchByAVG.length > 1) {
+      const next = pitchByAVG[1];
+      list.innerHTML += `<li>Be careful with <strong>${next}</strong> — hits <strong>${rbt[next].AVG}</strong> against it</li>`;
+    }
+  }
+
+  // 3. Cold zones — where to locate
+  const coldZones = [], hotZones = [];
+  for (let i = 1; i <= 9; i++) {
+    if (zs[i].abs >= 3) {
+      const avg = zs[i].hits / zs[i].abs;
+      if (avg < .150) coldZones.push(zoneNames[i]);
+      if (avg >= .300) hotZones.push(zoneNames[i]);
+    }
+  }
+  if (coldZones.length > 0) {
+    list.innerHTML += `<li>Locate to <strong>${coldZones.join(', ')}</strong> — cold zones</li>`;
+  }
+  if (hotZones.length > 0) {
+    list.innerHTML += `<li>Stay away from <strong>${hotZones.join(', ')}</strong> — hot zones</li>`;
+  }
+
+  // 4. Chase rate — can you expand?
+  const chaseNum = parseFloat(profile.overallChaseRate) || 0;
+  if (chaseNum > 30) {
+    list.innerHTML += `<li>Expand the zone — chases <strong>${profile.overallChaseRate}</strong> out of zone</li>`;
+  } else if (chaseNum > 0 && chaseNum <= 15) {
+    list.innerHTML += `<li>Don't waste pitches — only chases <strong>${profile.overallChaseRate}</strong>, stay in the zone</li>`;
+  }
+
+  // 5. Two-strike approach
+  if (pitchByWhiff.length > 0) {
+    const putaway = pitchByWhiff[0];
+    list.innerHTML += `<li>Put-away pitch: <strong>${putaway}</strong> with 2 strikes</li>`;
+  }
+
+  // 6. Platoon edge
+  const rAvg = parseFloat(dugout.vsRHP.AVG) || 0;
+  const lAvg = parseFloat(dugout.vsLHP.AVG) || 0;
+  if (rAvg > 0 && lAvg > 0) {
+    if (rAvg > lAvg + 0.05) list.innerHTML += `<li>Weaker vs LHP (<strong>${dugout.vsLHP.AVG}</strong>) — get a lefty if possible</li>`;
+    else if (lAvg > rAvg + 0.05) list.innerHTML += `<li>Weaker vs RHP (<strong>${dugout.vsRHP.AVG}</strong>) — get a righty if possible</li>`;
+  }
+
+  notes.appendChild(list);
+  card.appendChild(notes);
+  return card;
+}
+
+function buildNewAnalysisBar(hitterName) {
   const bar = document.createElement('div');
   bar.className = 'new-analysis-bar';
   const btn = document.createElement('button');
@@ -1721,10 +1813,26 @@ function buildNewAnalysisBar() {
   };
   bar.appendChild(btn);
   bar.appendChild(switchBtn);
+
+  // "How to Pitch" button — only for individual hitter cards
+  if (hitterName) {
+    const pitchBtn = document.createElement('button');
+    pitchBtn.className = 'new-analysis-btn';
+    pitchBtn.textContent = 'How to Pitch';
+    pitchBtn.onclick = () => {
+      const pitchCard = buildHowToPitchCard(hitterName);
+      if (pitchCard) {
+        appendMessage('user', `How to pitch — ${hitterName}`);
+        appendQuickLook(pitchCard);
+      }
+    };
+    bar.appendChild(pitchBtn);
+  }
+
   return bar;
 }
 
-function appendQuickLook(cardOrContainer) {
+function appendQuickLook(cardOrContainer, hitterName) {
   const msg = document.createElement('div');
   msg.className = 'message assistant';
   const label = document.createElement('div');
@@ -1736,7 +1844,7 @@ function appendQuickLook(cardOrContainer) {
   bubble.style.background = 'transparent';
   bubble.style.border = 'none';
   bubble.appendChild(cardOrContainer);
-  bubble.appendChild(buildNewAnalysisBar());
+  bubble.appendChild(buildNewAnalysisBar(hitterName));
   msg.appendChild(label);
   msg.appendChild(bubble);
   messagesEl.appendChild(msg);
