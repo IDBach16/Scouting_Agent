@@ -791,6 +791,67 @@ function buildQuickLookCard(profile, pitches) {
     card.appendChild(countTable);
   }
 
+  // ====== HOT/COLD ZONES BY PITCH TYPE ======
+  if (pitches && pitches.length > 0) {
+    const zoneByPitch = {};
+    const seenZonePA = new Set();
+    pitches.forEach(row => {
+      const pt = normalizePitchType(row.PitchType);
+      const loc = parseInt(row.Location);
+      const abResult = (row.AtBatResult||'').trim();
+      const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.PAofInning}`;
+      if (!abResult || seenZonePA.has(paKey)) return;
+      seenZonePA.add(paKey);
+      const isAB = !['BB','HBP','IBB','Sacrifice','Catchers Interference'].includes(abResult);
+      if (!isAB || loc < 1 || loc > 9) return;
+      if (!zoneByPitch[pt]) {
+        zoneByPitch[pt] = {};
+        for (let i = 1; i <= 9; i++) zoneByPitch[pt][i] = {abs:0,hits:0};
+      }
+      const isHit = ['1B','2B','3B','HR'].includes(abResult);
+      zoneByPitch[pt][loc].abs++;
+      if (isHit) zoneByPitch[pt][loc].hits++;
+    });
+    const ptKeys = Object.keys(zoneByPitch).filter(pt => {
+      const totalAB = Object.values(zoneByPitch[pt]).reduce((s,z) => s + z.abs, 0);
+      return totalAB >= 3;
+    });
+    if (ptKeys.length > 0) {
+      const zSection = document.createElement('div');
+      zSection.className = 'ql-zone-section';
+      zSection.innerHTML = '<div class="ql-zone-title">Hot/Cold Zones by Pitch &mdash; Catcher\'s View</div>';
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;justify-content:center;';
+      ptKeys.forEach(pt => {
+        const col = document.createElement('div');
+        col.style.cssText = 'text-align:center;';
+        col.innerHTML = `<div style="margin-bottom:4px;font-size:0.78rem;font-weight:600;"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[pt]||'#95A5A6'}"></span>${pt}</div>`;
+        const grid = document.createElement('div');
+        grid.className = 'ql-zone-grid';
+        for (let i = 1; i <= 9; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'ql-zone-cell';
+          const z = zoneByPitch[pt][i];
+          const avg = z.abs > 0 ? z.hits / z.abs : -1;
+          if (avg < 0) { cell.style.background = 'rgba(255,255,255,0.05)'; cell.textContent = '-'; cell.style.color = '#666'; }
+          else if (avg >= .300) { cell.style.background = 'rgba(46,204,113,0.6)'; cell.style.color = '#fff'; }
+          else if (avg >= .200) { cell.style.background = 'rgba(241,196,15,0.5)'; cell.style.color = '#fff'; }
+          else { cell.style.background = 'rgba(230,57,70,0.5)'; cell.style.color = '#fff'; }
+          if (avg >= 0) cell.innerHTML = `<span class="ql-zone-avg">${avg.toFixed(3)}</span><span class="ql-zone-ab">${z.abs} AB</span>`;
+          grid.appendChild(cell);
+        }
+        col.appendChild(grid);
+        wrapper.appendChild(col);
+      });
+      zSection.appendChild(wrapper);
+      const legend = document.createElement('div');
+      legend.className = 'ql-zone-legend';
+      legend.innerHTML = '<span style="color:#2ECC71">Hot .300+</span> <span style="color:#F1C40F">.200-.299</span> <span style="color:#E63946">Cold &lt;.200</span>';
+      zSection.appendChild(legend);
+      card.appendChild(zSection);
+    }
+  }
+
   // Sample size warning
   if (profile.sampleSizeWarning) {
     const warn = document.createElement('div');
@@ -835,6 +896,11 @@ function computeHitterDugoutStats(pitches) {
   // vs RHP / LHP detailed
   const vsRHP = {pitches:0,abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
   const vsLHP = {pitches:0,abs:0,hits:0,ks:0,bbs:0,hbp:0,singles:0,doubles:0,triples:0,hrs:0,outs:0};
+  // Count-group performance (AVG + K Rate by group)
+  const countPerf = {
+    first_pitch:{abs:0,hits:0,ks:0}, ahead:{abs:0,hits:0,ks:0},
+    even:{abs:0,hits:0,ks:0}, behind:{abs:0,hits:0,ks:0}, two_strikes:{abs:0,hits:0,ks:0}
+  };
   // Zone stats (1-9 for strike zone)
   const zoneStats = {};
   for (let i = 1; i <= 9; i++) zoneStats[i] = {abs:0,hits:0};
@@ -883,6 +949,21 @@ function computeHitterDugoutStats(pitches) {
         zoneStats[loc].abs++;
         if (isHit) zoneStats[loc].hits++;
       }
+
+      // Count-group performance (a PA can belong to multiple groups)
+      if (isAB) {
+        const groups = [];
+        if (b === 0 && s === 0) groups.push('first_pitch');
+        if (s === 2) groups.push('two_strikes');
+        if (b > s) groups.push('ahead');
+        else if (s > b) groups.push('behind');
+        else groups.push('even');
+        groups.forEach(g => {
+          countPerf[g].abs++;
+          if (isHit) countPerf[g].hits++;
+          if (abResult === 'Strike Out') countPerf[g].ks++;
+        });
+      }
     }
   });
 
@@ -893,8 +974,10 @@ function computeHitterDugoutStats(pitches) {
     return den > 0 ? (num/den).toFixed(3) : 'N/A';
   }
 
+  const fmtCP = c => ({AVG: c.abs>0?(c.hits/c.abs).toFixed(3):'N/A', K_rate: c.abs>0?pct(c.ks,c.abs):'N/A'});
   return {
     outcomeByCount,
+    countPerf: {first_pitch:fmtCP(countPerf.first_pitch), ahead:fmtCP(countPerf.ahead), even:fmtCP(countPerf.even), behind:fmtCP(countPerf.behind), two_strikes:fmtCP(countPerf.two_strikes)},
     vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,vsRHP.abs||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
     vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,vsLHP.abs||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
     zoneStats,
@@ -1023,6 +1106,31 @@ function buildHitterQuickLookCard(profile, pitches) {
     });
     ptTable.innerHTML = ptHTML;
     card.appendChild(ptTable);
+  }
+
+  // Performance by count group table
+  const cp = dugout.countPerf;
+  if (cp) {
+    const cpGroups = [
+      {key:'first_pitch',label:'1st Pitch'}, {key:'ahead',label:'Ahead'},
+      {key:'even',label:'Even'}, {key:'behind',label:'Behind'}, {key:'two_strikes',label:'2 Strikes'}
+    ];
+    const hasCP = cpGroups.some(g => cp[g.key]?.AVG !== 'N/A');
+    if (hasCP) {
+      const cpTable = document.createElement('div');
+      cpTable.className = 'ql-pitch-table';
+      let cpHTML = '<div class="ql-count-header"><span></span>';
+      cpGroups.forEach(g => { cpHTML += `<span>${g.label}</span>`; });
+      cpHTML += '</div>';
+      cpHTML += '<div class="ql-count-row"><span class="ql-count-label">AVG</span>';
+      cpGroups.forEach(g => { cpHTML += `<span class="ql-pitch-val">${cp[g.key]?.AVG || 'N/A'}</span>`; });
+      cpHTML += '</div>';
+      cpHTML += '<div class="ql-count-row"><span class="ql-count-label">K Rate</span>';
+      cpGroups.forEach(g => { cpHTML += `<span class="ql-pitch-val">${cp[g.key]?.K_rate || 'N/A'}</span>`; });
+      cpHTML += '</div>';
+      cpTable.innerHTML = cpHTML;
+      card.appendChild(cpTable);
+    }
   }
 
   // Outcome by count table
