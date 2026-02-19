@@ -546,7 +546,7 @@ function filterStep2List(query) {
   if (!window._menuItems) return;
   const filtered = !query ? window._menuItems : window._menuItems.filter(i => i.name.toLowerCase().includes(query));
   if (window._promptPickerActive && window._promptTemplate) {
-    renderPromptTeamList(filtered, window._promptTemplate);
+    renderPromptTeamList(filtered, window._promptTemplate, window._promptDugoutAction);
   } else {
     renderStep2List(filtered);
   }
@@ -561,44 +561,45 @@ function showPrompts() {
   const grid = document.getElementById('prompts-grid');
   grid.innerHTML = '';
 
-  // pick: 'team' = show team picker, null = send immediately
+  // pick: 'team' = show team picker first
+  // dugout: 'our_hitters' | 'our_pitchers' | 'team_pitchers' | 'team_hitters' = direct dugout card
   const prompts = [
     // Game plan & strategy
-    { cat: 'Game Plan', q: `What's the game plan for facing {TEAM}?`, pick: 'team' },
-    { cat: 'Game Plan', q: `How should we prepare for {TEAM}?`, pick: 'team' },
-    { cat: 'Game Plan', q: `What's our best lineup against a lefty starter?` },
+    { cat: 'Game Plan', q: `What's the game plan for facing {TEAM}?`, pick: 'team', dugout: 'team_pitchers' },
+    { cat: 'Game Plan', q: `How should we prepare for {TEAM}?`, pick: 'team', dugout: 'team_pitchers' },
+    { cat: 'Game Plan', q: `What's our best lineup against a lefty starter?`, dugout: 'our_hitters' },
 
     // Opponent pitching
-    { cat: 'Opp Pitching', q: `Who is {TEAM}'s best pitcher and what does he throw?`, pick: 'team' },
-    { cat: 'Opp Pitching', q: `What does {TEAM}'s staff throw first pitch?`, pick: 'team' },
-    { cat: 'Opp Pitching', q: `Which {TEAM} pitcher has the best put-away pitch?`, pick: 'team' },
+    { cat: 'Opp Pitching', q: `Who is {TEAM}'s best pitcher and what does he throw?`, pick: 'team', dugout: 'team_pitchers' },
+    { cat: 'Opp Pitching', q: `What does {TEAM}'s staff throw first pitch?`, pick: 'team', dugout: 'team_pitchers' },
+    { cat: 'Opp Pitching', q: `Which {TEAM} pitcher has the best put-away pitch?`, pick: 'team', dugout: 'team_pitchers' },
 
     // Our hitters
-    { cat: 'Our Hitters', q: `Which of our hitters struggle with breaking balls?` },
-    { cat: 'Our Hitters', q: `Who on our team has the best chase rate?` },
-    { cat: 'Our Hitters', q: `Which of our guys hit lefties the best?` },
-    { cat: 'Our Hitters', q: `Who's our best hitter with 2 strikes?` },
-    { cat: 'Our Hitters', q: `Which Moeller hitters are most aggressive early in counts?` },
+    { cat: 'Our Hitters', q: `Which of our hitters struggle with breaking balls?`, dugout: 'our_hitters' },
+    { cat: 'Our Hitters', q: `Who on our team has the best chase rate?`, dugout: 'our_hitters' },
+    { cat: 'Our Hitters', q: `Which of our guys hit lefties the best?`, dugout: 'our_hitters' },
+    { cat: 'Our Hitters', q: `Who's our best hitter with 2 strikes?`, dugout: 'our_hitters' },
+    { cat: 'Our Hitters', q: `Which Moeller hitters are most aggressive early in counts?`, dugout: 'our_hitters' },
 
     // Our pitchers
-    { cat: 'Our Pitchers', q: `Compare our pitching staff's strikeout rates` },
-    { cat: 'Our Pitchers', q: `Which of our pitchers has the best first pitch strike rate?` },
-    { cat: 'Our Pitchers', q: `Who on our staff is best against left-handed hitters?` },
+    { cat: 'Our Pitchers', q: `Compare our pitching staff's strikeout rates`, dugout: 'our_pitchers' },
+    { cat: 'Our Pitchers', q: `Which of our pitchers has the best first pitch strike rate?`, dugout: 'our_pitchers' },
+    { cat: 'Our Pitchers', q: `Who on our staff is best against left-handed hitters?`, dugout: 'our_pitchers' },
 
     // Matchups & splits
-    { cat: 'Matchups', q: `How does our lineup stack up against right-handed pitching?` },
-    { cat: 'Matchups', q: `Who should we pinch hit vs a lefty reliever?` },
-    { cat: 'Matchups', q: `Which of our hitters have the best wOBA?` },
+    { cat: 'Matchups', q: `How does our lineup stack up against right-handed pitching?`, dugout: 'our_hitters' },
+    { cat: 'Matchups', q: `Who should we pinch hit vs a lefty reliever?`, dugout: 'our_hitters' },
+    { cat: 'Matchups', q: `Which of our hitters have the best wOBA?`, dugout: 'our_hitters' },
 
     // Opponent hitters
-    { cat: 'Opp Hitters', q: `What are {TEAM}'s lineup weaknesses?`, pick: 'team' },
-    { cat: 'Opp Hitters', q: `Which {TEAM} hitters chase the most?`, pick: 'team' },
-    { cat: 'Opp Hitters', q: `How should we pitch to {TEAM}'s lefties?`, pick: 'team' },
+    { cat: 'Opp Hitters', q: `What are {TEAM}'s lineup weaknesses?`, pick: 'team', dugout: 'team_hitters' },
+    { cat: 'Opp Hitters', q: `Which {TEAM} hitters chase the most?`, pick: 'team', dugout: 'team_hitters' },
+    { cat: 'Opp Hitters', q: `How should we pitch to {TEAM}'s lefties?`, pick: 'team', dugout: 'team_hitters' },
 
     // Tendencies
-    { cat: 'Tendencies', q: `What does {TEAM} throw when they're behind in the count?`, pick: 'team' },
-    { cat: 'Tendencies', q: `Which teams throw the most off-speed?` },
-    { cat: 'Tendencies', q: `Who on our team gets behind in counts the most?` },
+    { cat: 'Tendencies', q: `What does {TEAM} throw when they're behind in the count?`, pick: 'team', dugout: 'team_pitchers' },
+    { cat: 'Tendencies', q: `Which teams throw the most off-speed?`, dugout: 'our_hitters' },
+    { cat: 'Tendencies', q: `Who on our team gets behind in counts the most?`, dugout: 'our_hitters' },
   ];
 
   prompts.forEach(p => {
@@ -608,11 +609,16 @@ function showPrompts() {
     btn.innerHTML = `<span class="prompt-cat">${p.cat}</span><span class="prompt-text">${displayText}</span>`;
     btn.addEventListener('click', () => {
       if (p.pick === 'team') {
-        showPromptTeamPicker(p.q);
+        showPromptTeamPicker(p.q, p.dugout);
       } else {
-        userInput.value = p.q;
         document.getElementById('menu-prompts').classList.add('hidden');
-        sendMessage();
+        if (appMode === 'dugout' && p.dugout) {
+          executePromptDugout(p.q, p.dugout);
+        } else {
+          userInput.value = p.q;
+          welcomeEl.classList.add('hidden');
+          sendMessage();
+        }
       }
     });
     grid.appendChild(btn);
@@ -621,11 +627,43 @@ function showPrompts() {
   userInput.focus();
 }
 
-function showPromptTeamPicker(template) {
+function executePromptDugout(question, dugoutAction, teamName) {
+  welcomeEl.classList.add('hidden');
+  const displayQ = teamName ? question.replace(/\{TEAM\}/g, teamName) : question;
+  appendMessage('user', displayQ);
+  let card = null;
+  if (dugoutAction === 'our_hitters') {
+    card = buildTeamHittersQuickLook('Moeller');
+  } else if (dugoutAction === 'our_pitchers') {
+    const container = document.createElement('div');
+    const moePitcherData = {};
+    stats.moellerPitcherList.forEach(n => { moePitcherData[n] = stats.moellerPitchers[n]; });
+    const summary = buildTeamPitchersSummaryCard('Moeller', moePitcherData);
+    if (summary) container.appendChild(summary);
+    stats.moellerPitcherList.forEach(n => {
+      const p = stats.moellerPitchers[n];
+      const c = buildQuickLookCard(computePitcherProfile(p.pitches, n, p.hand, 'Moeller'), p.pitches);
+      if (c) container.appendChild(c);
+    });
+    card = container.children.length > 0 ? container : null;
+  } else if (dugoutAction === 'team_pitchers' && teamName) {
+    card = buildTeamQuickLook(teamName);
+  } else if (dugoutAction === 'team_hitters' && teamName) {
+    card = buildTeamHittersQuickLook(teamName);
+  }
+  if (card) {
+    appendQuickLook(card);
+  } else {
+    appendMessage('assistant', 'No data available for this query. Try searching for a specific player or team.');
+  }
+}
+
+function showPromptTeamPicker(template, dugoutAction) {
   document.getElementById('menu-prompts').classList.add('hidden');
   document.getElementById('menu-step2').classList.remove('hidden');
   window._promptPickerActive = true;
   window._promptTemplate = template;
+  window._promptDugoutAction = dugoutAction || null;
 
   const titleEl = document.getElementById('step2-title');
   const inputEl = document.getElementById('step2-input');
@@ -641,11 +679,11 @@ function showPromptTeamPicker(template) {
   items.sort((a, b) => a.name.localeCompare(b.name));
   window._menuItems = items;
 
-  renderPromptTeamList(items, template);
+  renderPromptTeamList(items, template, dugoutAction);
   inputEl.focus();
 }
 
-function renderPromptTeamList(items, template) {
+function renderPromptTeamList(items, template, dugoutAction) {
   const listEl = document.getElementById('step2-list');
   listEl.innerHTML = '';
   items.forEach(item => {
@@ -654,11 +692,15 @@ function renderPromptTeamList(items, template) {
     el.innerHTML = `<span class="step2-item-name">${item.name}</span><span class="step2-item-meta">${item.meta}</span>`;
     el.addEventListener('click', () => {
       window._promptPickerActive = false;
-      const finalQ = template.replace(/\{TEAM\}/g, item.name);
-      userInput.value = finalQ;
       document.getElementById('menu-step2').classList.add('hidden');
-      welcomeEl.classList.add('hidden');
-      sendMessage();
+      if (appMode === 'dugout' && dugoutAction) {
+        executePromptDugout(template, dugoutAction, item.name);
+      } else {
+        const finalQ = template.replace(/\{TEAM\}/g, item.name);
+        userInput.value = finalQ;
+        welcomeEl.classList.add('hidden');
+        sendMessage();
+      }
     });
     listEl.appendChild(el);
   });
