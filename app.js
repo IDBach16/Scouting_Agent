@@ -462,11 +462,16 @@ function initMenu() {
   });
 
   document.getElementById('menu-back').addEventListener('click', () => {
-    document.getElementById('menu-step1').classList.remove('hidden');
     document.getElementById('menu-step2').classList.add('hidden');
-    document.getElementById('welcome-title').textContent = 'What do you need?';
-    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
-    selectedReportType = null;
+    if (window._promptPickerActive) {
+      window._promptPickerActive = false;
+      showPrompts();
+    } else {
+      document.getElementById('menu-step1').classList.remove('hidden');
+      document.getElementById('welcome-title').textContent = 'What do you need?';
+      document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
+      selectedReportType = null;
+    }
   });
 
   document.getElementById('prompts-back').addEventListener('click', () => {
@@ -539,9 +544,12 @@ function renderStep2List(items) {
 
 function filterStep2List(query) {
   if (!window._menuItems) return;
-  if (!query) { renderStep2List(window._menuItems); return; }
-  const filtered = window._menuItems.filter(i => i.name.toLowerCase().includes(query));
-  renderStep2List(filtered);
+  const filtered = !query ? window._menuItems : window._menuItems.filter(i => i.name.toLowerCase().includes(query));
+  if (window._promptPickerActive && window._promptTemplate) {
+    renderPromptTeamList(filtered, window._promptTemplate);
+  } else {
+    renderStep2List(filtered);
+  }
 }
 
 function showPrompts() {
@@ -553,21 +561,17 @@ function showPrompts() {
   const grid = document.getElementById('prompts-grid');
   grid.innerHTML = '';
 
-  // Build dynamic prompts using actual team/player names
-  const teams = stats.teamList.slice(0, 5);
-  const sampleTeam = teams.length > 0 ? teams[Math.floor(Math.random()*teams.length)] : 'the opponent';
-  const sampleTeam2 = teams.length > 1 ? teams.filter(t=>t!==sampleTeam)[0] : sampleTeam;
-
+  // pick: 'team' = show team picker, null = send immediately
   const prompts = [
     // Game plan & strategy
-    { cat: 'Game Plan', q: `What's the game plan for facing ${sampleTeam}?` },
-    { cat: 'Game Plan', q: `How should we prepare for ${sampleTeam2}?` },
+    { cat: 'Game Plan', q: `What's the game plan for facing {TEAM}?`, pick: 'team' },
+    { cat: 'Game Plan', q: `How should we prepare for {TEAM}?`, pick: 'team' },
     { cat: 'Game Plan', q: `What's our best lineup against a lefty starter?` },
 
     // Opponent pitching
-    { cat: 'Opp Pitching', q: `Who is ${sampleTeam}'s best pitcher and what does he throw?` },
-    { cat: 'Opp Pitching', q: `What does ${sampleTeam}'s staff throw first pitch?` },
-    { cat: 'Opp Pitching', q: `Which ${sampleTeam} pitcher has the best put-away pitch?` },
+    { cat: 'Opp Pitching', q: `Who is {TEAM}'s best pitcher and what does he throw?`, pick: 'team' },
+    { cat: 'Opp Pitching', q: `What does {TEAM}'s staff throw first pitch?`, pick: 'team' },
+    { cat: 'Opp Pitching', q: `Which {TEAM} pitcher has the best put-away pitch?`, pick: 'team' },
 
     // Our hitters
     { cat: 'Our Hitters', q: `Which of our hitters struggle with breaking balls?` },
@@ -587,12 +591,12 @@ function showPrompts() {
     { cat: 'Matchups', q: `Which of our hitters have the best wOBA?` },
 
     // Opponent hitters
-    { cat: 'Opp Hitters', q: `What are ${sampleTeam}'s lineup weaknesses?` },
-    { cat: 'Opp Hitters', q: `Which ${sampleTeam} hitters chase the most?` },
-    { cat: 'Opp Hitters', q: `How should we pitch to ${sampleTeam}'s lefties?` },
+    { cat: 'Opp Hitters', q: `What are {TEAM}'s lineup weaknesses?`, pick: 'team' },
+    { cat: 'Opp Hitters', q: `Which {TEAM} hitters chase the most?`, pick: 'team' },
+    { cat: 'Opp Hitters', q: `How should we pitch to {TEAM}'s lefties?`, pick: 'team' },
 
     // Tendencies
-    { cat: 'Tendencies', q: `What does ${sampleTeam} throw when they're behind in the count?` },
+    { cat: 'Tendencies', q: `What does {TEAM} throw when they're behind in the count?`, pick: 'team' },
     { cat: 'Tendencies', q: `Which teams throw the most off-speed?` },
     { cat: 'Tendencies', q: `Who on our team gets behind in counts the most?` },
   ];
@@ -600,16 +604,64 @@ function showPrompts() {
   prompts.forEach(p => {
     const btn = document.createElement('button');
     btn.className = 'prompt-btn';
-    btn.innerHTML = `<span class="prompt-cat">${p.cat}</span><span class="prompt-text">${p.q}</span>`;
+    const displayText = p.q.replace(/\{TEAM\}/g, '___');
+    btn.innerHTML = `<span class="prompt-cat">${p.cat}</span><span class="prompt-text">${displayText}</span>`;
     btn.addEventListener('click', () => {
-      userInput.value = p.q;
-      document.getElementById('menu-prompts').classList.add('hidden');
-      sendMessage();
+      if (p.pick === 'team') {
+        showPromptTeamPicker(p.q);
+      } else {
+        userInput.value = p.q;
+        document.getElementById('menu-prompts').classList.add('hidden');
+        sendMessage();
+      }
     });
     grid.appendChild(btn);
   });
 
   userInput.focus();
+}
+
+function showPromptTeamPicker(template) {
+  document.getElementById('menu-prompts').classList.add('hidden');
+  document.getElementById('menu-step2').classList.remove('hidden');
+  window._promptPickerActive = true;
+  window._promptTemplate = template;
+
+  const titleEl = document.getElementById('step2-title');
+  const inputEl = document.getElementById('step2-input');
+  const listEl = document.getElementById('step2-list');
+  listEl.innerHTML = '';
+  inputEl.value = '';
+
+  titleEl.textContent = 'Which team?';
+  inputEl.placeholder = 'Search teams...';
+
+  const items = [];
+  stats.teamList.forEach(t => items.push({ name: t, meta: '', source: 'team' }));
+  items.sort((a, b) => a.name.localeCompare(b.name));
+  window._menuItems = items;
+
+  renderPromptTeamList(items, template);
+  inputEl.focus();
+}
+
+function renderPromptTeamList(items, template) {
+  const listEl = document.getElementById('step2-list');
+  listEl.innerHTML = '';
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'step2-item';
+    el.innerHTML = `<span class="step2-item-name">${item.name}</span><span class="step2-item-meta">${item.meta}</span>`;
+    el.addEventListener('click', () => {
+      window._promptPickerActive = false;
+      const finalQ = template.replace(/\{TEAM\}/g, item.name);
+      userInput.value = finalQ;
+      document.getElementById('menu-step2').classList.add('hidden');
+      welcomeEl.classList.add('hidden');
+      sendMessage();
+    });
+    listEl.appendChild(el);
+  });
 }
 
 function executeMenuReport(type, item) {
