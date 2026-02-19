@@ -1053,7 +1053,7 @@ function buildHitterQuickLookCard(profile, pitches) {
   if (hasZones) {
     const zoneDiv = document.createElement('div');
     zoneDiv.className = 'ql-zone-section';
-    zoneDiv.innerHTML = '<div class="ql-zone-title">Hot/Cold Zone (AVG by zone)</div>';
+    zoneDiv.innerHTML = '<div class="ql-zone-title">Hot/Cold Zone — Catcher\'s View</div>';
     const grid = document.createElement('div');
     grid.className = 'ql-zone-grid';
     for (let i = 1; i <= 9; i++) {

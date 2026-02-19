@@ -276,7 +276,7 @@ function chartZoneHeatmap(pitches, label) {
   card.appendChild(gridEl);
   const lbl = document.createElement('div');
   lbl.className = 'zone-grid-label';
-  lbl.textContent = 'Inner box = strike zone | Color intensity = frequency';
+  lbl.textContent = 'Catcher\'s View | Inner box = strike zone | Color intensity = frequency';
   card.appendChild(lbl);
   return card;
 }
@@ -416,7 +416,7 @@ function chartHotColdZone(pitches, name) {
   card.appendChild(gridEl);
   const lbl = document.createElement('div');
   lbl.className = 'zone-grid-label';
-  lbl.innerHTML = '<span style="color:#2ECC71">Green = Hot (.300+)</span> | <span style="color:#F1C40F">Yellow = .200-.299</span> | <span style="color:#E63946">Red = Cold (&lt;.200)</span>';
+  lbl.innerHTML = 'Catcher\'s View | <span style="color:#2ECC71">Green = Hot (.300+)</span> | <span style="color:#F1C40F">Yellow = .200-.299</span> | <span style="color:#E63946">Red = Cold (&lt;.200)</span>';
   card.appendChild(lbl);
   return card;
 }
