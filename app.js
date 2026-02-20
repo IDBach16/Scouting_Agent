@@ -855,15 +855,14 @@ function buildQuickLookCard(profile, pitches) {
   if (types.length > 0) {
     const pitchTable = document.createElement('div');
     pitchTable.className = 'ql-pitch-table';
-    let tableHTML = '<div class="ql-pitch-header"><span>Pitch</span><span>Usage</span><span>Velo</span><span>Range</span><span>Whiff%</span></div>';
+    let tableHTML = '<div class="ql-pitch-header"><span>Pitch</span><span>Usage</span><span>Velo</span><span>Whiff%</span></div>';
     types.forEach(t => {
       const m = mix[t];
-      const range = (m.veloMin && m.veloMax) ? `${m.veloMin}\u2013${m.veloMax}` : '-';
+      const velo = (m.veloMin && m.veloMax) ? `${m.veloMin}\u2013${m.veloMax}` : '-';
       tableHTML += `<div class="ql-pitch-row">
         <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
         <span class="ql-pitch-val">${m.pct}</span>
-        <span class="ql-pitch-val">${m.avgVelo || '-'}</span>
-        <span class="ql-pitch-val">${range}</span>
+        <span class="ql-pitch-val">${velo}</span>
         <span class="ql-pitch-val">${m.whiffRate || '-'}</span>
       </div>`;
     });
@@ -1535,7 +1534,7 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
       html += `<div class="ql-pitch-row">
         <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
         <span class="ql-pitch-val">${pct(pitchTypes[t],totalPitches)}</span>
-        <span class="ql-pitch-val">${veloByType[t]?avg(veloByType[t]):'-'}</span>
+        <span class="ql-pitch-val">${veloByType[t]?Math.min(...veloByType[t]).toFixed(0)+'\u2013'+Math.max(...veloByType[t]).toFixed(0):'-'}</span>
         <span class="ql-pitch-val">${pct(whiffByType[t]||0,swingsByType[t]||0)}</span>
       </div>`;
     });
