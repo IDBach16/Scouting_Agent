@@ -281,16 +281,64 @@ body.dugout-mode .dugout-example{display:inline-block}
 body:not(.dugout-mode) .full-example{display:inline-block}
 body:not(.dugout-mode) .dugout-example{display:none}
 
-/* RESPONSIVE — iPad / Tablet (768px and below) */
-@media(max-width:768px){
+/* RESPONSIVE — iPad / Tablet (1024px and below) */
+@media(max-width:1024px){
   #app{max-width:100%}
   .message{max-width:98%}
-  .quick-look-card{padding:12px 14px}
-  .ql-zone-grid{grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,48px)}
-  .menu-grid{max-width:100%}
+
+  /* Welcome — larger heading and subtitle for arm's-length */
+  .welcome-screen h2{font-size:1.4rem}
+  .welcome-screen>p{font-size:.95rem}
+
+  /* Menu grid — slightly larger cards and logos */
+  .menu-grid{max-width:100%;gap:12px}
+  .menu-card{padding:22px 16px;gap:6px}
+  .menu-card-logo{width:48px;height:48px}
+  .menu-card-title{font-size:.95rem}
+  .menu-card-desc{font-size:.74rem}
+
+  /* Step 2 picker — bigger touch targets */
+  .step2-item{padding:14px 16px}
+  .step2-item-name{font-size:.9rem}
+
+  /* Example prompts — larger touch targets and text */
   .menu-prompts{max-width:100%}
+  .prompt-btn{padding:14px 16px;gap:10px}
+  .prompt-text{font-size:.88rem}
   .prompts-grid{max-height:50vh}
   .step2-list{max-height:50vh}
+
+  /* Quick Look cards — more padding, larger header */
+  .quick-look-card{padding:16px 18px}
+  .quick-look-name{font-size:1.1rem}
+  .quick-look-meta{font-size:.78rem}
+
+  /* Stat row — larger values for quick scanning */
+  .quick-look-stat .ql-val{font-size:1.05rem}
+  .quick-look-stat .ql-lbl{font-size:.6rem}
+
+  /* Relay / Coach's Notes — bump font for readability */
+  .ql-relay-bullets li{font-size:.88rem;padding:5px 0 5px 16px}
+  .ql-relay-bullets li::before{top:11px}
+
+  /* Splits row — keep side-by-side, not stacked */
+  .ql-splits-row{flex-direction:row;gap:8px}
+  .ql-split-stats{font-size:.8rem}
+
+  /* Zone grids — larger cells for easier reading */
+  .ql-zone-grid{grid-template-columns:repeat(3,68px);grid-template-rows:repeat(3,58px)}
+  .ql-zone-avg{font-size:.85rem}
+  .ql-zone-ab{font-size:.55rem}
+
+  /* Pitch tables — bump text size */
+  .ql-pitch-row{font-size:.82rem}
+  .ql-pitch-header{font-size:.65rem}
+  .ql-count-row{font-size:.78rem}
+  .ql-count-header{font-size:.62rem}
+
+  /* New Analysis bar — larger buttons, stay horizontal */
+  .new-analysis-bar{flex-direction:row;gap:10px}
+  .new-analysis-btn{padding:12px 22px;font-size:.88rem}
 }
 
 /* RESPONSIVE — Phone (480px and below) */
