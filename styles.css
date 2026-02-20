@@ -209,10 +209,10 @@ body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,
 .ql-pitch-table{margin-bottom:10px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)}
 .ql-pitch-header{display:flex;padding:5px 10px;background:var(--navy-dark);font-size:.6rem;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.04em;gap:2px}
 .ql-pitch-header span{flex:1;text-align:center}
-.ql-pitch-header span:first-child{flex:1.5;text-align:left}
+.ql-pitch-header span:first-child{flex:1.8;text-align:left}
 .ql-pitch-row{display:flex;padding:5px 10px;font-size:.78rem;border-top:1px solid rgba(255,255,255,0.04);transition:background .1s;gap:2px}
 .ql-pitch-row span{flex:1;text-align:center}
-.ql-pitch-row .ql-pitch-name{flex:1.5;text-align:left}
+.ql-pitch-row .ql-pitch-name{flex:1.8;text-align:left}
 .ql-pitch-row:hover{background:var(--gold-dim)}
 .ql-pitch-name{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--text)}
 .ql-pitch-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}

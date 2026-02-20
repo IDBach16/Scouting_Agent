@@ -219,7 +219,7 @@ function computePitcherProfile(pitches, name, hand, team) {
 
   const pitchMix = {};
   Object.keys(pitchTypes).sort((a,b)=>pitchTypes[b]-pitchTypes[a]).forEach(pt => {
-    pitchMix[pt] = { count:pitchTypes[pt], pct:pct(pitchTypes[pt],total), avgVelo:veloByType[pt]?avg(veloByType[pt]):null, whiffRate:pct(whiffByType[pt]||0,swingsByType[pt]||0) };
+    pitchMix[pt] = { count:pitchTypes[pt], pct:pct(pitchTypes[pt],total), avgVelo:veloByType[pt]?avg(veloByType[pt]):null, veloMin:veloByType[pt]?Math.min(...veloByType[pt]).toFixed(0):null, veloMax:veloByType[pt]?Math.max(...veloByType[pt]).toFixed(0):null, whiffRate:pct(whiffByType[pt]||0,swingsByType[pt]||0) };
   });
   const pitchMixByCount = {};
   Object.keys(pitchTypeByCount).forEach(cl => {
@@ -855,13 +855,15 @@ function buildQuickLookCard(profile, pitches) {
   if (types.length > 0) {
     const pitchTable = document.createElement('div');
     pitchTable.className = 'ql-pitch-table';
-    let tableHTML = '<div class="ql-pitch-header"><span>Pitch</span><span>Usage</span><span>Velo</span><span>Whiff%</span></div>';
+    let tableHTML = '<div class="ql-pitch-header"><span>Pitch</span><span>Usage</span><span>Velo</span><span>Range</span><span>Whiff%</span></div>';
     types.forEach(t => {
       const m = mix[t];
+      const range = (m.veloMin && m.veloMax) ? `${m.veloMin}\u2013${m.veloMax}` : '-';
       tableHTML += `<div class="ql-pitch-row">
         <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t]||'#95A5A6'}"></span>${t}</span>
         <span class="ql-pitch-val">${m.pct}</span>
         <span class="ql-pitch-val">${m.avgVelo || '-'}</span>
+        <span class="ql-pitch-val">${range}</span>
         <span class="ql-pitch-val">${m.whiffRate || '-'}</span>
       </div>`;
     });
