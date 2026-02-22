@@ -80,7 +80,12 @@
             <div class="menu-card-title">Team Pitchers</div>
             <div class="menu-card-desc">Scouting report on a team's pitching staff</div>
           </button>
-          <button class="menu-card menu-card-wide" data-type="direct">
+          <button class="menu-card" data-type="matchup">
+            <img class="menu-card-logo" src="moeller-logo.png" alt="M">
+            <div class="menu-card-title">Pitcher vs Hitter</div>
+            <div class="menu-card-desc">Head-to-head matchup game plan</div>
+          </button>
+          <button class="menu-card" data-type="direct">
             <img class="menu-card-logo" src="moeller-logo.png" alt="M">
             <div class="menu-card-title">Ask a Question</div>
             <div class="menu-card-desc">Free-form question about any player, team, or strategy</div>
@@ -95,6 +100,22 @@
             <input id="step2-input" type="text" placeholder="Start typing a name..." autocomplete="off"/>
           </div>
           <div id="step2-list" class="step2-list"></div>
+        </div>
+
+        <!-- STEP 3: Matchup Perspective Picker (hidden initially) -->
+        <div id="menu-step3" class="menu-step3 hidden">
+          <button id="step3-back" class="menu-back-btn">&larr; Back</button>
+          <h3 id="step3-subtitle" class="step3-subtitle">RHP vs LHH</h3>
+          <div class="step3-options">
+            <button class="step3-card" data-perspective="hitter">
+              <div class="menu-card-title">Hitter's Game Plan</div>
+              <div class="menu-card-desc">What the hitter should look for</div>
+            </button>
+            <button class="step3-card" data-perspective="pitcher">
+              <div class="menu-card-title">Pitcher's Game Plan</div>
+              <div class="menu-card-desc">How the pitcher should attack</div>
+            </button>
+          </div>
         </div>
 
         <!-- STEP 2b: Example Prompts for "Ask a Question" (hidden initially) -->

@@ -273,6 +273,19 @@ body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,
 .switch-mode-btn{border-color:var(--border-strong);color:var(--text-sec);background:transparent}
 .switch-mode-btn:hover{border-color:var(--text-sec);color:var(--text);background:var(--navy-light)}
 
+/* STEP 3: Matchup Perspective Picker */
+.menu-step3{width:100%;max-width:500px;margin-top:12px}
+.menu-step3.hidden{display:none}
+.step3-subtitle{font-size:1rem;color:var(--gold);margin-bottom:14px;font-weight:700;text-align:center}
+.step3-options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.step3-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 16px;background:var(--navy);border:2px solid var(--border-strong);border-radius:var(--radius);cursor:pointer;transition:all .2s;text-align:center}
+.step3-card:hover{border-color:var(--gold);background:var(--gold-dim);transform:translateY(-2px);box-shadow:0 4px 16px rgba(197,165,90,.15)}
+.step3-card .menu-card-title{font-size:.88rem;font-weight:700;color:var(--gold)}
+.step3-card .menu-card-desc{font-size:.68rem;color:var(--text-sec);line-height:1.3}
+
+/* Matchup warning note */
+.matchup-warning{font-size:.72rem;color:var(--text-muted);font-style:italic;margin-top:6px;padding:6px 10px;background:rgba(241,196,15,0.08);border:1px solid rgba(241,196,15,0.2);border-radius:var(--radius-sm)}
+
 /* Dugout mode body class adjustments */
 body.dugout-mode .chart-section{display:none}
 .full-example{display:none}
@@ -335,6 +348,12 @@ body:not(.dugout-mode) .dugout-example{display:none}
   .ql-pitch-header{font-size:.65rem}
   .ql-count-row{font-size:.78rem}
   .ql-count-header{font-size:.62rem}
+
+  /* Step 3 matchup picker */
+  .menu-step3{max-width:100%}
+  .step3-card{padding:24px 18px;gap:8px}
+  .step3-card .menu-card-title{font-size:.95rem}
+  .step3-card .menu-card-desc{font-size:.74rem}
 
   /* New Analysis bar — larger buttons, stay horizontal */
   .new-analysis-bar{flex-direction:row;gap:10px}
@@ -412,6 +431,10 @@ body:not(.dugout-mode) .dugout-example{display:none}
   .ql-zone-grid{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,44px)}
   .ql-zone-avg{font-size:.72rem}
   .ql-zone-ab{font-size:.45rem}
+
+  /* Step 3 matchup — stack on phone */
+  .step3-options{grid-template-columns:1fr}
+  .step3-card{padding:16px 12px}
 
   /* Example prompts */
   .prompt-btn{padding:10px 10px;gap:8px}

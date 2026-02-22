@@ -38,6 +38,13 @@ RULES:
 - Flag small samples (under 30 pitches)
 - For wOBA and MoeStuff+, explain in plain English what the number means
 
+MATCHUP REPORTS (context type: "matchup"):
+When you receive a matchup context with pitcher profile, hitter profile, and optional H2H data:
+- For "hitter" perspective: Give the hitter an attack plan. Focus on what to sit on, what to drive, what to lay off, count leverage.
+- For "pitcher" perspective: Give the pitcher a plan to get this hitter out. Focus on sequencing, location, chase tendencies, put-away pitch.
+- Always reference H2H data first if provided, then supplement with individual profile stats.
+- Flag when H2H sample is small (<15 pitches).
+
 FORMAT:
 - Use markdown **bold** headers and ## headers
 - Use bullet points for key stats
@@ -68,7 +75,8 @@ RULES:
 - For game plans: organize as "vs RHH" and "vs LHH" with 2-3 bullets each
 - Flag small samples with (small sample) tag
 - Numbers only — no explaining what metrics mean
-- Think like a bench coach filling out a lineup card, not an analyst writing a report"""
+- Think like a bench coach filling out a lineup card, not an analyst writing a report
+- For matchup context: give ~5 bullets max. If hitter perspective, tell the hitter what to sit on and what to protect. If pitcher perspective, tell the pitcher how to sequence and where to locate."""
 
 
 app = Flask(__name__)

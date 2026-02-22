@@ -448,6 +448,7 @@ function updateModeUI() {
 
 // ===== GUIDED MENU FLOW =====
 let selectedReportType = null;
+let matchupState = { pitcher: null, hitter: null, step: 0 };
 
 function initMenu() {
   document.querySelectorAll('.menu-card').forEach(card => {
@@ -465,11 +466,23 @@ function initMenu() {
         showPrompts();
         return;
       }
+      if (selectedReportType === 'matchup') {
+        matchupState = { pitcher: null, hitter: null, step: 1 };
+        showMatchupStep(1);
+        return;
+      }
       showStep2(selectedReportType);
     });
   });
 
   document.getElementById('menu-back').addEventListener('click', () => {
+    // Matchup-aware back button
+    if (selectedReportType === 'matchup' && matchupState.step === 2) {
+      matchupState.hitter = null;
+      matchupState.step = 1;
+      showMatchupStep(1);
+      return;
+    }
     document.getElementById('menu-step2').classList.add('hidden');
     if (window._promptPickerActive) {
       window._promptPickerActive = false;
@@ -479,7 +492,24 @@ function initMenu() {
       document.getElementById('welcome-title').textContent = 'What do you need?';
       document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
       selectedReportType = null;
+      matchupState = { pitcher: null, hitter: null, step: 0 };
     }
+  });
+
+  // Step 3 back button
+  document.getElementById('step3-back').addEventListener('click', () => {
+    document.getElementById('menu-step3').classList.add('hidden');
+    matchupState.hitter = null;
+    matchupState.step = 2;
+    showMatchupStep(2);
+  });
+
+  // Step 3 perspective cards
+  document.querySelectorAll('.step3-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const perspective = card.dataset.perspective;
+      executeMatchupReport(perspective);
+    });
   });
 
   document.getElementById('prompts-back').addEventListener('click', () => {
@@ -553,7 +583,9 @@ function renderStep2List(items) {
 function filterStep2List(query) {
   if (!window._menuItems) return;
   const filtered = !query ? window._menuItems : window._menuItems.filter(i => i.name.toLowerCase().includes(query));
-  if (window._promptPickerActive && window._promptTemplate) {
+  if (selectedReportType === 'matchup') {
+    renderMatchupList(filtered);
+  } else if (window._promptPickerActive && window._promptTemplate) {
     renderPromptTeamList(filtered, window._promptTemplate, window._promptDugoutAction);
   } else {
     renderStep2List(filtered);
@@ -763,6 +795,456 @@ function executeMenuReport(type, item) {
   else if (type === 'team_pitchers') query = item.name === 'Moeller' ? 'Give me a scouting report on our Moeller pitching staff' : `Give me a scouting report on ${item.name}'s pitching staff`;
   userInput.value = query;
   sendMessage();
+}
+
+// ===== MATCHUP FLOW =====
+function showMatchupStep(step) {
+  document.getElementById('menu-step1').classList.add('hidden');
+  document.getElementById('menu-step3').classList.add('hidden');
+  document.getElementById('menu-step2').classList.remove('hidden');
+
+  const titleEl = document.getElementById('step2-title');
+  const inputEl = document.getElementById('step2-input');
+  const listEl = document.getElementById('step2-list');
+  listEl.innerHTML = '';
+  inputEl.value = '';
+
+  let items = [];
+  if (step === 1) {
+    titleEl.textContent = 'Select a Pitcher';
+    inputEl.placeholder = 'Search pitchers...';
+    document.getElementById('welcome-title').textContent = 'Pitcher vs Hitter';
+    document.getElementById('welcome-subtitle').textContent = 'Step 1: Choose a pitcher';
+    // All pitchers: Moeller + opponent
+    stats.moellerPitcherList.forEach(n => items.push({ name: n, meta: 'Moeller', source: 'moeller_pitcher' }));
+    Object.keys(stats.opponentPitchers).forEach(n => items.push({ name: n, meta: stats.opponentPitchers[n].team, source: 'opponent_pitcher' }));
+  } else if (step === 2) {
+    titleEl.textContent = 'Select a Hitter';
+    inputEl.placeholder = 'Search hitters...';
+    document.getElementById('welcome-title').textContent = 'Pitcher vs Hitter';
+    document.getElementById('welcome-subtitle').textContent = `Step 2: Choose a hitter (vs ${matchupState.pitcher})`;
+    // All hitters: Moeller + opponent
+    stats.moellerHitterList.forEach(n => items.push({ name: n, meta: 'Moeller', source: 'moeller_hitter' }));
+    Object.keys(stats.opponentBatters).forEach(n => items.push({ name: n, meta: stats.opponentBatters[n].team, source: 'opponent_batter' }));
+  }
+
+  items.sort((a, b) => a.name.localeCompare(b.name));
+  window._menuItems = items;
+  renderMatchupList(items);
+  inputEl.focus();
+}
+
+function renderMatchupList(items) {
+  const listEl = document.getElementById('step2-list');
+  listEl.innerHTML = '';
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'step2-item';
+    el.innerHTML = `<span class="step2-item-name">${item.name}</span><span class="step2-item-meta">${item.meta}</span>`;
+    el.addEventListener('click', () => {
+      if (matchupState.step === 1) {
+        matchupState.pitcher = item.name;
+        matchupState.step = 2;
+        showMatchupStep(2);
+      } else if (matchupState.step === 2) {
+        matchupState.hitter = item.name;
+        matchupState.step = 3;
+        showMatchupPerspective();
+      }
+    });
+    listEl.appendChild(el);
+  });
+}
+
+function showMatchupPerspective() {
+  document.getElementById('menu-step2').classList.add('hidden');
+  document.getElementById('menu-step3').classList.remove('hidden');
+  document.getElementById('welcome-title').textContent = 'Pitcher vs Hitter';
+
+  // Build subtitle like "RHP vs LHH"
+  const pSrc = stats.opponentPitchers[matchupState.pitcher] || stats.moellerPitchers[matchupState.pitcher];
+  const hSrc = stats.moellerHitters[matchupState.hitter] || stats.opponentBatters[matchupState.hitter];
+  const pHand = (pSrc?.hand || '').toUpperCase();
+  const hHand = (hSrc?.hand || '').toUpperCase();
+  const pLabel = pHand === 'R' ? 'RHP' : pHand === 'L' ? 'LHP' : 'P';
+  const hLabel = hHand === 'R' ? 'RHH' : hHand === 'L' ? 'LHH' : 'H';
+  const subtitle = `${matchupState.pitcher} (${pLabel}) vs ${matchupState.hitter} (${hLabel})`;
+  document.getElementById('step3-subtitle').textContent = subtitle;
+  document.getElementById('welcome-subtitle').textContent = 'Step 3: Choose a perspective';
+}
+
+function computeMatchupProfile(pitcherName, hitterName) {
+  // Find pitcher and hitter data sources
+  const pSrc = stats.opponentPitchers[pitcherName] || stats.moellerPitchers[pitcherName];
+  const hSrc = stats.moellerHitters[hitterName] || stats.opponentBatters[hitterName];
+  if (!pSrc || !hSrc) return null;
+
+  // Filter for H2H pitches: same pitcher AND same hitter
+  const h2hPitches = filteredData.filter(row => {
+    const pitcher = (row.Pitcher || '').trim();
+    const batter = (row.Batter || '').trim();
+    return pitcher === pitcherName && batter === hitterName;
+  });
+
+  // Compute individual profiles (always available as fallback)
+  const pTeam = stats.opponentPitchers[pitcherName]?.team || 'Moeller';
+  const pitcherProfile = computePitcherProfile(pSrc.pitches, pitcherName, pSrc.hand, pTeam);
+  const hitterProfile = computeHitterProfile(hSrc.pitches, hitterName, hSrc.hand);
+
+  // Compute H2H stats if we have data
+  let h2h = null;
+  if (h2hPitches.length > 0) {
+    const byPitchType = {};
+    let totalSwings = 0, totalWhiffs = 0, totalHits = 0, totalAB = 0, totalKs = 0, totalBBs = 0, totalPA = 0;
+    const seenPA = new Set();
+
+    h2hPitches.forEach(row => {
+      const pt = normalizePitchType(row.PitchType);
+      const result = (row.PitchResult || '').trim();
+      const abResult = (row.AtBatResult || '').trim();
+
+      if (!byPitchType[pt]) byPitchType[pt] = { pitches: 0, swings: 0, whiffs: 0, hits: 0, abs: 0 };
+      byPitchType[pt].pitches++;
+
+      const isSwing = result.includes('Swing') || result.includes('Foul') || result.includes('In Play');
+      if (isSwing) { byPitchType[pt].swings++; totalSwings++; }
+      if (result.includes('Swing and Miss')) { byPitchType[pt].whiffs++; totalWhiffs++; }
+
+      const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.PAofInning}`;
+      if (abResult && !seenPA.has(paKey)) {
+        seenPA.add(paKey);
+        totalPA++;
+        const isHit = ['1B', '2B', '3B', 'HR'].includes(abResult);
+        const isAB = !['BB', 'HBP', 'IBB', 'Sacrifice', 'Catchers Interference'].includes(abResult);
+        if (isHit) { totalHits++; byPitchType[pt].hits++; }
+        if (isAB) { totalAB++; byPitchType[pt].abs++; }
+        if (abResult === 'Strike Out') totalKs++;
+        if (['BB', 'HBP', 'IBB'].includes(abResult)) totalBBs++;
+      }
+    });
+
+    const pitchMix = {};
+    Object.keys(byPitchType).sort((a, b) => byPitchType[b].pitches - byPitchType[a].pitches).forEach(pt => {
+      const d = byPitchType[pt];
+      pitchMix[pt] = {
+        count: d.pitches,
+        pct: pct(d.pitches, h2hPitches.length),
+        whiffRate: pct(d.whiffs, d.swings),
+        AVG: d.abs > 0 ? (d.hits / d.abs).toFixed(3) : 'N/A',
+      };
+    });
+
+    h2h = {
+      totalPitches: h2hPitches.length,
+      totalPA,
+      AVG: totalAB > 0 ? (totalHits / totalAB).toFixed(3) : 'N/A',
+      K_rate: pct(totalKs, totalPA),
+      BB_rate: pct(totalBBs, totalPA),
+      whiffRate: pct(totalWhiffs, totalSwings),
+      pitchMix,
+    };
+  }
+
+  return {
+    pitcherName,
+    hitterName,
+    pitcherHand: pSrc.hand,
+    hitterHand: hSrc.hand,
+    pitcherProfile,
+    hitterProfile,
+    h2h,
+    hasH2H: h2hPitches.length > 0,
+    h2hPitches: h2hPitches.length,
+  };
+}
+
+function buildHitterAttacksBullets(list, data) {
+  const pp = data.pitcherProfile;
+  const h2h = data.h2h;
+  const mix = pp?.pitchMix || {};
+  const byCount = pp?.pitchMixByCount || {};
+  const types = Object.keys(mix);
+
+  // Use H2H data when available, fall back to pitcher profile
+  const useMix = h2h ? h2h.pitchMix : null;
+
+  // 1. First pitch approach
+  const fpMix = byCount.first_pitch;
+  if (fpMix) {
+    const fpTypes = Object.keys(fpMix).sort((a, b) => parseFloat(fpMix[b]) - parseFloat(fpMix[a]));
+    if (fpTypes.length > 0) {
+      list.innerHTML += `<li>Sit <strong>${fpTypes[0]}</strong> first pitch — he throws it <strong>${fpMix[fpTypes[0]]}</strong> of the time</li>`;
+    }
+  }
+
+  // 2. Most hittable pitch (lowest whiff rate)
+  const src = useMix || mix;
+  const hittable = Object.keys(src).filter(t => src[t]?.whiffRate && src[t].whiffRate !== 'N/A')
+    .sort((a, b) => parseFloat(src[a].whiffRate) - parseFloat(src[b].whiffRate));
+  if (hittable.length > 0) {
+    const easiest = hittable[0];
+    const whiff = src[easiest].whiffRate;
+    const h2hNote = useMix ? ' (H2H)' : '';
+    list.innerHTML += `<li>Most hittable: <strong>${easiest}</strong> — only <strong>${whiff} whiff rate</strong>${h2hNote}</li>`;
+  }
+
+  // 3. Pitch to protect against (highest whiff rate)
+  if (hittable.length > 1) {
+    const toughest = hittable[hittable.length - 1];
+    const whiff = src[toughest].whiffRate;
+    list.innerHTML += `<li>Protect against the <strong>${toughest}</strong> — <strong>${whiff} whiff rate</strong>, shorten up</li>`;
+  }
+
+  // 4. When pitcher is behind
+  const behindMix = byCount.behind;
+  if (behindMix) {
+    const behTypes = Object.keys(behindMix).sort((a, b) => parseFloat(behindMix[b]) - parseFloat(behindMix[a]));
+    if (behTypes.length > 0) {
+      list.innerHTML += `<li>When he's behind, expect <strong>${behTypes[0]}</strong> (<strong>${behindMix[behTypes[0]]}</strong>) — be aggressive</li>`;
+    }
+  }
+
+  // 5. Two-strike approach
+  const tsMix = byCount.two_strikes;
+  if (tsMix) {
+    const tsTypes = Object.keys(tsMix).sort((a, b) => parseFloat(tsMix[b]) - parseFloat(tsMix[a]));
+    if (tsTypes.length > 0) {
+      const putaway = tsTypes[0];
+      const whiff = mix[putaway]?.whiffRate || '?';
+      list.innerHTML += `<li>With 2 strikes, guard the <strong>${putaway}</strong> (${tsMix[putaway]}) — <strong>${whiff} whiff</strong></li>`;
+    }
+  }
+}
+
+function buildPitcherAttacksBullets(list, data) {
+  const hp = data.hitterProfile;
+  const h2h = data.h2h;
+  const rbt = hp?.resultsByPitchType || {};
+
+  // Use H2H when available
+  const useMix = h2h ? h2h.pitchMix : null;
+
+  // 1. Best pitch to attack with (highest whiff in H2H or hitter's worst pitch)
+  const src = useMix || rbt;
+  const byWhiff = Object.keys(src).filter(t => {
+    const w = src[t]?.whiffRate;
+    return w && w !== 'N/A';
+  }).sort((a, b) => parseFloat(src[b].whiffRate) - parseFloat(src[a].whiffRate));
+  if (byWhiff.length > 0) {
+    const best = byWhiff[0];
+    const whiff = src[best].whiffRate;
+    const h2hNote = useMix ? ' (H2H)' : '';
+    list.innerHTML += `<li>Attack with <strong>${best}</strong> — <strong>${whiff} whiff rate</strong>${h2hNote}</li>`;
+  }
+
+  // 2. Pitch to be careful with (hitter's best AVG by pitch)
+  const pitchAVG = useMix || rbt;
+  const byAVG = Object.keys(pitchAVG).filter(t => pitchAVG[t]?.AVG && pitchAVG[t].AVG !== 'N/A')
+    .sort((a, b) => parseFloat(pitchAVG[b].AVG) - parseFloat(pitchAVG[a].AVG));
+  if (byAVG.length > 0) {
+    const avoid = byAVG[0];
+    if (!byWhiff.length || avoid !== byWhiff[0]) {
+      list.innerHTML += `<li>Be careful with <strong>${avoid}</strong> — hits <strong>${pitchAVG[avoid].AVG}</strong> against it</li>`;
+    } else if (byAVG.length > 1) {
+      list.innerHTML += `<li>Be careful with <strong>${byAVG[1]}</strong> — hits <strong>${pitchAVG[byAVG[1]].AVG}</strong> against it</li>`;
+    }
+  }
+
+  // 3. Chase rate advice
+  const chaseNum = parseFloat(hp?.overallChaseRate) || 0;
+  if (chaseNum > 30) {
+    list.innerHTML += `<li>Expand the zone — chases <strong>${hp.overallChaseRate}</strong> out of zone</li>`;
+  } else if (chaseNum > 0 && chaseNum <= 15) {
+    list.innerHTML += `<li>Stay in the zone — only chases <strong>${hp.overallChaseRate}</strong>, don't waste pitches</li>`;
+  } else if (chaseNum > 15) {
+    list.innerHTML += `<li>Chase rate: <strong>${hp.overallChaseRate}</strong> — mix in some chase pitches</li>`;
+  }
+
+  // 4. Location targets — cold/hot zones (from hitter profile dugout stats)
+  const hSrc = stats.moellerHitters[data.hitterName] || stats.opponentBatters[data.hitterName];
+  if (hSrc) {
+    const dugout = computeHitterDugoutStats(hSrc.pitches);
+    const zs = dugout.zoneStats;
+    const zoneNames = { 1: 'up-in', 2: 'up-mid', 3: 'up-away', 4: 'mid-in', 5: 'middle', 6: 'mid-away', 7: 'low-in', 8: 'low-mid', 9: 'low-away' };
+    const coldZones = [], hotZones = [];
+    for (let i = 1; i <= 9; i++) {
+      if (zs[i].abs >= 3) {
+        const avg = zs[i].hits / zs[i].abs;
+        if (avg < 0.150) coldZones.push(zoneNames[i]);
+        if (avg >= 0.300) hotZones.push(zoneNames[i]);
+      }
+    }
+    if (coldZones.length > 0) {
+      list.innerHTML += `<li>Target <strong>${coldZones.join(', ')}</strong> — cold zones</li>`;
+    }
+    if (hotZones.length > 0) {
+      list.innerHTML += `<li>Avoid <strong>${hotZones.join(', ')}</strong> — hot zones</li>`;
+    }
+  }
+
+  // 5. Put-away pitch
+  if (byWhiff.length > 0) {
+    const putaway = byWhiff[0];
+    list.innerHTML += `<li>Put-away with 2 strikes: <strong>${putaway}</strong></li>`;
+  }
+}
+
+function buildMatchupCard(perspective, data) {
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  const pHand = (data.pitcherHand || '').toUpperCase();
+  const hHand = (data.hitterHand || '').toUpperCase();
+  const pLabel = pHand === 'R' ? 'RHP' : pHand === 'L' ? 'LHP' : 'P';
+  const hLabel = hHand === 'R' ? 'RHH' : hHand === 'L' ? 'LHH' : 'H';
+  const title = perspective === 'hitter' ? "Hitter's Game Plan" : "Pitcher's Game Plan";
+  header.innerHTML = `<span class="quick-look-name">${title}</span>
+    <span class="quick-look-meta">${data.pitcherName} (${pLabel}) vs ${data.hitterName} (${hLabel})</span>`;
+  card.appendChild(header);
+
+  // H2H stat row (if data exists)
+  if (data.h2h) {
+    const statRow = document.createElement('div');
+    statRow.className = 'quick-look-row';
+    [
+      { val: data.h2h.totalPitches, lbl: 'H2H Pitches' },
+      { val: data.h2h.AVG, lbl: 'H2H AVG' },
+      { val: data.h2h.K_rate, lbl: 'H2H K%' },
+      { val: data.h2h.whiffRate, lbl: 'H2H Whiff%' },
+    ].forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'quick-look-stat';
+      el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+      statRow.appendChild(el);
+    });
+    card.appendChild(statRow);
+  }
+
+  // Relay section with ~5 bullets
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = `<div class="ql-relay-title">${perspective === 'hitter' ? 'HITTING PLAN' : 'PITCHING PLAN'}</div>`;
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  if (perspective === 'hitter') {
+    buildHitterAttacksBullets(list, data);
+  } else {
+    buildPitcherAttacksBullets(list, data);
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  // H2H pitch mix table
+  const h2hMix = data.h2h?.pitchMix;
+  const displayMix = h2hMix || data.pitcherProfile?.pitchMix;
+  if (displayMix) {
+    const mixTypes = Object.keys(displayMix);
+    if (mixTypes.length > 0) {
+      const pitchTable = document.createElement('div');
+      pitchTable.className = 'ql-pitch-table';
+      const isH2H = !!h2hMix;
+      let tableHTML = `<div class="ql-pitch-header"><span>Pitch${isH2H ? ' (H2H)' : ''}</span><span>Usage</span><span>Whiff%</span><span>AVG</span></div>`;
+      mixTypes.forEach(t => {
+        const m = displayMix[t];
+        const avgVal = m.AVG || '-';
+        tableHTML += `<div class="ql-pitch-row">
+          <span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[t] || '#95A5A6'}"></span>${t}</span>
+          <span class="ql-pitch-val">${m.pct}</span>
+          <span class="ql-pitch-val">${m.whiffRate || '-'}</span>
+          <span class="ql-pitch-val">${avgVal}</span>
+        </div>`;
+      });
+      pitchTable.innerHTML = tableHTML;
+      card.appendChild(pitchTable);
+    }
+  }
+
+  // Warnings
+  if (!data.hasH2H) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = 'No head-to-head data found — showing individual profile stats as fallback.';
+    card.appendChild(warn);
+  } else if (data.h2hPitches < 15) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small H2H sample: only ${data.h2hPitches} pitches. Individual stats used to supplement.`;
+    card.appendChild(warn);
+  }
+
+  if (data.pitcherProfile?.sampleSizeWarning) {
+    const warn = document.createElement('div');
+    warn.className = 'quick-look-bullets';
+    warn.innerHTML = `<li><strong>Pitcher NOTE:</strong> ${data.pitcherProfile.sampleSizeWarning} <span class="ql-tag small">small sample</span></li>`;
+    card.appendChild(warn);
+  }
+  if (data.hitterProfile?.sampleSizeWarning) {
+    const warn = document.createElement('div');
+    warn.className = 'quick-look-bullets';
+    warn.innerHTML = `<li><strong>Hitter NOTE:</strong> ${data.hitterProfile.sampleSizeWarning} <span class="ql-tag small">small sample</span></li>`;
+    card.appendChild(warn);
+  }
+
+  return card;
+}
+
+function executeMatchupReport(perspective) {
+  const data = computeMatchupProfile(matchupState.pitcher, matchupState.hitter);
+  if (!data) {
+    showError('Could not compute matchup — missing data for one or both players.');
+    return;
+  }
+
+  if (appMode === 'dugout') {
+    // Render card directly (zero tokens)
+    welcomeEl.classList.add('hidden');
+    const pLabel = perspective === 'hitter' ? "Hitter's Plan" : "Pitcher's Plan";
+    appendMessage('user', `${pLabel}: ${matchupState.pitcher} vs ${matchupState.hitter}`);
+    const card = buildMatchupCard(perspective, data);
+    appendQuickLook(card);
+  } else {
+    // Full mode — send to API
+    welcomeEl.classList.add('hidden');
+    const pHand = (data.pitcherHand || '').toUpperCase();
+    const hHand = (data.hitterHand || '').toUpperCase();
+    const pLabel = pHand === 'R' ? 'RHP' : pHand === 'L' ? 'LHP' : 'P';
+    const hLabel = hHand === 'R' ? 'RHH' : hHand === 'L' ? 'LHH' : 'H';
+    const perspLabel = perspective === 'hitter' ? "hitter's attack plan" : "pitcher's attack plan";
+    const query = `Give me a ${perspLabel} for ${matchupState.hitter} (${hLabel}) facing ${matchupState.pitcher} (${pLabel}).`;
+    const ctx = { type: 'matchup', data: { perspective, pitcherProfile: data.pitcherProfile, hitterProfile: data.hitterProfile, h2h: data.h2h } };
+    const dataPayload = JSON.stringify(ctx.data, null, 2);
+    const fullMessage = `Here is the relevant data (context type: matchup, perspective: ${perspective}). Coach's question: "${query}"\n\n${dataPayload}`;
+
+    appendMessage('user', query);
+    isLoading = true;
+    sendBtn.disabled = true;
+    const loadingEl = showLoading();
+
+    fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: fullMessage, session_id: sessionId, mode: appMode }),
+    })
+      .then(res => res.json().then(d => ({ ok: res.ok, data: d })))
+      .then(({ ok, data: d }) => {
+        removeLoading(loadingEl);
+        if (!ok) throw new Error(d.error || 'Server error');
+        appendMessage('assistant', d.reply);
+      })
+      .catch(err => {
+        removeLoading(loadingEl);
+        showError(err.message);
+      })
+      .finally(() => {
+        isLoading = false;
+        sendBtn.disabled = false;
+        userInput.focus();
+      });
+  }
 }
 
 // ===== QUICK LOOK CARDS (Dugout Mode - no API call) =====
@@ -1924,24 +2406,27 @@ function buildHowToHitCard(pitcherName) {
   return card;
 }
 
+function resetToMenu() {
+  messagesEl.innerHTML = '';
+  welcomeEl.classList.remove('hidden');
+  document.getElementById('menu-step1').classList.remove('hidden');
+  document.getElementById('menu-step2').classList.add('hidden');
+  document.getElementById('menu-step3').classList.add('hidden');
+  document.getElementById('menu-prompts').classList.add('hidden');
+  document.getElementById('welcome-title').textContent = 'What do you need?';
+  document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
+  selectedReportType = null;
+  matchupState = { pitcher: null, hitter: null, step: 0 };
+  scrollToBottom();
+}
+
 function buildNewAnalysisBar(hitterName, pitcherName) {
   const bar = document.createElement('div');
   bar.className = 'new-analysis-bar';
   const btn = document.createElement('button');
   btn.className = 'new-analysis-btn';
   btn.innerHTML = '&larr; New Analysis';
-  btn.onclick = () => {
-    // Reset to welcome menu
-    messagesEl.innerHTML = '';
-    welcomeEl.classList.remove('hidden');
-    document.getElementById('menu-step1').classList.remove('hidden');
-    document.getElementById('menu-step2').classList.add('hidden');
-    document.getElementById('menu-prompts').classList.add('hidden');
-    document.getElementById('welcome-title').textContent = 'What do you need?';
-    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
-    selectedReportType = null;
-    scrollToBottom();
-  };
+  btn.onclick = () => { resetToMenu(); };
   const switchBtn = document.createElement('button');
   switchBtn.className = 'new-analysis-btn switch-mode-btn';
   switchBtn.textContent = appMode === 'dugout' ? 'Switch to Full Analysis' : 'Switch to Dugout';
@@ -1952,16 +2437,7 @@ function buildNewAnalysisBar(hitterName, pitcherName) {
     });
     appMode = newMode;
     updateModeUI();
-    // Reset to menu
-    messagesEl.innerHTML = '';
-    welcomeEl.classList.remove('hidden');
-    document.getElementById('menu-step1').classList.remove('hidden');
-    document.getElementById('menu-step2').classList.add('hidden');
-    document.getElementById('menu-prompts').classList.add('hidden');
-    document.getElementById('welcome-title').textContent = 'What do you need?';
-    document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
-    selectedReportType = null;
-    scrollToBottom();
+    resetToMenu();
   };
   bar.appendChild(btn);
   bar.appendChild(switchBtn);
