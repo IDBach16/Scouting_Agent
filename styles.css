@@ -294,6 +294,33 @@ body.dugout-mode .dugout-example{display:inline-block}
 body:not(.dugout-mode) .full-example{display:inline-block}
 body:not(.dugout-mode) .dugout-example{display:none}
 
+/* TENDENCY CATEGORY PICKER */
+.menu-tendency-cats{width:100%;max-width:500px;margin-top:12px}
+.menu-tendency-cats.hidden{display:none}
+.tendency-cats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-height:380px;overflow-y:auto;padding-right:4px}
+.tendency-cats-grid::-webkit-scrollbar{width:4px}
+.tendency-cats-grid::-webkit-scrollbar-thumb{background:var(--navy-lighter);border-radius:2px}
+.tendency-cat-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 16px;background:var(--navy);border:2px solid var(--border-strong);border-radius:var(--radius);cursor:pointer;transition:all .2s;text-align:center}
+.tendency-cat-card:hover{border-color:var(--gold);background:var(--gold-dim);transform:translateY(-2px);box-shadow:0 4px 16px rgba(197,165,90,.15)}
+.tendency-cat-card .menu-card-title{font-size:.88rem;font-weight:700;color:var(--gold)}
+.tendency-cat-card .menu-card-desc{font-size:.68rem;color:var(--text-sec);line-height:1.3}
+
+/* Tendency batter table */
+.tendency-batter-table{margin-bottom:10px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);max-height:260px;overflow-y:auto}
+.tendency-batter-table::-webkit-scrollbar{width:4px}
+.tendency-batter-table::-webkit-scrollbar-thumb{background:var(--navy-lighter);border-radius:2px}
+
+/* Coaching takeaway callout */
+.ql-takeaway-section{background:rgba(197,165,90,0.08);border:1px solid rgba(197,165,90,0.25);border-radius:var(--radius-sm);padding:10px 14px;margin:10px 0 6px}
+.ql-takeaway-title{font-size:.72rem;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.ql-takeaway-text{font-size:.82rem;color:var(--text);line-height:1.4}
+
+/* Dataset comparison badge */
+.ql-compare-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.6rem;font-weight:700;margin-left:4px}
+.ql-compare-badge.above{background:rgba(230,57,70,0.2);color:#E63946}
+.ql-compare-badge.below{background:rgba(46,204,113,0.2);color:#2ECC71}
+.ql-compare-badge.avg{background:rgba(241,196,15,0.2);color:#F1C40F}
+
 /* RESPONSIVE — iPad / Tablet (1024px and below) */
 @media(max-width:1024px){
   #app{max-width:100%}
@@ -358,6 +385,15 @@ body:not(.dugout-mode) .dugout-example{display:none}
   /* New Analysis bar — larger buttons, stay horizontal */
   .new-analysis-bar{flex-direction:row;gap:10px}
   .new-analysis-btn{padding:12px 22px;font-size:.88rem}
+
+  /* Tendency category picker — larger touch targets */
+  .menu-tendency-cats{max-width:100%}
+  .tendency-cats-grid{max-height:50vh}
+  .tendency-cat-card{padding:24px 18px;gap:8px}
+  .tendency-cat-card .menu-card-title{font-size:.95rem}
+  .tendency-cat-card .menu-card-desc{font-size:.74rem}
+  .ql-takeaway-section{padding:12px 16px}
+  .ql-takeaway-text{font-size:.88rem}
 }
 
 /* RESPONSIVE — Phone (480px and below) */
@@ -454,4 +490,11 @@ body:not(.dugout-mode) .dugout-example{display:none}
   /* Charts */
   .chart-card canvas{max-height:240px}
   .zone-grid{grid-template-columns:repeat(5,36px);grid-template-rows:repeat(5,36px)}
+
+  /* Tendency category picker — 1 col on phone */
+  .tendency-cats-grid{grid-template-columns:1fr;max-height:55vh}
+  .tendency-cat-card{padding:16px 12px}
+  .tendency-batter-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ql-takeaway-section{padding:8px 10px}
+  .ql-takeaway-text{font-size:.78rem}
 }

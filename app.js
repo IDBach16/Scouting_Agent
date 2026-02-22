@@ -105,6 +105,9 @@ function reprocessData() {
   stats.moellerPitcherList.forEach(p => allNames.push({ name: p, type: 'pitcher' }));
   stats.moellerHitterList.forEach(h => allNames.push({ name: h, type: 'hitter' }));
   Object.keys(stats.opponentPitchers).forEach(p => allNames.push({ name: p, type: 'opp pitcher' }));
+
+  // Compute dataset averages for tendency comparisons
+  computeDatasetAverages();
 }
 
 function updateStatus(state, text) {
@@ -335,6 +338,479 @@ function computeTeamSummary(teamName) {
   return {team:teamName,totalPitchesInData:tp.length,pitchers:ps,teamPitchMix:tm};
 }
 
+// ===== TENDENCY HELPERS =====
+function getTeamOffensePitches(teamName) {
+  // Pitches where this team is batting
+  const isM = /moeller/i.test(teamName);
+  if (isM) {
+    const all = [];
+    Object.values(stats.moellerHitters).forEach(h => all.push(...h.pitches));
+    return all;
+  }
+  return filteredData.filter(row => {
+    const bTeam = (row.BatterTeam || '').trim();
+    return bTeam.toLowerCase() === teamName.toLowerCase();
+  });
+}
+
+function getTeamPitchingPitches(teamName) {
+  // Pitches where this team is pitching
+  const isM = /moeller/i.test(teamName);
+  if (isM) {
+    const all = [];
+    Object.values(stats.moellerPitchers).forEach(p => all.push(...p.pitches));
+    return all;
+  }
+  return filteredData.filter(row => {
+    const pTeam = (row.PitcherTeam || '').trim();
+    return pTeam.toLowerCase() === teamName.toLowerCase();
+  });
+}
+
+function pitchGroup(pt) {
+  const n = normalizePitchType(pt);
+  if (['Fastball', 'Two Seam', 'Cutter'].includes(n)) return 'Fastball';
+  if (['Slider', 'Curveball', 'Breaking Ball'].includes(n)) return 'Breaking';
+  if (['Changeup', 'Splitter'].includes(n)) return 'Offspeed';
+  return 'Other';
+}
+
+function computeDatasetAverages() {
+  // Called at end of reprocessData
+  let chaseSwings = 0, chasePitches = 0;
+  let fpSwings = 0, fpTotal = 0;
+  let tsKs = 0, tsPAs = 0;
+  let sacCount = 0, totalPAs = 0;
+  let zonePitches = 0, zoneTotal = 0;
+  const seenPA = new Set();
+
+  filteredData.forEach(row => {
+    const result = (row.PitchResult || '').trim();
+    const abResult = (row.AtBatResult || '').trim();
+    const zone = (row.AttackZone || '').trim();
+    const b = parseInt(row.Balls) || 0, s = parseInt(row.Strikes) || 0;
+    const isSwing = result.includes('Swing') || result.includes('Foul') || result.includes('In Play');
+
+    // Chase
+    if (zone === 'Chase' || zone === 'Waste') {
+      chasePitches++;
+      if (isSwing) chaseSwings++;
+    }
+    // First pitch
+    if (b === 0 && s === 0) {
+      fpTotal++;
+      if (isSwing) fpSwings++;
+    }
+    // Zone rate
+    if (zone === 'Heart' || zone === 'Shadow') zonePitches++;
+    if (zone === 'Heart' || zone === 'Shadow' || zone === 'Chase' || zone === 'Waste') zoneTotal++;
+
+    // PA-level
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.Pitcher}-${row.PAofInning}`;
+    if (abResult && !seenPA.has(paKey)) {
+      seenPA.add(paKey);
+      totalPAs++;
+      if (s === 2 && abResult === 'Strike Out') tsKs++;
+      if (s === 2) tsPAs++;
+      if (abResult === 'Sacrifice') sacCount++;
+    }
+  });
+
+  stats.datasetAverages = {
+    chaseRate: chasePitches > 0 ? (chaseSwings / chasePitches * 100) : 0,
+    firstPitchSwingRate: fpTotal > 0 ? (fpSwings / fpTotal * 100) : 0,
+    twoStrikeKRate: tsPAs > 0 ? (tsKs / tsPAs * 100) : 0,
+    sacRate: totalPAs > 0 ? (sacCount / totalPAs * 100) : 0,
+    zoneRate: zoneTotal > 0 ? (zonePitches / zoneTotal * 100) : 0,
+  };
+}
+
+// ===== 8 TENDENCY COMPUTE FUNCTIONS =====
+function computeBuntTendency(teamName) {
+  const pitches = getTeamOffensePitches(teamName);
+  if (!pitches.length) return null;
+  const seenPA = new Set();
+  let sacCount = 0, totalPA = 0;
+  const byBatter = {}, byInning = {}, byOuts = { 0: 0, 1: 0, 2: 0 };
+  let sacTotal = 0;
+
+  pitches.forEach(row => {
+    const abResult = (row.AtBatResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const inning = parseInt(row.Inning) || 0;
+    const outs = parseInt(row.Outs) || 0;
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${batter}-${row.PAofInning}`;
+    if (abResult && !seenPA.has(paKey)) {
+      seenPA.add(paKey);
+      totalPA++;
+      if (abResult === 'Sacrifice') {
+        sacCount++;
+        sacTotal++;
+        if (!byBatter[batter]) byBatter[batter] = 0;
+        byBatter[batter]++;
+        const ig = inning <= 3 ? 'Early (1-3)' : inning <= 6 ? 'Mid (4-6)' : 'Late (7+)';
+        byInning[ig] = (byInning[ig] || 0) + 1;
+        if (byOuts.hasOwnProperty(outs)) byOuts[outs]++;
+      }
+    }
+  });
+
+  const sacRate = totalPA > 0 ? (sacCount / totalPA * 100) : 0;
+  const batterList = Object.entries(byBatter).sort((a, b) => b[1] - a[1]);
+  const dsAvg = stats.datasetAverages?.sacRate || 0;
+
+  return { teamName, sacRate, sacCount, totalPA, byBatter: batterList, byInning, byOuts, dsAvg, totalPitches: pitches.length };
+}
+
+function computeFirstPitchApproach(teamName) {
+  const pitches = getTeamOffensePitches(teamName);
+  if (!pitches.length) return null;
+  let fpTotal = 0, fpSwings = 0, fpInPlay = 0, fpHits = 0, fpAB = 0;
+  const byBatter = {};
+
+  pitches.forEach(row => {
+    const b = parseInt(row.Balls) || 0, s = parseInt(row.Strikes) || 0;
+    if (b !== 0 || s !== 0) return;
+    fpTotal++;
+    const result = (row.PitchResult || '').trim();
+    const abResult = (row.AtBatResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const isSwing = result.includes('Swing') || result.includes('Foul') || result.includes('In Play');
+    if (isSwing) fpSwings++;
+    if (result.includes('In Play')) {
+      fpInPlay++;
+      const isHit = ['1B', '2B', '3B', 'HR'].includes(abResult);
+      const isAB = !['BB', 'HBP', 'IBB', 'Sacrifice', 'Catchers Interference'].includes(abResult);
+      if (isAB) fpAB++;
+      if (isHit) fpHits++;
+    }
+    if (!byBatter[batter]) byBatter[batter] = { total: 0, swings: 0 };
+    byBatter[batter].total++;
+    if (isSwing) byBatter[batter].swings++;
+  });
+
+  const swingRate = fpTotal > 0 ? (fpSwings / fpTotal * 100) : 0;
+  const hitRate = fpAB > 0 ? (fpHits / fpAB * 100) : 0;
+  const inPlayRate = fpTotal > 0 ? (fpInPlay / fpTotal * 100) : 0;
+  const batterList = Object.entries(byBatter)
+    .map(([name, d]) => ({ name, total: d.total, swings: d.swings, rate: d.total > 0 ? (d.swings / d.total * 100) : 0 }))
+    .filter(b => b.total >= 3)
+    .sort((a, b) => b.rate - a.rate);
+  const dsAvg = stats.datasetAverages?.firstPitchSwingRate || 0;
+
+  return { teamName, swingRate, hitRate, inPlayRate, fpTotal, fpSwings, fpInPlay, fpHits, fpAB, byBatter: batterList, dsAvg };
+}
+
+function computeChaseAndDiscipline(teamName) {
+  const pitches = getTeamOffensePitches(teamName);
+  if (!pitches.length) return null;
+  let chasePitches = 0, chaseSwings = 0;
+  const byBatter = {}, byCount = {};
+
+  pitches.forEach(row => {
+    const zone = (row.AttackZone || '').trim();
+    if (zone !== 'Chase' && zone !== 'Waste') return;
+    chasePitches++;
+    const result = (row.PitchResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const b = parseInt(row.Balls) || 0, s = parseInt(row.Strikes) || 0;
+    const countKey = `${b}-${s}`;
+    const isSwing = result.includes('Swing') || result.includes('Foul') || result.includes('In Play');
+    if (isSwing) chaseSwings++;
+    if (!byBatter[batter]) byBatter[batter] = { total: 0, swings: 0 };
+    byBatter[batter].total++;
+    if (isSwing) byBatter[batter].swings++;
+    if (!byCount[countKey]) byCount[countKey] = { total: 0, swings: 0 };
+    byCount[countKey].total++;
+    if (isSwing) byCount[countKey].swings++;
+  });
+
+  const chaseRate = chasePitches > 0 ? (chaseSwings / chasePitches * 100) : 0;
+  const batterList = Object.entries(byBatter)
+    .map(([name, d]) => ({ name, total: d.total, swings: d.swings, rate: d.total > 0 ? (d.swings / d.total * 100) : 0 }))
+    .filter(b => b.total >= 3)
+    .sort((a, b) => b.rate - a.rate);
+  const countList = Object.entries(byCount)
+    .map(([count, d]) => ({ count, total: d.total, swings: d.swings, rate: d.total > 0 ? (d.swings / d.total * 100) : 0 }))
+    .sort((a, b) => b.rate - a.rate);
+  const dsAvg = stats.datasetAverages?.chaseRate || 0;
+
+  return { teamName, chaseRate, chasePitches, chaseSwings, byBatter: batterList, byCount: countList, dsAvg };
+}
+
+function computeTwoStrikeApproach(teamName) {
+  const pitches = getTeamOffensePitches(teamName);
+  if (!pitches.length) return null;
+  let tsTotal = 0, tsSwings = 0, tsWhiffs = 0, tsFouls = 0;
+  const byBatter = {};
+  const seenPA = new Set();
+  let tsPA = 0, tsKs = 0;
+
+  pitches.forEach(row => {
+    const s = parseInt(row.Strikes) || 0;
+    if (s !== 2) return;
+    tsTotal++;
+    const result = (row.PitchResult || '').trim();
+    const abResult = (row.AtBatResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const isSwing = result.includes('Swing') || result.includes('Foul') || result.includes('In Play');
+    if (isSwing) tsSwings++;
+    if (result.includes('Swing and Miss')) tsWhiffs++;
+    if (result.includes('Foul')) tsFouls++;
+
+    if (!byBatter[batter]) byBatter[batter] = { pitches: 0, ks: 0, pa: 0 };
+    byBatter[batter].pitches++;
+
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${batter}-${row.PAofInning}`;
+    if (abResult && !seenPA.has(paKey)) {
+      seenPA.add(paKey);
+      tsPA++;
+      byBatter[batter].pa++;
+      if (abResult === 'Strike Out') {
+        tsKs++;
+        byBatter[batter].ks++;
+      }
+    }
+  });
+
+  const kRate = tsPA > 0 ? (tsKs / tsPA * 100) : 0;
+  const whiffRate = tsSwings > 0 ? (tsWhiffs / tsSwings * 100) : 0;
+  const foulRate = tsTotal > 0 ? (tsFouls / tsTotal * 100) : 0;
+  const chaseZone = pitches.filter(r => {
+    const s = parseInt(r.Strikes) || 0;
+    if (s !== 2) return false;
+    const z = (r.AttackZone || '').trim();
+    return z === 'Chase' || z === 'Waste';
+  });
+  let tsChaseSwings = 0;
+  chaseZone.forEach(r => {
+    const res = (r.PitchResult || '').trim();
+    if (res.includes('Swing') || res.includes('Foul') || res.includes('In Play')) tsChaseSwings++;
+  });
+  const tsChaseRate = chaseZone.length > 0 ? (tsChaseSwings / chaseZone.length * 100) : 0;
+
+  const batterList = Object.entries(byBatter)
+    .map(([name, d]) => ({ name, pitches: d.pitches, pa: d.pa, ks: d.ks, kRate: d.pa > 0 ? (d.ks / d.pa * 100) : 0 }))
+    .filter(b => b.pa >= 2)
+    .sort((a, b) => b.kRate - a.kRate);
+  const dsAvg = stats.datasetAverages?.twoStrikeKRate || 0;
+
+  return { teamName, kRate, whiffRate, foulRate, tsChaseRate, tsTotal, tsPA, tsKs, byBatter: batterList, dsAvg };
+}
+
+function computePitchMixTendency(teamName) {
+  const pitches = getTeamPitchingPitches(teamName);
+  if (!pitches.length) return null;
+  const overallMix = {};
+  const byCount = { first_pitch: {}, ahead: {}, behind: {}, even: {}, two_strikes: {} };
+  const byBatterHand = { R: {}, L: {} };
+  let total = 0;
+
+  pitches.forEach(row => {
+    const pt = normalizePitchType(row.PitchType);
+    const b = parseInt(row.Balls) || 0, s = parseInt(row.Strikes) || 0;
+    const bHand = (row['Batter Hand'] || '').trim().toUpperCase();
+    total++;
+    overallMix[pt] = (overallMix[pt] || 0) + 1;
+
+    const labels = [];
+    if (b === 0 && s === 0) labels.push('first_pitch');
+    if (s === 2) labels.push('two_strikes');
+    if (s > b) labels.push('ahead');
+    else if (b > s) labels.push('behind');
+    else labels.push('even');
+    labels.forEach(l => { if (byCount[l]) byCount[l][pt] = (byCount[l][pt] || 0) + 1; });
+
+    if (bHand === 'R' || bHand === 'L') {
+      byBatterHand[bHand][pt] = (byBatterHand[bHand][pt] || 0) + 1;
+    }
+  });
+
+  // Put-away pitch: most used pitch type with 2 strikes
+  const tsMix = byCount.two_strikes;
+  const tsTotal = Object.values(tsMix).reduce((a, b) => a + b, 0);
+  const putAwayPitch = Object.keys(tsMix).sort((a, b) => tsMix[b] - tsMix[a])[0] || null;
+
+  // Group by FB/BRK/OS
+  let fbCount = 0, brkCount = 0, osCount = 0;
+  Object.entries(overallMix).forEach(([pt, cnt]) => {
+    const g = pitchGroup(pt);
+    if (g === 'Fastball') fbCount += cnt;
+    else if (g === 'Breaking') brkCount += cnt;
+    else if (g === 'Offspeed') osCount += cnt;
+  });
+
+  const mixList = Object.entries(overallMix).sort((a, b) => b[1] - a[1])
+    .map(([pt, cnt]) => ({ pitch: pt, count: cnt, pct: (cnt / total * 100) }));
+
+  return {
+    teamName, total, overallMix: mixList, byCount, byBatterHand, putAwayPitch,
+    fbPct: total > 0 ? (fbCount / total * 100) : 0,
+    brkPct: total > 0 ? (brkCount / total * 100) : 0,
+    osPct: total > 0 ? (osCount / total * 100) : 0,
+  };
+}
+
+function computeZoneUsageTendency(teamName) {
+  const pitches = getTeamPitchingPitches(teamName);
+  if (!pitches.length) return null;
+  const zones = { Heart: 0, Shadow: 0, Chase: 0, Waste: 0 };
+  const byCount = {};
+  const countKeys = ['first_pitch', 'ahead', 'behind', 'even', 'two_strikes'];
+  countKeys.forEach(k => byCount[k] = { Heart: 0, Shadow: 0, Chase: 0, Waste: 0 });
+  let total = 0;
+
+  pitches.forEach(row => {
+    const zone = (row.AttackZone || '').trim();
+    if (!zones.hasOwnProperty(zone)) return;
+    zones[zone]++;
+    total++;
+    const b = parseInt(row.Balls) || 0, s = parseInt(row.Strikes) || 0;
+    const labels = [];
+    if (b === 0 && s === 0) labels.push('first_pitch');
+    if (s === 2) labels.push('two_strikes');
+    if (s > b) labels.push('ahead');
+    else if (b > s) labels.push('behind');
+    else labels.push('even');
+    labels.forEach(l => { if (byCount[l]) byCount[l][zone]++; });
+  });
+
+  const zoneRate = total > 0 ? ((zones.Heart + zones.Shadow) / total * 100) : 0;
+  const heartPct = total > 0 ? (zones.Heart / total * 100) : 0;
+  const shadowPct = total > 0 ? (zones.Shadow / total * 100) : 0;
+  const chasePct = total > 0 ? (zones.Chase / total * 100) : 0;
+  const dsAvg = stats.datasetAverages?.zoneRate || 0;
+
+  return { teamName, zones, total, zoneRate, heartPct, shadowPct, chasePct, byCount, dsAvg };
+}
+
+function computeSituationalTendency(teamName) {
+  const offPitches = getTeamOffensePitches(teamName);
+  if (!offPitches.length) return null;
+  const seenPA = new Set();
+  const inningGroups = { 'Early (1-3)': { pa: 0, hits: 0, abs: 0 }, 'Mid (4-6)': { pa: 0, hits: 0, abs: 0 }, 'Late (7+)': { pa: 0, hits: 0, abs: 0 } };
+  let twoOutPA = 0, twoOutHits = 0, twoOutAB = 0;
+  const scoringByInning = {};
+
+  offPitches.forEach(row => {
+    const abResult = (row.AtBatResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const inning = parseInt(row.Inning) || 0;
+    const outs = parseInt(row.Outs) || 0;
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${batter}-${row.PAofInning}`;
+    if (!abResult || seenPA.has(paKey)) return;
+    seenPA.add(paKey);
+
+    const isHit = ['1B', '2B', '3B', 'HR'].includes(abResult);
+    const isAB = !['BB', 'HBP', 'IBB', 'Sacrifice', 'Catchers Interference'].includes(abResult);
+    const ig = inning <= 3 ? 'Early (1-3)' : inning <= 6 ? 'Mid (4-6)' : 'Late (7+)';
+    if (inningGroups[ig]) {
+      inningGroups[ig].pa++;
+      if (isAB) inningGroups[ig].abs++;
+      if (isHit) inningGroups[ig].hits++;
+    }
+    if (outs === 2) {
+      twoOutPA++;
+      if (isAB) twoOutAB++;
+      if (isHit) twoOutHits++;
+    }
+    // Scoring by inning = hits + walks (simplification)
+    if (isHit || ['BB', 'HBP'].includes(abResult)) {
+      const iKey = `Inning ${inning}`;
+      scoringByInning[iKey] = (scoringByInning[iKey] || 0) + 1;
+    }
+  });
+
+  const earlyAVG = inningGroups['Early (1-3)'].abs > 0 ? (inningGroups['Early (1-3)'].hits / inningGroups['Early (1-3)'].abs) : 0;
+  const midAVG = inningGroups['Mid (4-6)'].abs > 0 ? (inningGroups['Mid (4-6)'].hits / inningGroups['Mid (4-6)'].abs) : 0;
+  const lateAVG = inningGroups['Late (7+)'].abs > 0 ? (inningGroups['Late (7+)'].hits / inningGroups['Late (7+)'].abs) : 0;
+  const twoOutAVG = twoOutAB > 0 ? (twoOutHits / twoOutAB) : 0;
+
+  return { teamName, inningGroups, earlyAVG, midAVG, lateAVG, twoOutAVG, twoOutPA, twoOutHits, twoOutAB, scoringByInning };
+}
+
+function computePlatoonTendency(teamName) {
+  const offPitches = getTeamOffensePitches(teamName);
+  const defPitches = getTeamPitchingPitches(teamName);
+  const seenOff = new Set(), seenDef = new Set();
+  const offVsR = { abs: 0, hits: 0, ks: 0 }, offVsL = { abs: 0, hits: 0, ks: 0 };
+  const defVsR = { abs: 0, hits: 0, ks: 0 }, defVsL = { abs: 0, hits: 0, ks: 0 };
+  const offBatterSplits = {};
+
+  offPitches.forEach(row => {
+    const abResult = (row.AtBatResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const pH = (row.PitcherHand || '').trim().toUpperCase();
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${batter}-${row.PAofInning}`;
+    if (!abResult || seenOff.has(paKey)) return;
+    seenOff.add(paKey);
+    const isHit = ['1B', '2B', '3B', 'HR'].includes(abResult);
+    const isAB = !['BB', 'HBP', 'IBB', 'Sacrifice', 'Catchers Interference'].includes(abResult);
+    const sp = pH === 'R' ? offVsR : offVsL;
+    if (isAB) sp.abs++;
+    if (isHit) sp.hits++;
+    if (abResult === 'Strike Out') sp.ks++;
+
+    if (!offBatterSplits[batter]) offBatterSplits[batter] = { vsR: { abs: 0, hits: 0 }, vsL: { abs: 0, hits: 0 } };
+    const bs = pH === 'R' ? offBatterSplits[batter].vsR : offBatterSplits[batter].vsL;
+    if (isAB) bs.abs++;
+    if (isHit) bs.hits++;
+  });
+
+  defPitches.forEach(row => {
+    const abResult = (row.AtBatResult || '').trim();
+    const batter = (row.Batter || '').trim();
+    const bH = (row['Batter Hand'] || '').trim().toUpperCase();
+    const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${batter}-${row.PAofInning}`;
+    if (!abResult || seenDef.has(paKey)) return;
+    seenDef.add(paKey);
+    const isHit = ['1B', '2B', '3B', 'HR'].includes(abResult);
+    const isAB = !['BB', 'HBP', 'IBB', 'Sacrifice', 'Catchers Interference'].includes(abResult);
+    const sp = bH === 'R' ? defVsR : defVsL;
+    if (isAB) sp.abs++;
+    if (isHit) sp.hits++;
+    if (abResult === 'Strike Out') sp.ks++;
+  });
+
+  const fmtSplit = s => ({
+    avg: s.abs > 0 ? (s.hits / s.abs).toFixed(3) : 'N/A',
+    kRate: s.abs > 0 ? (s.ks / s.abs * 100).toFixed(1) + '%' : 'N/A',
+    abs: s.abs, hits: s.hits
+  });
+
+  // Biggest split for batters
+  const batterSplitList = Object.entries(offBatterSplits)
+    .map(([name, d]) => {
+      const rAvg = d.vsR.abs > 0 ? d.vsR.hits / d.vsR.abs : 0;
+      const lAvg = d.vsL.abs > 0 ? d.vsL.hits / d.vsL.abs : 0;
+      return { name, vsR: d.vsR, vsL: d.vsL, rAvg, lAvg, split: Math.abs(rAvg - lAvg) };
+    })
+    .filter(b => b.vsR.abs >= 3 || b.vsL.abs >= 3)
+    .sort((a, b) => b.split - a.split);
+
+  return {
+    teamName,
+    offenseVsRHP: fmtSplit(offVsR), offenseVsLHP: fmtSplit(offVsL),
+    pitchingVsRHH: fmtSplit(defVsR), pitchingVsLHH: fmtSplit(defVsL),
+    batterSplits: batterSplitList,
+    hasOffense: offPitches.length > 0, hasPitching: defPitches.length > 0
+  };
+}
+
+function computeTendencyData(category, teamName) {
+  switch (category) {
+    case 'bunt_sacrifice': return computeBuntTendency(teamName);
+    case 'first_pitch_off': return computeFirstPitchApproach(teamName);
+    case 'chase_discipline': return computeChaseAndDiscipline(teamName);
+    case 'two_strike_off': return computeTwoStrikeApproach(teamName);
+    case 'pitch_mix_seq': return computePitchMixTendency(teamName);
+    case 'zone_usage': return computeZoneUsageTendency(teamName);
+    case 'situational': return computeSituationalTendency(teamName);
+    case 'platoon': return computePlatoonTendency(teamName);
+    default: return null;
+  }
+}
+
 // ===== QUESTION ROUTING =====
 function findBestMatch(query, candidates) {
   let best=null, bestLen=0;
@@ -449,6 +925,17 @@ function updateModeUI() {
 // ===== GUIDED MENU FLOW =====
 let selectedReportType = null;
 let matchupState = { pitcher: null, hitter: null, step: 0 };
+let tendencyState = { team: null, category: null, step: 0 };
+const TENDENCY_CATEGORIES = [
+  { key: 'bunt_sacrifice',   title: 'Bunt & Sacrifice',       desc: 'When, who, and how they bunt' },
+  { key: 'first_pitch_off',  title: 'First-Pitch Approach',   desc: 'Swing rate on 0-0, by batter, results' },
+  { key: 'chase_discipline', title: 'Chase & Discipline',     desc: 'Chase rate by count and batter' },
+  { key: 'two_strike_off',   title: 'Two-Strike Approach',    desc: 'K rate, foul rate, whiff rate with 2 strikes' },
+  { key: 'pitch_mix_seq',    title: 'Pitch Mix & Sequencing', desc: 'Mix by count, first pitch, put-away' },
+  { key: 'zone_usage',       title: 'Zone Usage',             desc: 'AttackZone distribution by count' },
+  { key: 'situational',      title: 'Situational / Game-State', desc: 'Early vs late, 2-out, scoring by inning' },
+  { key: 'platoon',          title: 'Platoon Tendencies',     desc: 'vs LHP/RHP batting, vs LHH/RHH pitching' },
+];
 
 function initMenu() {
   document.querySelectorAll('.menu-card').forEach(card => {
@@ -469,6 +956,11 @@ function initMenu() {
       if (selectedReportType === 'matchup') {
         matchupState = { pitcher: null, hitter: null, step: 1 };
         showMatchupStep(1);
+        return;
+      }
+      if (selectedReportType === 'tendencies') {
+        tendencyState = { team: null, category: null, step: 1 };
+        showStep2('tendencies');
         return;
       }
       showStep2(selectedReportType);
@@ -493,7 +985,16 @@ function initMenu() {
       document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
       selectedReportType = null;
       matchupState = { pitcher: null, hitter: null, step: 0 };
+      tendencyState = { team: null, category: null, step: 0 };
     }
+  });
+
+  // Tendency category back button
+  document.getElementById('tendency-cats-back').addEventListener('click', () => {
+    document.getElementById('menu-tendency-cats').classList.add('hidden');
+    tendencyState.category = null;
+    tendencyState.step = 1;
+    showStep2('tendencies');
   });
 
   // Step 3 back button
@@ -556,6 +1057,13 @@ function showStep2(type) {
   } else if (type === 'team_pitchers') {
     titleEl.textContent = 'Which team\'s pitching staff?';
     inputEl.placeholder = 'Search teams...';
+    stats.teamList.forEach(t => items.push({ name: t, meta: '', source: 'team' }));
+    items.push({ name: 'Moeller', meta: 'Our team', source: 'moeller_team' });
+  } else if (type === 'tendencies') {
+    titleEl.textContent = "Which team's tendencies?";
+    inputEl.placeholder = 'Search teams...';
+    document.getElementById('welcome-title').textContent = 'Coaching Tendencies';
+    document.getElementById('welcome-subtitle').textContent = 'Step 1: Choose a team';
     stats.teamList.forEach(t => items.push({ name: t, meta: '', source: 'team' }));
     items.push({ name: 'Moeller', meta: 'Our team', source: 'moeller_team' });
   }
@@ -747,6 +1255,14 @@ function renderPromptTeamList(items, template, dugoutAction) {
 }
 
 function executeMenuReport(type, item) {
+  // Tendencies branch — route to category picker instead of generating report
+  if (type === 'tendencies') {
+    tendencyState.team = item.name;
+    tendencyState.step = 2;
+    showTendencyCategoryPicker();
+    return;
+  }
+
   welcomeEl.classList.add('hidden');
 
   // In dugout mode, try to build Quick Look cards directly (zero tokens)
@@ -2122,6 +2638,809 @@ function tryQuickLook(question) {
   return null;
 }
 
+// ===== TENDENCY CARD BUILDERS =====
+function compareBadge(val, dsAvg, higherLabel, lowerLabel) {
+  if (!dsAvg || dsAvg === 0) return '';
+  const diff = val - dsAvg;
+  if (Math.abs(diff) < 2) return `<span class="ql-compare-badge avg">~avg</span>`;
+  if (diff > 0) return `<span class="ql-compare-badge above">${higherLabel || 'above avg'}</span>`;
+  return `<span class="ql-compare-badge below">${lowerLabel || 'below avg'}</span>`;
+}
+
+function buildBuntTendencyCard(data) {
+  if (!data) return buildNoDataCard('Bunt & Sacrifice');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Bunt & Sacrifice</span>
+    <span class="quick-look-meta">${data.totalPA} PA | ${data.totalPitches} pitches</span>`;
+  card.appendChild(header);
+
+  // Relay bullets
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  if (data.sacCount === 0) {
+    list.innerHTML += `<li>No sacrifices recorded in ${data.totalPA} plate appearances</li>`;
+  } else {
+    list.innerHTML += `<li>Sacrifice rate: <strong>${data.sacRate.toFixed(1)}%</strong> (${data.sacCount}/${data.totalPA} PA) ${compareBadge(data.sacRate, data.dsAvg, 'above avg', 'below avg')}</li>`;
+    if (data.byBatter.length > 0) {
+      list.innerHTML += `<li>Top bunter: <strong>${data.byBatter[0][0]}</strong> with <strong>${data.byBatter[0][1]}</strong> sacrifice${data.byBatter[0][1] > 1 ? 's' : ''}</li>`;
+    }
+    const prefSit = Object.entries(data.byOuts).sort((a, b) => b[1] - a[1]);
+    if (prefSit[0] && prefSit[0][1] > 0) {
+      list.innerHTML += `<li>Preferred situation: <strong>${prefSit[0][0]} out${prefSit[0][0] !== '1' ? 's' : ''}</strong> (${prefSit[0][1]} of ${data.sacCount})</li>`;
+    }
+    const prefInning = Object.entries(data.byInning).sort((a, b) => b[1] - a[1]);
+    if (prefInning[0]) {
+      list.innerHTML += `<li>Most bunts in <strong>${prefInning[0][0]}</strong> innings (${prefInning[0][1]})</li>`;
+    }
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  // Stat row
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.sacRate.toFixed(1) + '%', lbl: 'Sac Rate' },
+    { val: String(data.sacCount), lbl: 'Total' },
+    { val: data.byBatter.length > 0 ? data.byBatter[0][0].split(' ').pop() : '-', lbl: 'Top Player' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Batter table
+  if (data.byBatter.length > 0) {
+    const table = document.createElement('div');
+    table.className = 'tendency-batter-table ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Batter</span><span>Sac</span></div>';
+    data.byBatter.forEach(([name, cnt]) => {
+      html += `<div class="ql-pitch-row"><span class="ql-pitch-name">${name}</span><span class="ql-pitch-val">${cnt}</span></div>`;
+    });
+    table.innerHTML = html;
+    card.appendChild(table);
+  }
+
+  // Takeaway
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  if (data.sacCount === 0) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This team does not sacrifice bunt. Expect them to swing away in bunt situations — play accordingly on defense.</div>`;
+  } else {
+    const topBunter = data.byBatter.length > 0 ? data.byBatter[0][0] : 'their batters';
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Watch for <strong>${topBunter}</strong> in bunt situations. They bunt most with ${Object.entries(data.byOuts).sort((a, b) => b[1] - a[1])[0]?.[0] || '0'} out(s). Crash corners when you see it coming.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  if (data.totalPitches < 50) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small sample: only ${data.totalPitches} pitches for this team.`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildFirstPitchApproachCard(data) {
+  if (!data) return buildNoDataCard('First-Pitch Approach');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — First-Pitch Approach</span>
+    <span class="quick-look-meta">${data.fpTotal} first pitches</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  list.innerHTML += `<li>First-pitch swing rate: <strong>${data.swingRate.toFixed(1)}%</strong> ${compareBadge(data.swingRate, data.dsAvg, 'aggressive', 'patient')}</li>`;
+  if (data.byBatter.length > 0) {
+    list.innerHTML += `<li>Most aggressive: <strong>${data.byBatter[0].name}</strong> — swings <strong>${data.byBatter[0].rate.toFixed(0)}%</strong> of first pitches</li>`;
+  }
+  if (data.byBatter.length > 1) {
+    const patient = data.byBatter[data.byBatter.length - 1];
+    list.innerHTML += `<li>Most patient: <strong>${patient.name}</strong> — swings <strong>${patient.rate.toFixed(0)}%</strong></li>`;
+  }
+  list.innerHTML += `<li>When putting first pitch in play: <strong>${data.hitRate.toFixed(0)}%</strong> hit rate on <strong>${data.fpAB}</strong> AB</li>`;
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.swingRate.toFixed(1) + '%', lbl: 'Swing%' },
+    { val: data.hitRate.toFixed(0) + '%', lbl: 'Hit%' },
+    { val: data.inPlayRate.toFixed(1) + '%', lbl: 'InPlay%' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Batter table
+  if (data.byBatter.length > 0) {
+    const table = document.createElement('div');
+    table.className = 'tendency-batter-table ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Batter</span><span>1st Pitches</span><span>Swing%</span></div>';
+    data.byBatter.forEach(b => {
+      html += `<div class="ql-pitch-row"><span class="ql-pitch-name">${b.name}</span><span class="ql-pitch-val">${b.total}</span><span class="ql-pitch-val">${b.rate.toFixed(0)}%</span></div>`;
+    });
+    table.innerHTML = html;
+    card.appendChild(table);
+  }
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  if (data.swingRate > 35) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Aggressive lineup — they swing early. Get ahead with a first-pitch strike and don't give them anything easy to hit. Throw off-speed first pitch to disrupt timing.</div>`;
+  } else if (data.swingRate < 20) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Patient lineup — they take first pitches. Attack the zone early with fastballs for easy strike one. Free strikes available.</div>`;
+  } else {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Average first-pitch approach. Mix your first-pitch selection to keep them guessing.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  if (data.fpTotal < 30) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small sample: only ${data.fpTotal} first pitches.`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildChaseAndDisciplineCard(data) {
+  if (!data) return buildNoDataCard('Chase & Discipline');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Chase & Discipline</span>
+    <span class="quick-look-meta">${data.chasePitches} chase-zone pitches</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  list.innerHTML += `<li>Team chase rate: <strong>${data.chaseRate.toFixed(1)}%</strong> ${compareBadge(data.chaseRate, data.dsAvg, 'chases more', 'disciplined')}</li>`;
+  if (data.byBatter.length > 0) {
+    list.innerHTML += `<li>Worst chaser: <strong>${data.byBatter[0].name}</strong> — chases <strong>${data.byBatter[0].rate.toFixed(0)}%</strong></li>`;
+  }
+  if (data.byBatter.length > 1) {
+    const best = data.byBatter[data.byBatter.length - 1];
+    list.innerHTML += `<li>Best discipline: <strong>${best.name}</strong> — only <strong>${best.rate.toFixed(0)}%</strong> chase rate</li>`;
+  }
+  if (data.byCount.length > 0) {
+    const worstCount = data.byCount[0];
+    list.innerHTML += `<li>Chase most at <strong>${worstCount.count}</strong> count (${worstCount.rate.toFixed(0)}% on ${worstCount.total} pitches)</li>`;
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.chaseRate.toFixed(1) + '%', lbl: 'Chase%' },
+    { val: data.byBatter.length > 0 ? data.byBatter[0].name.split(' ').pop() : '-', lbl: 'Worst' },
+    { val: data.byBatter.length > 1 ? data.byBatter[data.byBatter.length - 1].name.split(' ').pop() : '-', lbl: 'Best' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Batter table
+  if (data.byBatter.length > 0) {
+    const table = document.createElement('div');
+    table.className = 'tendency-batter-table ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Batter</span><span>Chase Pitches</span><span>Chase%</span></div>';
+    data.byBatter.forEach(b => {
+      html += `<div class="ql-pitch-row"><span class="ql-pitch-name">${b.name}</span><span class="ql-pitch-val">${b.total}</span><span class="ql-pitch-val">${b.rate.toFixed(0)}%</span></div>`;
+    });
+    table.innerHTML = html;
+    card.appendChild(table);
+  }
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  if (data.chaseRate > 30) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This lineup chases — expand the zone early and often. Use off-speed out of the zone to generate weak contact and whiffs. ${data.byBatter.length > 0 ? `Target <strong>${data.byBatter[0].name}</strong> especially.` : ''}</div>`;
+  } else if (data.chaseRate < 20) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Disciplined lineup — stay in the zone and attack. Wasting pitches off the plate will just put you behind in counts.</div>`;
+  } else {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Average chase discipline. Mix in chase pitches selectively, especially with 2 strikes.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  if (data.chasePitches < 20) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small sample: only ${data.chasePitches} chase-zone pitches.`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildTwoStrikeApproachCard(data) {
+  if (!data) return buildNoDataCard('Two-Strike Approach');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Two-Strike Approach</span>
+    <span class="quick-look-meta">${data.tsTotal} pitches with 2 strikes | ${data.tsPA} PA</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  list.innerHTML += `<li>Strikeout rate with 2 strikes: <strong>${data.kRate.toFixed(1)}%</strong> ${compareBadge(data.kRate, data.dsAvg, 'high K', 'low K')}</li>`;
+  list.innerHTML += `<li>Foul ball rate: <strong>${data.foulRate.toFixed(1)}%</strong> — ${data.foulRate > 25 ? 'they fight off pitches' : 'not many fouls'}</li>`;
+  list.innerHTML += `<li>Whiff rate on swings: <strong>${data.whiffRate.toFixed(1)}%</strong></li>`;
+  list.innerHTML += `<li>Chase rate with 2 strikes: <strong>${data.tsChaseRate.toFixed(1)}%</strong></li>`;
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.kRate.toFixed(1) + '%', lbl: 'K%' },
+    { val: data.foulRate.toFixed(1) + '%', lbl: 'Foul%' },
+    { val: data.whiffRate.toFixed(1) + '%', lbl: 'Whiff%' },
+    { val: data.tsChaseRate.toFixed(1) + '%', lbl: 'Chase%' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Batter K-rate table
+  if (data.byBatter.length > 0) {
+    const table = document.createElement('div');
+    table.className = 'tendency-batter-table ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Batter</span><span>2K PA</span><span>Ks</span><span>K%</span></div>';
+    data.byBatter.forEach(b => {
+      html += `<div class="ql-pitch-row"><span class="ql-pitch-name">${b.name}</span><span class="ql-pitch-val">${b.pa}</span><span class="ql-pitch-val">${b.ks}</span><span class="ql-pitch-val">${b.kRate.toFixed(0)}%</span></div>`;
+    });
+    table.innerHTML = html;
+    card.appendChild(table);
+  }
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  if (data.kRate > 40) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This team is vulnerable with 2 strikes — high K rate and whiff rate. Expand the zone with breaking balls and be aggressive with the put-away pitch.</div>`;
+  } else if (data.kRate < 25) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Tough to put away — they battle with 2 strikes. Need quality stuff in the zone. Don't hang breaking balls.</div>`;
+  } else {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Average two-strike approach. Mix locations and keep the ball out of the heart of the zone with 2 strikes.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  if (data.tsPA < 10) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small sample: only ${data.tsPA} two-strike plate appearances.`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildPitchMixTendencyCard(data) {
+  if (!data) return buildNoDataCard('Pitch Mix & Sequencing');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Pitch Mix & Sequencing</span>
+    <span class="quick-look-meta">${data.total} pitches thrown</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  list.innerHTML += `<li>Pitch group split: <strong>FB ${data.fbPct.toFixed(0)}%</strong> / <strong>BRK ${data.brkPct.toFixed(0)}%</strong> / <strong>OS ${data.osPct.toFixed(0)}%</strong></li>`;
+
+  // First pitch preference
+  const fpMix = data.byCount.first_pitch;
+  const fpTotal = Object.values(fpMix).reduce((a, b) => a + b, 0);
+  if (fpTotal > 0) {
+    const fpTop = Object.entries(fpMix).sort((a, b) => b[1] - a[1])[0];
+    list.innerHTML += `<li>First pitch: <strong>${fpTop[0]}</strong> (${(fpTop[1] / fpTotal * 100).toFixed(0)}%)</li>`;
+  }
+
+  if (data.putAwayPitch) {
+    const tsMix = data.byCount.two_strikes;
+    const tsTotal = Object.values(tsMix).reduce((a, b) => a + b, 0);
+    list.innerHTML += `<li>Put-away pitch: <strong>${data.putAwayPitch}</strong> (${tsTotal > 0 ? (tsMix[data.putAwayPitch] / tsTotal * 100).toFixed(0) : '?'}% with 2 strikes)</li>`;
+  }
+
+  // RHH vs LHH mix difference
+  const rTotal = Object.values(data.byBatterHand.R).reduce((a, b) => a + b, 0);
+  const lTotal = Object.values(data.byBatterHand.L).reduce((a, b) => a + b, 0);
+  if (rTotal > 10 && lTotal > 10) {
+    const rTop = Object.entries(data.byBatterHand.R).sort((a, b) => b[1] - a[1])[0];
+    const lTop = Object.entries(data.byBatterHand.L).sort((a, b) => b[1] - a[1])[0];
+    list.innerHTML += `<li>vs RHH: mostly <strong>${rTop[0]}</strong> (${(rTop[1] / rTotal * 100).toFixed(0)}%) | vs LHH: mostly <strong>${lTop[0]}</strong> (${(lTop[1] / lTotal * 100).toFixed(0)}%)</li>`;
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.fbPct.toFixed(0) + '%', lbl: 'FB%' },
+    { val: data.brkPct.toFixed(0) + '%', lbl: 'BRK%' },
+    { val: data.osPct.toFixed(0) + '%', lbl: 'OS%' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Overall mix table
+  if (data.overallMix.length > 0) {
+    const table = document.createElement('div');
+    table.className = 'ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Pitch</span><span>Count</span><span>Usage</span></div>';
+    data.overallMix.forEach(m => {
+      html += `<div class="ql-pitch-row"><span class="ql-pitch-name"><span class="ql-pitch-dot" style="background:${PITCH_COLORS[m.pitch] || '#95A5A6'}"></span>${m.pitch}</span><span class="ql-pitch-val">${m.count}</span><span class="ql-pitch-val">${m.pct.toFixed(1)}%</span></div>`;
+    });
+    table.innerHTML = html;
+    card.appendChild(table);
+  }
+
+  // By-count table
+  const countKeys = ['first_pitch', 'ahead', 'even', 'behind', 'two_strikes'];
+  const countLabels = { first_pitch: '1st Pitch', ahead: 'Ahead', even: 'Even', behind: 'Behind', two_strikes: '2 Strikes' };
+  const allPitches = data.overallMix.map(m => m.pitch);
+  if (allPitches.length > 0) {
+    const ctTable = document.createElement('div');
+    ctTable.className = 'ql-pitch-table';
+    let ctHTML = '<div class="ql-count-header"><span>Count</span>';
+    allPitches.forEach(pt => { ctHTML += `<span><span class="ql-pitch-dot" style="background:${PITCH_COLORS[pt] || '#95A5A6'}"></span>${pt}</span>`; });
+    ctHTML += '</div>';
+    countKeys.forEach(k => {
+      const cm = data.byCount[k];
+      const ct = Object.values(cm).reduce((a, b) => a + b, 0);
+      if (ct === 0) return;
+      ctHTML += `<div class="ql-count-row"><span class="ql-count-label">${countLabels[k]}</span>`;
+      allPitches.forEach(pt => {
+        const val = cm[pt] ? (cm[pt] / ct * 100).toFixed(0) + '%' : '-';
+        ctHTML += `<span class="ql-pitch-val">${val}</span>`;
+      });
+      ctHTML += '</div>';
+    });
+    ctTable.innerHTML = ctHTML;
+    card.appendChild(ctTable);
+  }
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  if (data.fbPct > 65) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Fastball-heavy staff — sit fastball early, adjust to off-speed. Time the heater and make them beat you with secondary stuff.</div>`;
+  } else if (data.brkPct > 35) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Breaking-ball heavy staff — be patient and recognize spin early. Don't chase breaking balls out of the zone.</div>`;
+  } else {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Balanced pitch mix. Read the pitcher's hand and stay disciplined. Look for patterns by count.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  if (data.total < 50) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small sample: only ${data.total} pitches.`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildZoneUsageTendencyCard(data) {
+  if (!data) return buildNoDataCard('Zone Usage');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Zone Usage</span>
+    <span class="quick-look-meta">${data.total} pitches with zone data</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  list.innerHTML += `<li>Zone rate (Heart+Shadow): <strong>${data.zoneRate.toFixed(1)}%</strong> ${compareBadge(data.zoneRate, data.dsAvg, 'in zone', 'off plate')}</li>`;
+  list.innerHTML += `<li>Heart%: <strong>${data.heartPct.toFixed(1)}%</strong> | Shadow%: <strong>${data.shadowPct.toFixed(1)}%</strong> | Chase%: <strong>${data.chasePct.toFixed(1)}%</strong></li>`;
+
+  // Check first pitch zone
+  const fpZones = data.byCount.first_pitch;
+  const fpTotal = fpZones.Heart + fpZones.Shadow + fpZones.Chase + fpZones.Waste;
+  if (fpTotal > 0) {
+    const fpZone = ((fpZones.Heart + fpZones.Shadow) / fpTotal * 100).toFixed(0);
+    list.innerHTML += `<li>First-pitch zone rate: <strong>${fpZone}%</strong></li>`;
+  }
+
+  // Count shifts
+  const aheadZones = data.byCount.ahead;
+  const behindZones = data.byCount.behind;
+  const aTotal = aheadZones.Heart + aheadZones.Shadow + aheadZones.Chase + aheadZones.Waste;
+  const bTotal = behindZones.Heart + behindZones.Shadow + behindZones.Chase + behindZones.Waste;
+  if (aTotal > 5 && bTotal > 5) {
+    const aZone = ((aheadZones.Heart + aheadZones.Shadow) / aTotal * 100).toFixed(0);
+    const bZone = ((behindZones.Heart + behindZones.Shadow) / bTotal * 100).toFixed(0);
+    list.innerHTML += `<li>Ahead: <strong>${aZone}%</strong> zone | Behind: <strong>${bZone}%</strong> zone — ${parseInt(bZone) > parseInt(aZone) + 5 ? 'comes back to zone when behind' : 'expands when ahead'}</li>`;
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.zoneRate.toFixed(1) + '%', lbl: 'Zone%' },
+    { val: data.heartPct.toFixed(1) + '%', lbl: 'Heart%' },
+    { val: data.shadowPct.toFixed(1) + '%', lbl: 'Shadow%' },
+    { val: data.chasePct.toFixed(1) + '%', lbl: 'Chase%' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Zone by count table
+  const countKeys = ['first_pitch', 'ahead', 'even', 'behind', 'two_strikes'];
+  const countLabels = { first_pitch: '1st Pitch', ahead: 'Ahead', even: 'Even', behind: 'Behind', two_strikes: '2 Strikes' };
+  const zoneKeys = ['Heart', 'Shadow', 'Chase', 'Waste'];
+  const zcTable = document.createElement('div');
+  zcTable.className = 'ql-pitch-table';
+  let zcHTML = '<div class="ql-count-header"><span>Count</span>';
+  zoneKeys.forEach(z => { zcHTML += `<span style="color:${ZONE_COLORS[z] || '#95A5A6'}">${z}</span>`; });
+  zcHTML += '</div>';
+  countKeys.forEach(k => {
+    const zd = data.byCount[k];
+    const zt = zd.Heart + zd.Shadow + zd.Chase + zd.Waste;
+    if (zt === 0) return;
+    zcHTML += `<div class="ql-count-row"><span class="ql-count-label">${countLabels[k]}</span>`;
+    zoneKeys.forEach(z => {
+      zcHTML += `<span class="ql-pitch-val">${(zd[z] / zt * 100).toFixed(0)}%</span>`;
+    });
+    zcHTML += '</div>';
+  });
+  zcTable.innerHTML = zcHTML;
+  card.appendChild(zcTable);
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  if (data.zoneRate > 55) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This pitching staff lives in the zone — be aggressive early in counts. Hitters should be ready to swing at hittable pitches and not fall behind.</div>`;
+  } else if (data.zoneRate < 40) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This staff works off the plate — be patient! Take pitches and work counts. The free base path to walks is open.</div>`;
+  } else {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Average zone usage. Look for count-based patterns — they may expand differently when ahead vs behind.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  if (data.total < 50) {
+    const warn = document.createElement('div');
+    warn.className = 'matchup-warning';
+    warn.textContent = `Small sample: only ${data.total} pitches with zone data.`;
+    card.appendChild(warn);
+  }
+  return card;
+}
+
+function buildSituationalTendencyCard(data) {
+  if (!data) return buildNoDataCard('Situational / Game-State');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Situational</span>
+    <span class="quick-look-meta">${data.twoOutPA} two-out PA</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  list.innerHTML += `<li>Early (1-3): <strong>${data.earlyAVG.toFixed(3)}</strong> AVG | Mid (4-6): <strong>${data.midAVG.toFixed(3)}</strong> | Late (7+): <strong>${data.lateAVG.toFixed(3)}</strong></li>`;
+
+  const best = [{ label: 'Early', avg: data.earlyAVG }, { label: 'Mid', avg: data.midAVG }, { label: 'Late', avg: data.lateAVG }]
+    .filter(g => g.avg > 0).sort((a, b) => b.avg - a.avg);
+  if (best.length > 0) {
+    list.innerHTML += `<li>Best inning group: <strong>${best[0].label}</strong> innings (${best[0].avg.toFixed(3)})</li>`;
+  }
+
+  list.innerHTML += `<li>Two-out performance: <strong>${data.twoOutAVG.toFixed(3)}</strong> AVG (${data.twoOutHits}/${data.twoOutAB})</li>`;
+
+  if (data.twoOutAVG > 0.300) {
+    list.innerHTML += `<li>Dangerous with 2 outs — don't let up on the mound</li>`;
+  } else if (data.twoOutAVG < 0.180) {
+    list.innerHTML += `<li>Struggles with 2 outs — get two outs and bear down to finish innings</li>`;
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.earlyAVG.toFixed(3), lbl: 'Early' },
+    { val: data.midAVG.toFixed(3), lbl: 'Mid' },
+    { val: data.lateAVG.toFixed(3), lbl: 'Late' },
+    { val: data.twoOutAVG.toFixed(3), lbl: '2-Out AVG' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Inning group table
+  const igTable = document.createElement('div');
+  igTable.className = 'ql-pitch-table';
+  let igHTML = '<div class="ql-pitch-header"><span>Group</span><span>PA</span><span>H</span><span>AB</span><span>AVG</span></div>';
+  Object.entries(data.inningGroups).forEach(([group, d]) => {
+    igHTML += `<div class="ql-pitch-row"><span class="ql-pitch-name">${group}</span><span class="ql-pitch-val">${d.pa}</span><span class="ql-pitch-val">${d.hits}</span><span class="ql-pitch-val">${d.abs}</span><span class="ql-pitch-val">${d.abs > 0 ? (d.hits / d.abs).toFixed(3) : '-'}</span></div>`;
+  });
+  igHTML += `<div class="ql-pitch-row" style="border-top:2px solid var(--border-strong)"><span class="ql-pitch-name" style="font-weight:800">2-Out</span><span class="ql-pitch-val">${data.twoOutPA}</span><span class="ql-pitch-val">${data.twoOutHits}</span><span class="ql-pitch-val">${data.twoOutAB}</span><span class="ql-pitch-val">${data.twoOutAVG.toFixed(3)}</span></div>`;
+  igTable.innerHTML = igHTML;
+  card.appendChild(igTable);
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  const earlyLate = data.earlyAVG > data.lateAVG + 0.04 ? 'better early — consider front-loading your best arms' :
+    data.lateAVG > data.earlyAVG + 0.04 ? 'better late — save your closer for tight situations' : 'consistent across innings';
+  takeaway.innerHTML += `<div class="ql-takeaway-text">This team hits ${earlyLate}. Two-out AVG is <strong>${data.twoOutAVG.toFixed(3)}</strong> — ${data.twoOutAVG > 0.250 ? "don't relax with 2 outs" : "finish the inning strong"}.</div>`;
+  card.appendChild(takeaway);
+
+  return card;
+}
+
+function buildPlatoonTendencyCard(data) {
+  if (!data) return buildNoDataCard('Platoon Tendencies');
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${data.teamName} — Platoon Tendencies</span>
+    <span class="quick-look-meta">Offense + Pitching splits</span>`;
+  card.appendChild(header);
+
+  const relay = document.createElement('div');
+  relay.className = 'ql-relay-section';
+  relay.innerHTML = '<div class="ql-relay-title">KEY FINDINGS</div>';
+  const list = document.createElement('ul');
+  list.className = 'ql-relay-bullets';
+
+  if (data.hasOffense) {
+    list.innerHTML += `<li>Offense vs RHP: <strong>${data.offenseVsRHP.avg}</strong> AVG (${data.offenseVsRHP.abs} AB) | vs LHP: <strong>${data.offenseVsLHP.avg}</strong> AVG (${data.offenseVsLHP.abs} AB)</li>`;
+    const rAvg = parseFloat(data.offenseVsRHP.avg) || 0;
+    const lAvg = parseFloat(data.offenseVsLHP.avg) || 0;
+    if (rAvg > lAvg + 0.04) list.innerHTML += `<li>Better against <strong>RHP</strong> — consider starting your lefty</li>`;
+    else if (lAvg > rAvg + 0.04) list.innerHTML += `<li>Better against <strong>LHP</strong> — go with right-handed pitching</li>`;
+  }
+
+  if (data.hasPitching) {
+    list.innerHTML += `<li>Pitching vs RHH: <strong>${data.pitchingVsRHH.avg}</strong> AVG allowed | vs LHH: <strong>${data.pitchingVsLHH.avg}</strong> AVG allowed</li>`;
+  }
+
+  if (data.batterSplits.length > 0) {
+    const biggest = data.batterSplits[0];
+    const favor = biggest.rAvg > biggest.lAvg ? 'vs RHP' : 'vs LHP';
+    list.innerHTML += `<li>Biggest platoon split: <strong>${biggest.name}</strong> — ${favor} (.${(Math.max(biggest.rAvg, biggest.lAvg) * 1000).toFixed(0).padStart(3, '0')} vs .${(Math.min(biggest.rAvg, biggest.lAvg) * 1000).toFixed(0).padStart(3, '0')})</li>`;
+  }
+
+  relay.appendChild(list);
+  card.appendChild(relay);
+
+  const statRow = document.createElement('div');
+  statRow.className = 'quick-look-row';
+  [
+    { val: data.offenseVsRHP.avg, lbl: 'vs RHP AVG' },
+    { val: data.offenseVsLHP.avg, lbl: 'vs LHP AVG' },
+  ].forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'quick-look-stat';
+    el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
+    statRow.appendChild(el);
+  });
+  card.appendChild(statRow);
+
+  // Batter splits table
+  if (data.batterSplits.length > 0) {
+    const table = document.createElement('div');
+    table.className = 'tendency-batter-table ql-pitch-table';
+    let html = '<div class="ql-pitch-header"><span>Batter</span><span>vs RHP</span><span>vs LHP</span><span>Split</span></div>';
+    data.batterSplits.slice(0, 15).forEach(b => {
+      const rA = b.vsR.abs > 0 ? (b.vsR.hits / b.vsR.abs).toFixed(3) : '-';
+      const lA = b.vsL.abs > 0 ? (b.vsL.hits / b.vsL.abs).toFixed(3) : '-';
+      html += `<div class="ql-pitch-row"><span class="ql-pitch-name">${b.name}</span><span class="ql-pitch-val">${rA}</span><span class="ql-pitch-val">${lA}</span><span class="ql-pitch-val">${(b.split * 1000).toFixed(0)} pts</span></div>`;
+    });
+    table.innerHTML = html;
+    card.appendChild(table);
+  }
+
+  const takeaway = document.createElement('div');
+  takeaway.className = 'ql-takeaway-section';
+  takeaway.innerHTML = `<div class="ql-takeaway-title">COACHING TAKEAWAY</div>`;
+  const rOff = parseFloat(data.offenseVsRHP.avg) || 0;
+  const lOff = parseFloat(data.offenseVsLHP.avg) || 0;
+  if (rOff > lOff + 0.04) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This team hits righties better. Start a LHP if available. Their lineup has clear platoon advantages worth exploiting.</div>`;
+  } else if (lOff > rOff + 0.04) {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">This team hits lefties better. Go with RHP as your starter. Stack your lineup against their pitching handedness accordingly.</div>`;
+  } else {
+    takeaway.innerHTML += `<div class="ql-takeaway-text">Balanced platoon splits. Look at individual batter matchups for handedness edges rather than team-level splits.</div>`;
+  }
+  card.appendChild(takeaway);
+
+  return card;
+}
+
+function buildNoDataCard(title) {
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="quick-look-name">${title}</span>`;
+  card.appendChild(header);
+  const msg = document.createElement('div');
+  msg.className = 'matchup-warning';
+  msg.textContent = 'No data available for this team/category combination.';
+  card.appendChild(msg);
+  return card;
+}
+
+function buildTendencyCard(category, data) {
+  switch (category) {
+    case 'bunt_sacrifice': return buildBuntTendencyCard(data);
+    case 'first_pitch_off': return buildFirstPitchApproachCard(data);
+    case 'chase_discipline': return buildChaseAndDisciplineCard(data);
+    case 'two_strike_off': return buildTwoStrikeApproachCard(data);
+    case 'pitch_mix_seq': return buildPitchMixTendencyCard(data);
+    case 'zone_usage': return buildZoneUsageTendencyCard(data);
+    case 'situational': return buildSituationalTendencyCard(data);
+    case 'platoon': return buildPlatoonTendencyCard(data);
+    default: return buildNoDataCard(category);
+  }
+}
+
+function showTendencyCategoryPicker() {
+  document.getElementById('menu-step2').classList.add('hidden');
+  document.getElementById('menu-tendency-cats').classList.remove('hidden');
+  document.getElementById('welcome-title').textContent = `${tendencyState.team} Tendencies`;
+  document.getElementById('welcome-subtitle').textContent = 'Choose a category to analyze';
+
+  const grid = document.getElementById('tendency-cats-grid');
+  grid.innerHTML = '';
+  TENDENCY_CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'tendency-cat-card';
+    btn.innerHTML = `<div class="menu-card-title">${cat.title}</div><div class="menu-card-desc">${cat.desc}</div>`;
+    btn.addEventListener('click', () => {
+      tendencyState.category = cat.key;
+      tendencyState.step = 3;
+      executeTendencyReport();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function executeTendencyReport() {
+  const data = computeTendencyData(tendencyState.category, tendencyState.team);
+  const catInfo = TENDENCY_CATEGORIES.find(c => c.key === tendencyState.category);
+  const catTitle = catInfo ? catInfo.title : tendencyState.category;
+
+  if (appMode === 'dugout') {
+    // Render card directly (zero tokens)
+    welcomeEl.classList.add('hidden');
+    document.getElementById('menu-tendency-cats').classList.add('hidden');
+    appendMessage('user', `Coaching Tendencies — ${tendencyState.team} — ${catTitle}`);
+    const card = buildTendencyCard(tendencyState.category, data);
+    appendQuickLook(card);
+  } else {
+    // Full mode — send to API
+    welcomeEl.classList.add('hidden');
+    document.getElementById('menu-tendency-cats').classList.add('hidden');
+    const query = `Analyze ${tendencyState.team}'s ${catTitle} tendencies. Provide coaching insights and compare to dataset averages.`;
+    const ctx = {
+      type: 'coaching_tendency',
+      data: {
+        category: tendencyState.category,
+        categoryTitle: catTitle,
+        teamName: tendencyState.team,
+        tendencyData: data,
+        datasetAverages: stats.datasetAverages || {},
+      }
+    };
+    const dataPayload = JSON.stringify(ctx.data, null, 2);
+    const fullMessage = `Here is the relevant data (context type: coaching_tendency, category: ${catTitle}). Coach's question: "${query}"\n\n${dataPayload}`;
+
+    appendMessage('user', `Coaching Tendencies — ${tendencyState.team} — ${catTitle}`);
+    isLoading = true;
+    sendBtn.disabled = true;
+    const loadingEl = showLoading();
+
+    fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: fullMessage, session_id: sessionId, mode: appMode }),
+    })
+      .then(res => res.json().then(d => ({ ok: res.ok, data: d })))
+      .then(({ ok, data: d }) => {
+        removeLoading(loadingEl);
+        if (!ok) throw new Error(d.error || 'Server error');
+        appendMessage('assistant', d.reply);
+      })
+      .catch(err => {
+        removeLoading(loadingEl);
+        showError(err.message);
+      })
+      .finally(() => {
+        isLoading = false;
+        sendBtn.disabled = false;
+        userInput.focus();
+      });
+  }
+}
+
 // ===== SEND MESSAGE =====
 async function sendMessage() {
   const text=userInput.value.trim();
@@ -2413,10 +3732,12 @@ function resetToMenu() {
   document.getElementById('menu-step2').classList.add('hidden');
   document.getElementById('menu-step3').classList.add('hidden');
   document.getElementById('menu-prompts').classList.add('hidden');
+  document.getElementById('menu-tendency-cats').classList.add('hidden');
   document.getElementById('welcome-title').textContent = 'What do you need?';
   document.getElementById('welcome-subtitle').textContent = 'Select a report type to get started';
   selectedReportType = null;
   matchupState = { pitcher: null, hitter: null, step: 0 };
+  tendencyState = { team: null, category: null, step: 0 };
   scrollToBottom();
 }
 
