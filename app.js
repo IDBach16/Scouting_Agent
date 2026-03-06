@@ -13,6 +13,10 @@ let isLoading = false;
 let sessionId = 'session_' + Date.now();
 let allNames = []; // for autocomplete
 
+// Synergy API cache
+const synergyCache = { teams: {}, teamData: {} };
+const MOELLER_SYNERGY_ID = '65c146c774638098f4957640';
+
 const chatArea = document.getElementById('chat-area');
 const messagesEl = document.getElementById('messages');
 const welcomeEl = document.getElementById('welcome');
@@ -845,6 +849,74 @@ function getTeamBatterProfiles(teamName) {
 }
 function getAllMoellerPitcherProfiles() {
   const p={}; Object.keys(stats.moellerPitchers).forEach(n => { p[n]=computePitcherProfile(stats.moellerPitchers[n].pitches,n,stats.moellerPitchers[n].hand,'Moeller'); }); return p;
+}
+
+// ===== SYNERGY API HELPERS =====
+async function synergySearchTeam(teamName) {
+  const cacheKey = teamName.toLowerCase();
+  if (synergyCache.teams[cacheKey]) return synergyCache.teams[cacheKey];
+  try {
+    const res = await fetch(`/api/synergy/search-teams?q=${encodeURIComponent(teamName)}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const teams = data.teams || [];
+    synergyCache.teams[cacheKey] = teams;
+    return teams;
+  } catch { return []; }
+}
+
+async function synergyGetTeamData(teamId) {
+  if (synergyCache.teamData[teamId]) return synergyCache.teamData[teamId];
+  try {
+    const currentYear = new Date().getFullYear().toString();
+    const res = await fetch(`/api/synergy/team/${teamId}?season=${currentYear}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    synergyCache.teamData[teamId] = data;
+    return data;
+  } catch { return null; }
+}
+
+async function synergyGetH2H(teamId) {
+  try {
+    const res = await fetch(`/api/synergy/h2h/${MOELLER_SYNERGY_ID}/${teamId}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.games || [];
+  } catch { return []; }
+}
+
+function extractTeamKeyword(name) {
+  // Strip common suffixes so "Elder High School" becomes "Elder", "St. Xavier Bombers" stays "St. Xavier"
+  return name.replace(/\s+(High School|HS|Prep|Academy|School|College)$/i, '').trim();
+}
+
+async function enrichWithSynergy(teamName, context) {
+  // Try to find the team in Synergy — first full name, then stripped keyword
+  let teams = await synergySearchTeam(teamName);
+  if (!teams.length) {
+    const keyword = extractTeamKeyword(teamName);
+    if (keyword !== teamName) teams = await synergySearchTeam(keyword);
+  }
+  if (!teams.length) return context;
+
+  // Pick best match (prefer HS league)
+  const hsTeam = teams.find(t => t.league_abbr === 'HS') || teams[0];
+  const teamData = await synergyGetTeamData(hsTeam.id);
+  const h2h = await synergyGetH2H(hsTeam.id);
+
+  context.data.synergy = {
+    team: { name: hsTeam.name, league: hsTeam.league, id: hsTeam.id },
+    record: teamData ? teamData.record : null,
+    recent_games: teamData ? teamData.recent_games : [],
+    vs_moeller: h2h,
+  };
+  if (context.type === 'opponent_team' || context.type === 'game_plan') {
+    context.type += '+synergy';
+  } else if (!context.type.includes('synergy')) {
+    context.type += '+synergy';
+  }
+  return context;
 }
 
 function routeQuestion(question) {
@@ -3464,7 +3536,38 @@ async function sendMessage() {
   const loadingEl=showLoading();
 
   try {
-    const context=routeQuestion(text);
+    let context=routeQuestion(text);
+
+    // Enrich with Synergy live data when a team is detected
+    const team=findBestMatch(text.toLowerCase(),stats.teamList);
+    if (team) {
+      try { context = await enrichWithSynergy(team, context); } catch(e) { console.warn('Synergy fetch failed:', e); }
+    } else if (context.type === 'general') {
+      // No CSV match — try Synergy-only lookup for teams we haven't charted
+      // Strip common question words to extract a possible team name
+      const words = text.replace(/[^\w\s.'-]/g,'').trim()
+        .replace(/\b(tell|me|about|what|is|are|the|how|does|do|give|show|scouting|report|game|plan|for|prep|facing|record|stats|team|their|whats|who)\b/gi,'')
+        .replace(/\s+/g,' ').trim();
+      if (words.length >= 3) {
+        try {
+          const synergyTeams = await synergySearchTeam(words);
+          if (synergyTeams.length) {
+            const best = synergyTeams.find(t => t.league_abbr === 'HS') || synergyTeams[0];
+            const teamData = await synergyGetTeamData(best.id);
+            const h2h = await synergyGetH2H(best.id);
+            context.type = 'synergy_only';
+            context.data.synergy = {
+              team: { name: best.name, league: best.league, id: best.id },
+              record: teamData ? teamData.record : null,
+              recent_games: teamData ? teamData.recent_games : [],
+              vs_moeller: h2h,
+            };
+            context.data.note = 'No pitch-level charting data available for this team. Showing Synergy team-level data only.';
+          }
+        } catch(e) { console.warn('Synergy-only lookup failed:', e); }
+      }
+    }
+
     const dataPayload=JSON.stringify(context.data,null,2);
     const fullMessage=`Here is the relevant data (context type: ${context.type}). Coach's question: "${text}"\n\n${dataPayload}`;
 

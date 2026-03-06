@@ -4,6 +4,7 @@ Moeller Game Prep Agent V3 — Python Backend
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from anthropic import Anthropic
+import synergy_client
 
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 MODEL = "claude-haiku-4-5-20251001"  # Haiku: ~10x cheaper than Sonnet, great for data lookups
@@ -56,6 +57,16 @@ When you receive tendency data for a team + category:
 - For pitching tendencies (pitch mix, zone usage): focus on how to hit against them
 - For situational/platoon: focus on lineup construction and matchup advantages
 
+SYNERGY DATA (context type: "synergy_team", "synergy_games", "synergy_h2h"):
+When the user's message includes Synergy data, this is LIVE team-level data from the Synergy Sports platform covering HS, Perfect Game, PBR, Area Code Games, and other showcases.
+- Team records include W-L-T, run differential, avg runs scored/allowed
+- Game logs show date, opponent, score, home/away, venue
+- Head-to-head data shows history between two specific teams
+- Use this data to supplement pitch-level scouting with team-level context
+- When both pitch data AND Synergy data are provided, combine them: lead with the team record/trends from Synergy, then dive into pitch-level detail
+- If Synergy data shows a team is on a hot/cold streak, call it out
+- Compare run differential and scoring trends to Moeller's numbers when relevant
+
 FORMAT:
 - Use markdown **bold** headers and ## headers
 - Use bullet points for key stats
@@ -88,7 +99,8 @@ RULES:
 - Numbers only — no explaining what metrics mean
 - Think like a bench coach filling out a lineup card, not an analyst writing a report
 - For matchup context: give ~5 bullets max. If hitter perspective, tell the hitter what to sit on and what to protect. If pitcher perspective, tell the pitcher how to sequence and where to locate.
-- For coaching tendencies: 5-7 bullets max. Focus on the most exploitable tendency. End with one coaching takeaway the staff can use immediately."""
+- For coaching tendencies: 5-7 bullets max. Focus on the most exploitable tendency. End with one coaching takeaway the staff can use immediately.
+- For Synergy data: If team record/games are included, lead with record and recent trend (W/L streak). Keep it to 2-3 bullets. If H2H data exists, show it."""
 
 
 app = Flask(__name__)
@@ -145,6 +157,51 @@ def chat():
         if "authentication" in error_msg.lower() or "api key" in error_msg.lower():
             return jsonify({"error": "Invalid API key. Check your ANTHROPIC_API_KEY."}), 401
         return jsonify({"error": f"API error: {error_msg}"}), 500
+
+
+@app.route("/api/synergy/search-teams", methods=["GET"])
+def synergy_search_teams():
+    q = request.args.get("q", "")
+    league = request.args.get("league", None)
+    if not q:
+        return jsonify({"error": "Missing query parameter 'q'"}), 400
+    try:
+        teams = synergy_client.search_teams_by_name(q, league)
+        return jsonify({"teams": teams})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/synergy/team/<team_id>", methods=["GET"])
+def synergy_team(team_id):
+    season = request.args.get("season", None)
+    try:
+        record = synergy_client.get_team_record(team_id, season)
+        recent = synergy_client.get_recent_games(team_id, count=10, season_year=season)
+        return jsonify({"record": record, "recent_games": recent})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/synergy/team/<team_id>/games", methods=["GET"])
+def synergy_team_games(team_id):
+    season = request.args.get("season", None)
+    count = int(request.args.get("count", 20))
+    try:
+        games = synergy_client.get_recent_games(team_id, count=count, season_year=season)
+        return jsonify({"games": games})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/synergy/h2h/<team1_id>/<team2_id>", methods=["GET"])
+def synergy_h2h(team1_id, team2_id):
+    season = request.args.get("season", None)
+    try:
+        games = synergy_client.get_head_to_head(team1_id, team2_id, season)
+        return jsonify({"games": games})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/status", methods=["GET"])
