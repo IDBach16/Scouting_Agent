@@ -2,8 +2,18 @@
 Moeller Game Prep Agent V3 — Python Backend
 """
 import os
+from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from anthropic import Anthropic
+
+# Load .env file if it exists
+_env_path = Path(__file__).resolve().parent / ".env"
+if _env_path.exists():
+    for line in _env_path.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 MODEL = "claude-haiku-4-5-20251001"  # Haiku: ~10x cheaper than Sonnet, great for data lookups
@@ -92,18 +102,19 @@ RULES:
 
 
 app = Flask(__name__)
-client = None
 conversation_histories = {}
+
+# Initialize client at module load time
+_client = None
+if API_KEY:
+    try:
+        _client = Anthropic(api_key=API_KEY)
+    except Exception as e:
+        print(f"  Failed to create Anthropic client: {e}")
 
 
 def get_client():
-    global client
-    if client is None:
-        key = API_KEY or os.environ.get("ANTHROPIC_API_KEY", "")
-        if not key:
-            return None
-        client = Anthropic(api_key=key)
-    return client
+    return _client
 
 
 @app.route("/api/chat", methods=["POST"])
