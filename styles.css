@@ -48,6 +48,10 @@ body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,
 .season-btn.active{background:var(--gold);color:var(--navy-dark)}
 .season-btn:hover:not(.active){color:var(--text)}
 
+.git-push-btn{display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--navy);color:var(--text-sec);font-size:.7rem;font-weight:600;cursor:pointer;transition:all .2s}
+.git-push-btn:hover{background:var(--navy-light);color:var(--text);border-color:var(--gold-glow)}
+.git-push-btn:disabled{opacity:.6;cursor:not-allowed}
+
 .status-badge{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;font-size:.65rem;font-weight:600;background:var(--gold-dim);border:1px solid var(--border)}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted);flex-shrink:0}
 .status-badge.ready .status-dot{background:#4ADE80;box-shadow:0 0 6px rgba(74,222,128,.5)}

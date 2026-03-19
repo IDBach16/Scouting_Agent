@@ -2,6 +2,7 @@
 Moeller Game Prep Agent V3 — Python Backend
 """
 import os
+import subprocess
 from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from anthropic import Anthropic
@@ -181,6 +182,32 @@ def chat():
 def status():
     key = API_KEY or os.environ.get("ANTHROPIC_API_KEY", "")
     return jsonify({"ready": bool(key)})
+
+
+@app.route("/api/git-push", methods=["POST"])
+def git_push():
+    """Stage all changes, commit with a timestamp, and push to origin."""
+    try:
+        from datetime import datetime
+        ts = datetime.now().strftime("%a %m/%d/%Y %H:%M")
+        msg = f"Data update - {ts}"
+        cmds = [
+            ["git", "add", "-A"],
+            ["git", "commit", "-m", msg],
+            ["git", "push", "origin", "main"],
+        ]
+        output_lines = []
+        for cmd in cmds:
+            r = subprocess.run(cmd, cwd=STATIC_DIR, capture_output=True, text=True, timeout=30)
+            out = (r.stdout + r.stderr).strip()
+            if out:
+                output_lines.append(out)
+            # "nothing to commit" is fine, but real failures should stop
+            if r.returncode != 0 and "nothing to commit" not in out:
+                return jsonify({"ok": False, "message": out}), 500
+        return jsonify({"ok": True, "message": "\n".join(output_lines) or "Pushed successfully."})
+    except Exception as e:
+        return jsonify({"ok": False, "message": str(e)}), 500
 
 
 @app.route("/")
