@@ -2035,8 +2035,8 @@ function computeHitterDugoutStats(pitches) {
 
   return {
     outcomeByGroup,
-    vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,vsRHP.abs||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
-    vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,vsLHP.abs||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
+    vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,vsRHP.abs+vsRHP.bbs+vsRHP.hbp||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
+    vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,vsLHP.abs+vsLHP.bbs+vsLHP.hbp||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
     zoneStats,
   };
 }
@@ -2644,6 +2644,16 @@ function tryQuickLook(question) {
     if (q.includes('moeller') || q.includes('our')) return {card: buildTeamHittersQuickLook('Moeller'), hitterName: null, pitcherName: null};
   }
 
+  // Pitcher lookups — check before hitters so pitcher/hitter dual players show pitcher card
+  if (oppP) {
+    const p = stats.opponentPitchers[oppP];
+    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches), hitterName: null, pitcherName: oppP};
+  }
+  if (moeP) {
+    const p = stats.moellerPitchers[moeP];
+    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches), hitterName: null, pitcherName: moeP};
+  }
+
   // Individual hitter by name
   if (moeH) {
     const h = stats.moellerHitters[moeH];
@@ -2652,16 +2662,6 @@ function tryQuickLook(question) {
   if (oppB) {
     const h = stats.opponentBatters[oppB];
     return {card: buildHitterQuickLookCard(computeHitterProfile(h.pitches, oppB, h.hand), h.pitches), hitterName: oppB, pitcherName: null};
-  }
-
-  // Pitcher lookups
-  if (oppP) {
-    const p = stats.opponentPitchers[oppP];
-    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, oppP, p.hand, p.team), p.pitches), hitterName: null, pitcherName: oppP};
-  }
-  if (moeP) {
-    const p = stats.moellerPitchers[moeP];
-    return {card: buildQuickLookCard(computePitcherProfile(p.pitches, moeP, p.hand, 'Moeller'), p.pitches), hitterName: null, pitcherName: moeP};
   }
   if (team) return {card: buildTeamQuickLook(team), hitterName: null, pitcherName: null};
   return null;
