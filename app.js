@@ -206,7 +206,7 @@ function computePitcherProfile(pitches, name, hand, team) {
   const pitchTypes={}, pitchTypeByCount={first_pitch:{},ahead:{},behind:{},even:{},two_strikes:{}};
   const veloByType={}, whiffByType={}, swingsByType={};
   let zones={Heart:0,Shadow:0,Chase:0,Waste:0};
-  let totalPA=0, ks=0, bbs=0, hrs=0, hits=0, firstPitchStrikes=0, firstPitches=0;
+  let totalPA=0, ks=0, bbs=0, hrs=0, hits=0, firstPitchStrikes=0, firstPitches=0, totalStrikes=0, totalBalls=0;
   const vsRHH={pitches:0,ks:0,bbs:0,hits:0,hrs:0,abs:0};
   const vsLHH={pitches:0,ks:0,bbs:0,hits:0,hrs:0,abs:0};
   const seenPA = new Set();
@@ -229,9 +229,13 @@ function computePitcherProfile(pitches, name, hand, team) {
     if (!isNaN(velo)&&velo>0) { if (!veloByType[pt]) veloByType[pt]=[]; veloByType[pt].push(velo); }
     if (zones.hasOwnProperty(zone)) zones[zone]++;
     const isSwing = result.includes('Swing')||result.includes('Foul')||result.includes('In Play');
+    const isStrike = result.includes('Strike')||result.includes('Foul')||result.includes('In Play');
+    const isBall = result==='Ball'||result.includes('Ball');
+    if (isStrike) totalStrikes++;
+    if (isBall) totalBalls++;
     if (isSwing) swingsByType[pt] = (swingsByType[pt]||0)+1;
     if (result.includes('Swing and Miss')) whiffByType[pt] = (whiffByType[pt]||0)+1;
-    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')||result.includes('Foul')||result.includes('In Play')) firstPitchStrikes++; }
+    if (b===0&&s===0) { firstPitches++; if (isStrike) firstPitchStrikes++; }
 
     const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.PAofInning}`;
     if (abResult && !seenPA.has(paKey)) {
@@ -266,6 +270,7 @@ function computePitcherProfile(pitches, name, hand, team) {
     name, team:team||'', hand:hand||'', totalPitches:total, totalPA, pitchMix, pitchMixByCount,
     zoneProfile: { 'Zone% (Heart+Shadow)':pct(zones.Heart+zones.Shadow,zoneTotal), 'Heart%':pct(zones.Heart,zoneTotal), 'Shadow%':pct(zones.Shadow,zoneTotal), 'Chase%':pct(zones.Chase,zoneTotal), 'Waste%':pct(zones.Waste,zoneTotal) },
     K_rate:pct(ks,totalPA), BB_rate:pct(bbs,totalPA), HR_rate:pct(hrs,totalPA),
+    Strike_pct:pct(totalStrikes,total), Ball_pct:pct(totalBalls,total),
     firstPitchStrike:pct(firstPitchStrikes,firstPitches),
     vsRHH:fmtSplit(vsRHH), vsLHH:fmtSplit(vsLHH),
     sampleSizeWarning: total<30 ? `Small sample: only ${total} pitches` : null,
@@ -1871,7 +1876,7 @@ function buildQuickLookCard(profile, pitches) {
   // ====== STAT ROW ======
   const statRow = document.createElement('div');
   statRow.className = 'quick-look-row';
-  [{val:`${primaryVelo}`,lbl:`${primary} Velo`},{val:profile.K_rate||'N/A',lbl:'K Rate'},{val:profile.BB_rate||'N/A',lbl:'BB Rate'},{val:profile.firstPitchStrike||'N/A',lbl:'FP Strike%'}].forEach(s => {
+  [{val:`${primaryVelo}`,lbl:`${primary} Velo`},{val:profile.Strike_pct||'N/A',lbl:'Strike%'},{val:profile.Ball_pct||'N/A',lbl:'Ball%'},{val:profile.firstPitchStrike||'N/A',lbl:'FP Strike%'}].forEach(s => {
     const el = document.createElement('div');
     el.className = 'quick-look-stat';
     el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
@@ -2444,7 +2449,7 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
   names.forEach(n => { allPitches.push(...(pitcherData[n].pitches || [])); });
   const totalPitches = allPitches.length;
 
-  let totalPA=0, ks=0, bbs=0, hrs=0, hits=0, firstPitchStrikes=0, firstPitches=0;
+  let totalPA=0, ks=0, bbs=0, hrs=0, hits=0, firstPitchStrikes=0, firstPitches=0, teamStrikes=0, teamBalls=0;
   const pitchTypes={}, veloByType={}, whiffByType={}, swingsByType={};
   const vsRHH={pitches:0,abs:0,hits:0,ks:0}, vsLHH={pitches:0,abs:0,hits:0,ks:0};
   const byCount={first_pitch:{},ahead:{},behind:{},even:{},two_strikes:{}};
@@ -2461,9 +2466,13 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
     pitchTypes[pt] = (pitchTypes[pt]||0)+1;
     if (!isNaN(velo)&&velo>0) { if (!veloByType[pt]) veloByType[pt]=[]; veloByType[pt].push(velo); }
     const isSwing = result.includes('Swing')||result.includes('Foul')||result.includes('In Play');
+    const isStrike = result.includes('Strike')||result.includes('Foul')||result.includes('In Play');
+    const isBall = result==='Ball'||result.includes('Ball');
+    if (isStrike) teamStrikes++;
+    if (isBall) teamBalls++;
     if (isSwing) swingsByType[pt] = (swingsByType[pt]||0)+1;
     if (result.includes('Swing and Miss')) whiffByType[pt] = (whiffByType[pt]||0)+1;
-    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')||result.includes('Foul')||result.includes('In Play')) firstPitchStrikes++; }
+    if (b===0&&s===0) { firstPitches++; if (isStrike) firstPitchStrikes++; }
 
     const labels = [];
     if (b===0&&s===0) labels.push('first_pitch');
@@ -2509,7 +2518,7 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
   const relayList = document.createElement('ul');
   relayList.className = 'ql-relay-bullets';
 
-  relayList.innerHTML += `<li>Staff K rate: <strong>${pct(ks,totalPA)}</strong> | BB rate: <strong>${pct(bbs,totalPA)}</strong> | 1st pitch strike: <strong>${pct(firstPitchStrikes,firstPitches)}</strong></li>`;
+  relayList.innerHTML += `<li>Staff Strike%: <strong>${pct(teamStrikes,totalPitches)}</strong> | Ball%: <strong>${pct(teamBalls,totalPitches)}</strong> | FP Strike%: <strong>${pct(firstPitchStrikes,firstPitches)}</strong></li>`;
 
   // Primary pitch
   if (types.length > 0) {
@@ -2546,7 +2555,7 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
   // Stat row
   const statRow = document.createElement('div');
   statRow.className = 'quick-look-row';
-  [{val:pct(ks,totalPA),lbl:'K Rate'},{val:pct(bbs,totalPA),lbl:'BB Rate'},{val:pct(firstPitchStrikes,firstPitches),lbl:'FP Strike%'},{val:pct(hrs,totalPA),lbl:'HR Rate'},{val:String(names.length),lbl:'Arms'}].forEach(s => {
+  [{val:pct(teamStrikes,totalPitches),lbl:'Strike%'},{val:pct(teamBalls,totalPitches),lbl:'Ball%'},{val:pct(firstPitchStrikes,firstPitches),lbl:'FP Strike%'},{val:pct(whiffByType[types[0]]||0,swingsByType[types[0]]||0),lbl:'Whiff%'},{val:String(names.length),lbl:'Arms'}].forEach(s => {
     const el = document.createElement('div');
     el.className = 'quick-look-stat';
     el.innerHTML = `<div class="ql-val">${s.val||'N/A'}</div><div class="ql-lbl">${s.lbl}</div>`;
