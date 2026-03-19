@@ -31,7 +31,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 30,2024-03-23,16:23:34,20,4,Austin Payne,R,Strongsville High School,Carter Christenson,R,Moeller,1,Bottom,2,2,1,2 and 1,Fast Ball,Strike Swing and Miss,,73.0,17.0,Shadow,
 31,2024-03-23,16:23:49,21,5,Austin Payne,R,Strongsville High School,Carter Christenson,R,Moeller,1,Bottom,2,2,2,2 and 2,Fast Ball,Strike In Play,Ground Out,77.0,16.0,Shadow,
 32,2024-03-23,16:25:46,1,1,Zion Theophilus,R,Moeller,Tommy Farkas,R,Strongsville High School,2,Top,0,0,0,0 and 0,Slider,Strike Looking,,81.0,4.0,Heart,
-33,2024-03-23,16:25:59,2,2,Zion Theophilus,R,Moeller,Tommy Farkas,R,Strongsville High School,2,Top,0,0,1,0 and 1,Fast Ball,Strike Swing and Miss,,32.0,1.0,Heart,
+33,2024-03-23,16:25:59,2,2,Zion Theophilus,R,Moeller,Tommy Farkas,R,Strongsville High School,2,Top,0,0,1,0 and 1,Fast Ball,Strike Swing and Miss,,90.0,1.0,Heart,
 34,2024-03-23,16:26:14,3,3,Zion Theophilus,R,Moeller,Tommy Farkas,R,Strongsville High School,2,Top,0,0,2,0 and 2,Slider,Ball,,81.0,11.0,Shadow,
 35,2024-03-23,16:26:26,4,4,Zion Theophilus,R,Moeller,Tommy Farkas,R,Strongsville High School,2,Top,0,1,2,1 and 2,Fast Ball,Strike Foul,,92.0,6.0,Heart,
 36,2024-03-23,16:26:48,5,5,Zion Theophilus,R,Moeller,Tommy Farkas,R,Strongsville High School,2,Top,0,1,2,1 and 2,Slider,Strike Swing and Miss,Strike Out,82.0,12.0,Shadow,
@@ -7567,7 +7567,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 183,2025-03-17,18:29:58,20,4,William Clark,R,Centerville High School,Brody Foltz,R,Moeller,6,Top,2,1,2,1 and 2,Fast Ball,Strike Looking,Strike Out,75.0,14.0,Shadow,
 184,2025-03-17,18:32:11,1,1,Connor Scoggins,R,Moeller,Jackson Clark,R,Centerville High School,6,Bottom,0,0,0,0 and 0,Fast Ball,Strike In Play,Fly Out,80.0,29.0,Chase,
 185,2025-03-17,18:32:42,2,1,Connor Scoggins,R,Moeller,Jackson Puckett,R,Centerville High School,6,Bottom,1,0,0,0 and 0,Fast Ball,Strike Looking,,80.0,18.0,Shadow,
-186,2025-03-17,18:32:54,3,2,Connor Scoggins,R,Moeller,Jackson Puckett,R,Centerville High School,6,Bottom,1,0,1,0 and 1,Breaking Ball,Ball,,0.0,38.0,Waste,
+186,2025-03-17,18:32:54,3,2,Connor Scoggins,R,Moeller,Jackson Puckett,R,Centerville High School,6,Bottom,1,0,1,0 and 1,Breaking Ball,Ball,,68.0,38.0,Waste,
 187,2025-03-17,18:33:08,4,3,Connor Scoggins,R,Moeller,Jackson Puckett,R,Centerville High School,6,Bottom,1,1,1,1 and 1,Fast Ball,Ball,,81.0,,Waste,
 188,2025-03-17,18:33:21,5,4,Connor Scoggins,R,Moeller,Jackson Puckett,R,Centerville High School,6,Bottom,1,2,1,2 and 1,Breaking Ball,Ball,,69.0,7.0,Heart,
 189,2025-03-17,18:33:41,6,5,Connor Scoggins,R,Moeller,Jackson Puckett,R,Centerville High School,6,Bottom,1,3,1,3 and 1,Fast Ball,Ball,BB,81.0,21.0,Chase,
@@ -7620,7 +7620,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 236,2025-03-17,18:55:05,1,1,Connor Scoggins,R,Moeller,Hayden Hollen,R,Centerville High School,7,Bottom,0,0,0,0 and 0,Fast Ball,Strike Looking,,77.0,13.0,Shadow,
 237,2025-03-17,18:55:20,2,2,Connor Scoggins,R,Moeller,Hayden Hollen,R,Centerville High School,7,Bottom,0,0,1,0 and 1,Fast Ball,Strike In Play,1B,78.0,11.0,Shadow,
 238,2025-03-17,18:56:51,3,1,Connor Scoggins,R,Moeller,Joshua Ullmer,R,Centerville High School,7,Bottom,0,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,78.0,19.0,Shadow,
-239,2025-03-17,18:57:10,4,1,Connor Scoggins,R,Moeller,Andrew Erwin,R,Centerville High School,7,Bottom,1,0,0,0 and 0,Fast Ball,Strike Looking,,0.0,17.0,Shadow,
+239,2025-03-17,18:57:10,4,1,Connor Scoggins,R,Moeller,Andrew Erwin,R,Centerville High School,7,Bottom,1,0,0,0 and 0,Fast Ball,Strike Looking,,79.0,17.0,Shadow,
 240,2025-03-17,18:57:20,5,2,Connor Scoggins,R,Moeller,Andrew Erwin,R,Centerville High School,7,Bottom,1,0,1,0 and 1,Breaking Ball,Ball,,68.0,14.0,Shadow,
 241,2025-03-17,18:57:39,6,3,Connor Scoggins,R,Moeller,Andrew Erwin,R,Centerville High School,7,Bottom,1,1,1,1 and 1,Fast Ball,Ball,,78.0,17.0,Shadow,
 242,2025-03-17,18:57:55,7,4,Connor Scoggins,R,Moeller,Joshua Becker,R,Centerville High School,7,Bottom,1,2,1,2 and 1,Fast Ball,Strike Foul,,77.0,11.0,Shadow,
@@ -7634,7 +7634,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 250,2025-03-17,19:01:38,15,4,Connor Scoggins,R,Moeller,Noah Schoen,R,Centerville High School,7,Bottom,2,1,2,1 and 2,Breaking Ball,Ball,,67.0,19.0,Shadow,
 251,2025-03-17,19:02:00,16,5,Connor Scoggins,R,Moeller,Noah Schoen,R,Centerville High School,7,Bottom,2,2,2,2 and 2,Fast Ball,Strike In Play,Line Out,79.0,39.0,Waste,
 252,2025-03-17,19:05:05,1,1,Matthew Hoyle,R,Centerville High School,Jovan Love,R,Moeller,8,Top,0,0,0,0 and 0,Fast Ball,Ball,,80.0,7.0,Heart,
-253,2025-03-17,19:05:08,2,2,Matthew Hoyle,R,Centerville High School,Jovan Love,R,Moeller,8,Top,0,1,0,1 and 0,Fast Ball,Ball,,0.0,16.0,Shadow,
+253,2025-03-17,19:05:08,2,2,Matthew Hoyle,R,Centerville High School,Jovan Love,R,Moeller,8,Top,0,1,0,1 and 0,Fast Ball,Ball,,75.0,16.0,Shadow,
 254,2025-03-17,19:05:20,3,3,Matthew Hoyle,R,Centerville High School,Jovan Love,R,Moeller,8,Top,0,2,0,2 and 0,Breaking Ball,Strike Swing and Miss,,80.0,39.0,Waste,
 255,2025-03-17,19:05:32,4,4,Matthew Hoyle,R,Centerville High School,Jovan Love,R,Moeller,8,Top,0,2,1,2 and 1,Change Up,Strike Looking,,74.0,38.0,Waste,
 256,2025-03-17,19:05:45,5,5,Matthew Hoyle,R,Centerville High School,Jovan Love,R,Moeller,8,Top,0,2,2,2 and 2,Fast Ball,Ball,,73.0,39.0,Waste,
@@ -7786,7 +7786,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 67,2025-03-26,17:05:48,4,1,Zion Theophilus,R,Moeller,Mac Reed,L,Turpin High School,3,Top,1,0,0,0 and 0,Fast Ball,Strike Foul,,92.0,13.0,Shadow,
 68,2025-03-26,17:06:12,5,2,Zion Theophilus,R,Moeller,Mac Reed,L,Turpin High School,3,Top,1,0,1,0 and 1,Change Up,Ball,,83.0,29.0,Chase,
 69,2025-03-26,17:06:29,6,3,Zion Theophilus,R,Moeller,Mac Reed,L,Turpin High School,3,Top,1,1,1,1 and 1,Fast Ball,Strike Foul,,92.0,9.0,Heart,
-70,2025-03-26,17:06:54,7,4,Zion Theophilus,R,Moeller,Mac Reed,L,Turpin High School,3,Top,1,1,2,1 and 2,Cut Fastball,Strike In Play,1B,8.0,8.0,Heart,
+70,2025-03-26,17:06:54,7,4,Zion Theophilus,R,Moeller,Mac Reed,L,Turpin High School,3,Top,1,1,2,1 and 2,Cut Fastball,Strike In Play,1B,88.0,8.0,Heart,
 71,2025-03-26,17:07:31,8,1,Zion Theophilus,R,Moeller,Nathan Kinsey,L,Turpin High School,3,Top,1,0,0,0 and 0,Fast Ball,Ball,,89.0,38.0,Waste,
 72,2025-03-26,17:07:54,9,2,Zion Theophilus,R,Moeller,Nathan Kinsey,L,Turpin High School,3,Top,1,1,0,1 and 0,Fast Ball,Strike Foul,,90.0,12.0,Shadow,
 73,2025-03-26,17:08:21,10,3,Zion Theophilus,R,Moeller,Nathan Kinsey,L,Turpin High School,3,Top,1,1,1,1 and 1,Fast Ball,Strike Foul,,89.0,12.0,Shadow,
@@ -8026,7 +8026,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 307,2025-03-26,19:20:13,24,4,Matt Cnota,L,Turpin High School,Adam Maybury,L,Moeller,8,Bottom,2,2,1,2 and 1,Fast Ball,Strike Looking,,75.0,26.0,Chase,
 308,2025-03-26,19:20:32,25,5,Matt Cnota,L,Turpin High School,Adam Maybury,L,Moeller,8,Bottom,2,2,2,2 and 2,Change Up,Ball,,70.0,28.0,Chase,
 309,2025-03-26,19:20:59,26,6,Matt Cnota,L,Turpin High School,Adam Maybury,L,Moeller,8,Bottom,2,3,2,3 and 2,Breaking Ball,Ball,BB,68.0,37.0,Waste,
-310,2025-03-26,19:24:25,1,1,Matt Ponatoski,R,Moeller,Drew Oaks,R,Turpin High School,9,Top,0,0,0,0 and 0,Fast Ball,Ball,HBP,0.0,34.0,Waste,
+310,2025-03-26,19:24:25,1,1,Matt Ponatoski,R,Moeller,Drew Oaks,R,Turpin High School,9,Top,0,0,0,0 and 0,Fast Ball,Ball,HBP,91.0,34.0,Waste,
 311,2025-03-26,19:24:46,2,1,Matt Ponatoski,R,Moeller,Carson Stier,R,Turpin High School,9,Top,0,0,0,0 and 0,Fast Ball,Strike Looking,,92.0,19.0,Shadow,
 312,2025-03-26,19:25:04,3,2,Matt Ponatoski,R,Moeller,Carson Stier,R,Turpin High School,9,Top,0,0,1,0 and 1,Fast Ball,Strike Swing and Miss,,92.0,18.0,Shadow,
 313,2025-03-26,19:25:20,4,3,Matt Ponatoski,R,Moeller,Carson Stier,R,Turpin High School,9,Top,0,0,2,0 and 2,Fast Ball,Strike Looking,Strike Out,92.0,16.0,Shadow,
@@ -8077,7 +8077,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 16,2025-03-29,13:09:23,16,3,Connor Fuhrer,R,Moeller,Gianni Lora,R,Lakota East High School,1,Top,2,1,1,1 and 1,Fast Ball,Ball,,80.0,36.0,Waste,
 17,2025-03-29,13:09:49,17,4,Connor Fuhrer,R,Moeller,Gianni Lora,R,Lakota East High School,1,Top,2,2,1,2 and 1,Fast Ball,Strike Looking,,87.0,13.0,Shadow,
 18,2025-03-29,13:10:13,18,5,Connor Fuhrer,R,Moeller,Gianni Lora,R,Lakota East High School,1,Top,2,2,2,2 and 2,Slider,Strike Swing and Miss,Strike Out,78.0,39.0,Waste,
-19,2025-03-29,13:12:31,1,1,Trieg Matthews,L,Lakota East High School,Carter Christenson,R,Moeller,1,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,0.0,28.0,Chase,
+19,2025-03-29,13:12:31,1,1,Trieg Matthews,L,Lakota East High School,Carter Christenson,R,Moeller,1,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,86.0,28.0,Chase,
 20,2025-03-29,13:12:45,2,2,Trieg Matthews,L,Lakota East High School,Carter Christenson,R,Moeller,1,Bottom,0,1,0,1 and 0,Fast Ball,Strike Looking,,87.0,3.0,Heart,
 21,2025-03-29,13:12:59,3,3,Trieg Matthews,L,Lakota East High School,Carter Christenson,R,Moeller,1,Bottom,0,1,1,1 and 1,Breaking Ball,Ball,,68.0,36.0,Waste,
 22,2025-03-29,13:13:13,4,4,Trieg Matthews,L,Lakota East High School,Carter Christenson,R,Moeller,1,Bottom,0,2,1,2 and 1,Fast Ball,Strike Foul,,85.0,16.0,Shadow,
@@ -8201,9 +8201,9 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 140,2025-03-29,14:15:23,3,2,Logan Cole,R,Lakota East High School,Carter Christenson,R,Moeller,4,Bottom,1,1,0,1 and 0,Fast Ball,Ball,HBP,89.0,34.0,Waste,
 141,2025-03-29,14:16:56,4,1,Logan Cole,R,Lakota East High School,Luke Pappano,L,Moeller,4,Bottom,1,0,0,0 and 0,Fast Ball,Ball,,88.0,31.0,Waste,
 142,2025-03-29,14:17:13,5,2,Logan Cole,R,Lakota East High School,Luke Pappano,L,Moeller,4,Bottom,1,1,0,1 and 0,Fast Ball,Strike Looking,,85.0,12.0,Shadow,
-143,2025-03-29,14:17:34,6,3,Logan Cole,R,Lakota East High School,Luke Pappano,L,Moeller,4,Bottom,1,1,1,1 and 1,Fast Ball,Strike In Play,1B,8.0,26.0,Chase,
+143,2025-03-29,14:17:34,6,3,Logan Cole,R,Lakota East High School,Luke Pappano,L,Moeller,4,Bottom,1,1,1,1 and 1,Fast Ball,Strike In Play,1B,88.0,26.0,Chase,
 144,2025-03-29,14:18:18,7,1,Logan Cole,R,Lakota East High School,Matt Ponatoski,L,Moeller,4,Bottom,1,0,0,0 and 0,Breaking Ball,Strike Looking,,77.0,2.0,Heart,
-145,2025-03-29,14:18:38,8,2,Logan Cole,R,Lakota East High School,Matt Ponatoski,L,Moeller,4,Bottom,1,0,1,0 and 1,Fast Ball,Strike In Play,1B,0.0,23.0,Chase,
+145,2025-03-29,14:18:38,8,2,Logan Cole,R,Lakota East High School,Matt Ponatoski,L,Moeller,4,Bottom,1,0,1,0 and 1,Fast Ball,Strike In Play,1B,88.0,23.0,Chase,
 146,2025-03-29,14:19:25,9,1,Logan Cole,R,Lakota East High School,Conner Cuozzo,R,Moeller,4,Bottom,1,0,0,0 and 0,Breaking Ball,Strike Foul,,76.0,12.0,Shadow,
 147,2025-03-29,14:19:52,10,2,Logan Cole,R,Lakota East High School,Conner Cuozzo,R,Moeller,4,Bottom,1,0,1,0 and 1,Breaking Ball,Strike Looking,,77.0,12.0,Shadow,
 148,2025-03-29,14:20:18,11,3,Logan Cole,R,Lakota East High School,Conner Cuozzo,R,Moeller,4,Bottom,1,0,2,0 and 2,Breaking Ball,Ball,,78.0,22.0,Chase,
@@ -8603,7 +8603,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 85,2025-04-02,17:44:13,26,6,Jack Ryan,R,St. Xavier High School,Jovan Love,R,Moeller,3,Top,2,3,2,3 and 2,Breaking Ball,Strike Foul,,78.0,5.0,Heart,
 86,2025-04-02,17:44:37,27,7,Jack Ryan,R,St. Xavier High School,Jovan Love,R,Moeller,3,Top,2,3,2,3 and 2,Fast Ball,Strike Foul,,85.0,9.0,Heart,
 87,2025-04-02,17:44:50,28,8,Jack Ryan,R,St. Xavier High School,Jovan Love,R,Moeller,3,Top,2,3,2,3 and 2,Breaking Ball,Strike In Play,1B,77.0,9.0,Heart,
-88,2025-04-02,17:46:15,29,1,Jack Ryan,R,St. Xavier High School,Cooper Ridley,L,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike In Play,1B,8.0,16.0,Shadow,
+88,2025-04-02,17:46:15,29,1,Jack Ryan,R,St. Xavier High School,Cooper Ridley,L,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike In Play,1B,86.0,16.0,Shadow,
 89,2025-04-02,17:46:59,30,1,Jack Ryan,R,St. Xavier High School,Jackson Porta,R,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike Looking,,83.0,13.0,Shadow,
 90,2025-04-02,17:47:37,31,2,Jack Ryan,R,St. Xavier High School,Jackson Porta,R,Moeller,3,Top,2,0,1,0 and 1,Breaking Ball,Strike Looking,,75.0,13.0,Shadow,
 91,2025-04-02,17:48:10,32,3,Jack Ryan,R,St. Xavier High School,Jackson Porta,R,Moeller,3,Top,2,0,2,0 and 2,Fast Ball,Strike In Play,1B,86.0,13.0,Shadow,
@@ -9069,9 +9069,9 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 153,2025-04-11,18:45:36,24,4,Brady Young,R,New Richmond High School,Noah Goettke,R,Moeller,3,Bottom,2,1,2,1 and 2,Breaking Ball,Strike Looking,Strike Out,64.0,16.0,Shadow,
 154,2025-04-11,18:48:28,1,1,Logan Rosenberger,R,Moeller,Alex Uhlenbrock,R,New Richmond High School,4,Top,0,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,82.0,16.0,Shadow,
 155,2025-04-11,18:48:55,2,1,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,0,0,0 and 0,Fast Ball,Strike Foul,,82.0,3.0,Heart,
-156,2025-04-11,18:49:10,3,2,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,0,1,0 and 1,Breaking Ball,Ball,,0.0,28.0,Chase,
+156,2025-04-11,18:49:10,3,2,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,0,1,0 and 1,Breaking Ball,Ball,,72.0,28.0,Chase,
 157,2025-04-11,18:49:28,4,3,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,1,1,1 and 1,Fast Ball,Ball,,81.0,39.0,Waste,
-158,2025-04-11,18:49:42,5,4,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,2,1,2 and 1,Breaking Ball,Strike Foul,,0.0,16.0,Shadow,
+158,2025-04-11,18:49:42,5,4,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,2,1,2 and 1,Breaking Ball,Strike Foul,,72.0,16.0,Shadow,
 159,2025-04-11,18:49:59,6,5,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,2,2,2 and 2,Breaking Ball,Ball,,69.0,28.0,Chase,
 160,2025-04-11,18:50:13,7,6,Logan Rosenberger,R,Moeller,Hunter Ashley,R,New Richmond High School,4,Top,1,3,2,3 and 2,Fast Ball,Ball,BB,85.0,39.0,Waste,
 161,2025-04-11,18:50:41,8,1,Logan Rosenberger,R,Moeller,Trey Davis,R,New Richmond High School,4,Top,1,0,0,0 and 0,Fast Ball,Strike Looking,,84.0,16.0,Shadow,
@@ -10780,7 +10780,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 85,2025-04-24,18:23:37,2,2,Luke Pappano,L,Moeller,Drew Oerther,L,Loveland High School,4,Top,0,0,1,0 and 1,Breaking Ball,Ball,,73.0,27.0,Chase,
 86,2025-04-24,18:23:58,3,3,Luke Pappano,L,Moeller,Drew Oerther,L,Loveland High School,4,Top,0,1,1,1 and 1,Fast Ball,Ball,,84.0,23.0,Chase,
 87,2025-04-24,18:24:20,4,4,Luke Pappano,L,Moeller,Drew Oerther,L,Loveland High School,4,Top,0,2,1,2 and 1,Fast Ball,Ball,,84.0,21.0,Chase,
-88,2025-04-24,18:24:39,5,5,Luke Pappano,L,Moeller,Drew Oerther,L,Loveland High School,4,Top,0,3,1,3 and 1,Change Up,Strike In Play,Line Out,1.0,12.0,Shadow,
+88,2025-04-24,18:24:39,5,5,Luke Pappano,L,Moeller,Drew Oerther,L,Loveland High School,4,Top,0,3,1,3 and 1,Change Up,Strike In Play,Line Out,79.0,12.0,Shadow,
 89,2025-04-24,18:25:24,6,1,Luke Pappano,L,Moeller,Blake Carrigan,R,Loveland High School,4,Top,1,0,0,0 and 0,Fast Ball,Ball,,88.0,28.0,Chase,
 90,2025-04-24,18:25:39,7,2,Luke Pappano,L,Moeller,Blake Carrigan,R,Loveland High School,4,Top,1,1,0,1 and 0,Fast Ball,Ball,,87.0,33.0,Waste,
 91,2025-04-24,18:25:56,8,3,Luke Pappano,L,Moeller,Blake Carrigan,R,Loveland High School,4,Top,1,2,0,2 and 0,Fast Ball,Strike Foul,,87.0,13.0,Shadow,
@@ -11954,7 +11954,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 180,2025-05-07,18:44:02,7,2,Zion Theophilus,R,Moeller,Joey Thamann,R,Elder High School,6,Bottom,1,0,1,0 and 1,Fast Ball,Strike Swing and Miss,,90.0,8.0,Heart,
 181,2025-05-07,18:44:24,8,3,Zion Theophilus,R,Moeller,Joey Thamann,R,Elder High School,6,Bottom,1,0,2,0 and 2,Fast Ball,Strike Swing and Miss,Strike Out,90.0,3.0,Heart,
 182,2025-05-07,18:45:27,9,1,Zion Theophilus,R,Moeller,Dylan Palicki,R,Elder High School,6,Bottom,2,0,0,0 and 0,Cut Fastball,Strike Foul,,88.0,18.0,Shadow,
-183,2025-05-07,18:45:58,10,2,Zion Theophilus,R,Moeller,Dylan Palicki,R,Elder High School,6,Bottom,2,0,1,0 and 1,Cut Fastball,Ball,,0.0,24.0,Chase,
+183,2025-05-07,18:45:58,10,2,Zion Theophilus,R,Moeller,Dylan Palicki,R,Elder High School,6,Bottom,2,0,1,0 and 1,Cut Fastball,Ball,,89.0,24.0,Chase,
 184,2025-05-07,18:48:22,1,1,Caleb McComas,R,Elder High School,Carter Christenson,R,Moeller,7,Top,0,0,0,0 and 0,Fast Ball,Ball,,82.0,26.0,Chase,
 185,2025-05-07,18:48:36,2,2,Caleb McComas,R,Elder High School,Carter Christenson,R,Moeller,7,Top,0,1,0,1 and 0,Fast Ball,Strike Looking,,85.0,3.0,Heart,
 186,2025-05-07,18:48:56,3,3,Caleb McComas,R,Elder High School,Carter Christenson,R,Moeller,7,Top,0,1,1,1 and 1,Fast Ball,Ball,,83.0,23.0,Chase,
@@ -12429,7 +12429,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 242,2025-05-10,13:18:16,5,2,Matt Ponatoski,R,Moeller,Braylen Jehnzen,L,Olentangy Berlin High School,7,Bottom,2,1,0,1 and 0,Fast Ball,Strike Looking,,93.0,4.0,Heart,
 243,2025-05-10,13:18:33,6,3,Matt Ponatoski,R,Moeller,Braylen Jehnzen,L,Olentangy Berlin High School,7,Bottom,2,1,1,1 and 1,Fast Ball,Ball,,94.0,21.0,Chase,
 244,2025-05-10,13:18:45,7,4,Matt Ponatoski,R,Moeller,Braylen Jehnzen,L,Olentangy Berlin High School,7,Bottom,2,2,1,2 and 1,Fast Ball,Ball,,94.0,29.0,Chase,
-245,2025-05-10,13:18:55,8,5,Matt Ponatoski,R,Moeller,Braylen Jehnzen,L,Olentangy Berlin High School,7,Bottom,2,3,1,3 and 1,Fast Ball,Ball,BB,0.0,21.0,Chase,
+245,2025-05-10,13:18:55,8,5,Matt Ponatoski,R,Moeller,Braylen Jehnzen,L,Olentangy Berlin High School,7,Bottom,2,3,1,3 and 1,Fast Ball,Ball,BB,94.0,21.0,Chase,
 246,2025-05-10,13:19:15,9,1,Matt Ponatoski,R,Moeller,Max Endarries,R,Olentangy Berlin High School,7,Bottom,2,0,0,0 and 0,Fast Ball,Strike Looking,,92.0,16.0,Shadow,
 247,2025-05-10,13:19:32,10,2,Matt Ponatoski,R,Moeller,Max Endarries,R,Olentangy Berlin High School,7,Bottom,2,0,1,0 and 1,Breaking Ball,Strike Swing and Miss,,81.0,28.0,Chase,
 248,2025-05-10,13:19:54,11,3,Matt Ponatoski,R,Moeller,Max Endarries,R,Olentangy Berlin High School,7,Bottom,2,0,2,0 and 2,Fast Ball,Strike Foul,,94.0,16.0,Shadow,
@@ -14955,8 +14955,8 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 239,2026-03-18,18:35:40,4,4,TJ Brown,R,Springboro High School,Connor Maupin,R,Moeller,6,Bottom,0,2,1,1 and 1,Fast Ball,Strike In Play,1B,76.0,8.0,Heart,Rick Reynolds
 240,2026-03-18,18:36:25,5,1,TJ Brown,R,Springboro High School,Adam Maybury,L,Moeller,6,Bottom,0,0,0,2 and 1,Fast Ball,Ball,,75.0,26.0,Chase,Rick Reynolds
 241,2026-03-18,18:36:31,6,2,TJ Brown,R,Springboro High School,Adam Maybury,L,Moeller,6,Bottom,0,1,0,0 and 0,Fast Ball,Strike Foul,,76.0,4.0,Heart,Rick Reynolds
-242,2026-03-18,18:37:32,7,3,TJ Brown,R,Springboro High School,Adam Maybury,L,Moeller,6,Bottom,0,1,1,1 and 0,Not Tracked,Strike In Play,Line Out,0.0,38.0,Waste,Rick Reynolds
-243,2026-03-18,18:38:02,8,1,TJ Brown,R,Springboro High School,Adam Holstein,R,Moeller,6,Bottom,2,0,0,1 and 1,Not Tracked,Ball,,0.0,38.0,Waste,Rick Reynolds
+242,2026-03-18,18:37:32,7,3,TJ Brown,R,Springboro High School,Adam Maybury,L,Moeller,6,Bottom,0,1,1,1 and 0,Not Tracked,Strike In Play,Line Out,,38.0,Waste,Rick Reynolds
+243,2026-03-18,18:38:02,8,1,TJ Brown,R,Springboro High School,Adam Holstein,R,Moeller,6,Bottom,2,0,0,1 and 1,Not Tracked,Ball,,,38.0,Waste,Rick Reynolds
 244,2026-03-18,18:38:06,9,2,TJ Brown,R,Springboro High School,Adam Holstein,R,Moeller,6,Bottom,2,1,0,0 and 0,Fast Ball,Strike In Play,Line Out,76.0,7.0,Heart,Rick Reynolds
 245,2026-03-18,18:40:52,1,1,Jake Gaerke,R,Moeller,Ben Veletean,R,Springboro High School,7,Top,0,0,0,1 and 0,Fast Ball,Strike In Play,Ground Out,88.0,7.0,Heart,Rick Reynolds
 246,2026-03-18,18:41:19,2,1,Jake Gaerke,R,Moeller,Dylan Brabston,R,Springboro High School,7,Top,1,0,0,0 and 0,Change Up,Ball,,80.0,28.0,Chase,Rick Reynolds
@@ -14992,7 +14992,7 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 276,2026-03-18,18:54:49,16,2,TJ Brown,R,Springboro High School,Seth Maybury,R,Moeller,7,Bottom,2,1,0,0 and 0,Fast Ball,Strike Looking,,72.0,19.0,Shadow,Rick Reynolds
 277,2026-03-18,18:54:59,17,3,TJ Brown,R,Springboro High School,Seth Maybury,R,Moeller,7,Bottom,2,1,1,1 and 0,Fast Ball,Strike Swing and Miss,,72.0,8.0,Heart,Rick Reynolds
 278,2026-03-18,18:55:14,18,4,TJ Brown,R,Springboro High School,Seth Maybury,R,Moeller,7,Bottom,2,1,2,1 and 1,Fast Ball,Strike In Play,Ground Out,74.0,1.0,Heart,Rick Reynolds
-279,2026-03-18,18:57:40,1,1,Jake Gaerke,R,Moeller,NA NA,R,Springboro High School,8,Top,0,0,0,1 and 2,Not Tracked,Strike Swing and Miss,,0.0,38.0,Waste,Rick Reynolds
+279,2026-03-18,18:57:40,1,1,Jake Gaerke,R,Moeller,NA NA,R,Springboro High School,8,Top,0,0,0,1 and 2,Not Tracked,Strike Swing and Miss,,,38.0,Waste,Rick Reynolds
 280,2026-03-18,18:58:05,2,2,Jake Gaerke,R,Moeller,NA NA,R,Springboro High School,8,Top,0,0,1,0 and 0,Fast Ball,Strike Foul,,88.0,14.0,Shadow,Rick Reynolds
 281,2026-03-18,18:58:27,3,3,Jake Gaerke,R,Moeller,NA NA,R,Springboro High School,8,Top,0,0,2,0 and 1,Fast Ball,Strike Swing and Miss,Strike Out,88.0,5.0,Heart,Rick Reynolds
 282,2026-03-18,18:58:53,4,1,Jake Gaerke,R,Moeller,Ben Kacsandy,R,Springboro High School,8,Top,1,0,0,0 and 2,Change Up,Strike Foul,,79.0,17.0,Shadow,Rick Reynolds
@@ -15007,8 +15007,8 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 291,2026-03-18,19:03:42,1,1,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,0,0,1 and 2,Breaking Ball,Ball,,74.0,39.0,Waste,Rick Reynolds
 292,2026-03-18,19:03:53,2,2,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,1,0,0 and 0,Fast Ball,Ball,,82.0,31.0,Waste,Rick Reynolds
 293,2026-03-18,19:04:08,3,3,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,2,0,1 and 0,Fast Ball,Strike Looking,,81.0,9.0,Heart,Rick Reynolds
-294,2026-03-18,19:04:39,4,4,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,2,1,2 and 0,Not Tracked,Ball,,0.0,38.0,Waste,Rick Reynolds
-295,2026-03-18,19:04:44,5,5,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,3,1,2 and 1,Not Tracked,Strike Looking,,0.0,38.0,Waste,Rick Reynolds
+294,2026-03-18,19:04:39,4,4,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,2,1,2 and 0,Not Tracked,Ball,,,38.0,Waste,Rick Reynolds
+295,2026-03-18,19:04:44,5,5,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,3,1,2 and 1,Not Tracked,Strike Looking,,,38.0,Waste,Rick Reynolds
 296,2026-03-18,19:04:57,6,6,NA NA,R,Springboro High School,Reggie Watson III,L,Moeller,8,Bottom,0,3,2,3 and 1,Change Up,Strike In Play,Fly Out,75.0,5.0,Heart,Rick Reynolds
 297,2026-03-18,19:05:26,7,1,NA NA,R,Springboro High School,Connor Maupin,R,Moeller,8,Bottom,1,0,0,3 and 2,Fast Ball,Strike Foul,,81.0,5.0,Heart,Rick Reynolds
 298,2026-03-18,19:05:49,8,2,NA NA,R,Springboro High School,Matt Ponatoski,L,Moeller,8,Bottom,1,0,1,0 and 0,Change Up,Strike In Play,Fly Out,75.0,5.0,Heart,Rick Reynolds
@@ -15032,5 +15032,5 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 316,2026-03-18,19:15:48,16,2,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,1,0,0 and 0,Fast Ball,Ball,,84.0,28.0,Chase,Rick Reynolds
 317,2026-03-18,19:16:04,17,3,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,0,1 and 0,Fast Ball,Strike Foul,,83.0,8.0,Heart,Rick Reynolds
 318,2026-03-18,19:16:33,18,4,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,1,2 and 0,Change Up,Strike Looking,,79.0,19.0,Shadow,Rick Reynolds
-319,2026-03-18,19:18:02,19,5,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,2,2 and 1,Not Tracked,Strike In Play,Ground Out,0.0,18.0,Shadow,Rick Reynolds
-320,,,9,1,TJ Brown,R,Springboro High School,Conner Cuozzo,R,Moeller,1,Bottom,0,0,0,2 and 2,Other,Ball,,0.0,38.0,Waste,Rick Reynolds
+319,2026-03-18,19:18:02,19,5,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,2,2 and 1,Not Tracked,Strike In Play,Ground Out,,18.0,Shadow,Rick Reynolds
+320,,,9,1,TJ Brown,R,Springboro High School,Conner Cuozzo,R,Moeller,1,Bottom,0,0,0,2 and 2,Other,Ball,,,38.0,Waste,Rick Reynolds
