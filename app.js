@@ -118,10 +118,8 @@ function reprocessData() {
 
   filteredData = seasonFilter === 'all' ? rawData : rawData.filter(r => {
     const d = (r.Date || '');
-    if (seasonFilter === '2024') return d.includes('/2024');
-    if (seasonFilter === '2025') return d.includes('/2025');
-    if (seasonFilter === '2026') return d.includes('/2026');
-    return true;
+    // Support both "3/23/2024" and "2024-03-23" date formats
+    return d.includes('/' + seasonFilter) || d.startsWith(seasonFilter + '-');
   });
 
   preprocessData(filteredData);
