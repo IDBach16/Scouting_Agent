@@ -231,7 +231,7 @@ function computePitcherProfile(pitches, name, hand, team) {
     const isSwing = result.includes('Swing')||result.includes('Foul')||result.includes('In Play');
     if (isSwing) swingsByType[pt] = (swingsByType[pt]||0)+1;
     if (result.includes('Swing and Miss')) whiffByType[pt] = (whiffByType[pt]||0)+1;
-    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')) firstPitchStrikes++; }
+    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')||result.includes('Foul')||result.includes('In Play')) firstPitchStrikes++; }
 
     const paKey = `${row.Date}-${row.Inning}-${row['Top/Bottom']}-${row.Batter}-${row.PAofInning}`;
     if (abResult && !seenPA.has(paKey)) {
@@ -277,8 +277,8 @@ function computeHitterProfile(pitches, name, hand) {
   if (!total) return null;
   const byPitchType={};
   let chaseSwings=0, chasePitches=0;
-  const vsRHP={abs:0,hits:0,ks:0}, vsLHP={abs:0,hits:0,ks:0};
-  const byCount={first_pitch:{abs:0,hits:0,ks:0},ahead:{abs:0,hits:0,ks:0},even:{abs:0,hits:0,ks:0},two_strikes:{abs:0,hits:0,ks:0}};
+  const vsRHP={pa:0,abs:0,hits:0,ks:0}, vsLHP={pa:0,abs:0,hits:0,ks:0};
+  const byCount={first_pitch:{pa:0,abs:0,hits:0,ks:0},ahead:{pa:0,abs:0,hits:0,ks:0},behind:{pa:0,abs:0,hits:0,ks:0},even:{pa:0,abs:0,hits:0,ks:0},two_strikes:{pa:0,abs:0,hits:0,ks:0}};
   let totalPA=0, totalHits=0, totalAB=0, totalKs=0, totalBBs=0;
   const seenPA=new Set();
   const chasePitchesByType={}, chaseSwingsByType={};
@@ -311,13 +311,14 @@ function computeHitterProfile(pitches, name, hand) {
       if (['BB','HBP','IBB'].includes(abResult)) totalBBs++;
       if (isAB) byPitchType[pt].abs++; if (isHit) byPitchType[pt].hits++;
       const sp=pH==='R'?vsRHP:vsLHP;
-      if (isAB) sp.abs++; if (isHit) sp.hits++; if (abResult==='Strike Out') sp.ks++;
+      sp.pa++; if (isAB) sp.abs++; if (isHit) sp.hits++; if (abResult==='Strike Out') sp.ks++;
       const cats=[];
       if (b===0 && s===0) cats.push('first_pitch');
       if (s===2) cats.push('two_strikes');
       if (b>s) cats.push('ahead');
-      if (b===s) cats.push('even');
-      cats.forEach(cc=>{ if (isAB) byCount[cc].abs++; if (isHit) byCount[cc].hits++; if (abResult==='Strike Out') byCount[cc].ks++; });
+      else if (s>b) cats.push('behind');
+      else cats.push('even');
+      cats.forEach(cc=>{ if (byCount[cc]) { byCount[cc].pa++; if (isAB) byCount[cc].abs++; if (isHit) byCount[cc].hits++; if (abResult==='Strike Out') byCount[cc].ks++; } });
     }
   });
 
@@ -326,7 +327,7 @@ function computeHitterProfile(pitches, name, hand) {
     const d=byPitchType[pt];
     resultsByPitchType[pt]={ pitchesSeen:d.pitches, AVG:d.abs>0?(d.hits/d.abs).toFixed(3):'N/A', whiffRate:pct(d.whiffs,d.swings), chaseRate:pct(chaseSwingsByType[pt]||0,chasePitchesByType[pt]||0) };
   });
-  const fmtCount=c=>({AVG:c.abs>0?(c.hits/c.abs).toFixed(3):'N/A', K_rate:c.abs>0?pct(c.ks,c.abs):'N/A'});
+  const fmtCount=c=>({AVG:c.abs>0?(c.hits/c.abs).toFixed(3):'N/A', K_rate:c.pa>0?pct(c.ks,c.pa):'N/A'});
 
   return {
     name, hand:hand||'', totalPitchesSeen:total, totalPA,
@@ -334,9 +335,9 @@ function computeHitterProfile(pitches, name, hand) {
     K_rate:pct(totalKs,totalPA), BB_rate:pct(totalBBs,totalPA),
     overallChaseRate:pct(chaseSwings,chasePitches),
     resultsByPitchType,
-    vsRHP:{AVG:vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A',K_rate:vsRHP.abs>0?pct(vsRHP.ks,vsRHP.abs):'N/A'},
-    vsLHP:{AVG:vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A',K_rate:vsLHP.abs>0?pct(vsLHP.ks,vsLHP.abs):'N/A'},
-    byCount:{first_pitch:fmtCount(byCount.first_pitch),ahead:fmtCount(byCount.ahead),even:fmtCount(byCount.even),two_strikes:fmtCount(byCount.two_strikes)},
+    vsRHP:{AVG:vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A',K_rate:vsRHP.pa>0?pct(vsRHP.ks,vsRHP.pa):'N/A'},
+    vsLHP:{AVG:vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A',K_rate:vsLHP.pa>0?pct(vsLHP.ks,vsLHP.pa):'N/A'},
+    byCount:{first_pitch:fmtCount(byCount.first_pitch),ahead:fmtCount(byCount.ahead),behind:fmtCount(byCount.behind),even:fmtCount(byCount.even),two_strikes:fmtCount(byCount.two_strikes)},
     sampleSizeWarning:total<30?`Small sample: only ${total} pitches`:'',
   };
 }
@@ -1870,7 +1871,7 @@ function buildQuickLookCard(profile, pitches) {
   // ====== STAT ROW ======
   const statRow = document.createElement('div');
   statRow.className = 'quick-look-row';
-  [{val:`${primaryVelo}`,lbl:`${primary} Velo`},{val:profile.K_rate||'N/A',lbl:'K Rate'},{val:profile.BB_rate||'N/A',lbl:'BB Rate'},{val:profile.firstPitchStrike||'N/A',lbl:'1st Pitch K%'}].forEach(s => {
+  [{val:`${primaryVelo}`,lbl:`${primary} Velo`},{val:profile.K_rate||'N/A',lbl:'K Rate'},{val:profile.BB_rate||'N/A',lbl:'BB Rate'},{val:profile.firstPitchStrike||'N/A',lbl:'FP Strike%'}].forEach(s => {
     const el = document.createElement('div');
     el.className = 'quick-look-stat';
     el.innerHTML = `<div class="ql-val">${s.val}</div><div class="ql-lbl">${s.lbl}</div>`;
@@ -2010,7 +2011,7 @@ function computeHitterDugoutStats(pitches) {
       if (isAB) sp.abs++;
       if (isHit) sp.hits++;
       if (abResult === 'Strike Out') sp.ks++;
-      if (['BB','HBP','IBB'].includes(abResult)) sp.bbs++;
+      if (abResult === 'BB') sp.bbs++;
       if (abResult === 'HBP') sp.hbp++;
       if (abResult === '1B') sp.singles++;
       if (abResult === '2B') sp.doubles++;
@@ -2026,17 +2027,18 @@ function computeHitterDugoutStats(pitches) {
     }
   });
 
-  // Compute wOBA
+  // Compute wOBA (standard weights, exclude IBB)
   function calcWOBA(s) {
     const num = (0.69*s.bbs) + (0.72*s.hbp) + (0.89*s.singles) + (1.27*s.doubles) + (1.62*s.triples) + (2.10*s.hrs);
-    const den = s.bbs + s.hbp + s.singles + s.doubles + s.triples + s.hrs + s.outs;
+    const den = s.abs + s.bbs + s.hbp;
     return den > 0 ? (num/den).toFixed(3) : 'N/A';
   }
+  function splitPA(s) { return s.abs + s.bbs + s.hbp; }
 
   return {
     outcomeByGroup,
-    vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,vsRHP.abs+vsRHP.bbs+vsRHP.hbp||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
-    vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,vsLHP.abs+vsLHP.bbs+vsLHP.hbp||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
+    vsRHP: { ...vsRHP, AVG: vsRHP.abs>0?(vsRHP.hits/vsRHP.abs).toFixed(3):'N/A', K_rate:pct(vsRHP.ks,splitPA(vsRHP)||1), wOBA:calcWOBA(vsRHP), XBH:vsRHP.doubles+vsRHP.triples+vsRHP.hrs, H:vsRHP.hits },
+    vsLHP: { ...vsLHP, AVG: vsLHP.abs>0?(vsLHP.hits/vsLHP.abs).toFixed(3):'N/A', K_rate:pct(vsLHP.ks,splitPA(vsLHP)||1), wOBA:calcWOBA(vsLHP), XBH:vsLHP.doubles+vsLHP.triples+vsLHP.hrs, H:vsLHP.hits },
     zoneStats,
   };
 }
@@ -2303,7 +2305,7 @@ function buildTeamHittersSummaryCard(teamName, hitters) {
       if (isAB) sp.abs++;
       if (isHit) sp.hits++;
       if (abResult==='Strike Out') sp.ks++;
-      if (['BB','HBP','IBB'].includes(abResult)) sp.bbs++;
+      if (abResult==='BB') sp.bbs++;
       if (abResult==='HBP') sp.hbp++;
       if (abResult==='1B') sp.singles++;
       if (abResult==='2B') sp.doubles++;
@@ -2315,7 +2317,7 @@ function buildTeamHittersSummaryCard(teamName, hitters) {
 
   function calcWOBA(s) {
     const num = (0.69*s.bbs)+(0.72*s.hbp)+(0.89*s.singles)+(1.27*s.doubles)+(1.62*s.triples)+(2.10*s.hrs);
-    const den = s.bbs+s.hbp+s.singles+s.doubles+s.triples+s.hrs+s.outs;
+    const den = s.abs+s.bbs+s.hbp;
     return den>0?(num/den).toFixed(3):'N/A';
   }
 
@@ -2399,7 +2401,7 @@ function buildTeamHittersSummaryCard(teamName, hitters) {
     box.innerHTML = `<div class="ql-split-title">vs ${side}</div>
       <div class="ql-split-stats">
         <span><strong>${a}</strong> AVG</span>
-        <span><strong>${pct(d.ks,d.abs||1)}</strong> K%</span>
+        <span><strong>${pct(d.ks,(d.abs+d.bbs+d.hbp)||1)}</strong> K%</span>
         <span><strong>${w}</strong> wOBA</span>
         <span><strong>${d.hits}</strong> H</span>
         <span><strong>${d.doubles+d.triples+d.hrs}</strong> XBH</span>
@@ -2461,7 +2463,7 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
     const isSwing = result.includes('Swing')||result.includes('Foul')||result.includes('In Play');
     if (isSwing) swingsByType[pt] = (swingsByType[pt]||0)+1;
     if (result.includes('Swing and Miss')) whiffByType[pt] = (whiffByType[pt]||0)+1;
-    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')) firstPitchStrikes++; }
+    if (b===0&&s===0) { firstPitches++; if (result.includes('Strike')||result.includes('Foul')||result.includes('In Play')) firstPitchStrikes++; }
 
     const labels = [];
     if (b===0&&s===0) labels.push('first_pitch');
@@ -2544,7 +2546,7 @@ function buildTeamPitchersSummaryCard(teamName, pitcherData) {
   // Stat row
   const statRow = document.createElement('div');
   statRow.className = 'quick-look-row';
-  [{val:pct(ks,totalPA),lbl:'K Rate'},{val:pct(bbs,totalPA),lbl:'BB Rate'},{val:pct(firstPitchStrikes,firstPitches),lbl:'1st Pitch K%'},{val:pct(hrs,totalPA),lbl:'HR Rate'},{val:String(names.length),lbl:'Arms'}].forEach(s => {
+  [{val:pct(ks,totalPA),lbl:'K Rate'},{val:pct(bbs,totalPA),lbl:'BB Rate'},{val:pct(firstPitchStrikes,firstPitches),lbl:'FP Strike%'},{val:pct(hrs,totalPA),lbl:'HR Rate'},{val:String(names.length),lbl:'Arms'}].forEach(s => {
     const el = document.createElement('div');
     el.className = 'quick-look-stat';
     el.innerHTML = `<div class="ql-val">${s.val||'N/A'}</div><div class="ql-lbl">${s.lbl}</div>`;
