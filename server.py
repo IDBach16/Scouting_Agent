@@ -20,6 +20,25 @@ MODEL = "claude-haiku-4-5-20251001"  # Haiku: ~10x cheaper than Sonnet, great fo
 PORT = 3000
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Convert Excel source to data.csv on startup so the frontend (PapaParse) stays happy
+EXCEL_SOURCE = os.path.join(STATIC_DIR, "Moeller_2024_2025_2026_Final_Season.xlsx")
+CSV_TARGET = os.path.join(STATIC_DIR, "data.csv")
+
+def _refresh_csv():
+    """Rebuild data.csv from the Excel file if the xlsx is newer."""
+    if not os.path.exists(EXCEL_SOURCE):
+        return
+    xlsx_mtime = os.path.getmtime(EXCEL_SOURCE)
+    csv_mtime = os.path.getmtime(CSV_TARGET) if os.path.exists(CSV_TARGET) else 0
+    if xlsx_mtime > csv_mtime:
+        import pandas as pd
+        print("  Refreshing data.csv from Excel...")
+        df = pd.read_excel(EXCEL_SOURCE)
+        df.to_csv(CSV_TARGET, index=False)
+        print(f"  Wrote {len(df)} rows to data.csv")
+
+_refresh_csv()
+
 # Instructions-only system prompt (no data — frontend sends relevant data per question)
 SYSTEM_PROMPT_FULL = """You are the Moeller Baseball Game Prep Agent — a baseball analytics assistant built for the coaching staff at Archbishop Moeller High School.
 

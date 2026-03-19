@@ -90,6 +90,7 @@ function reprocessData() {
     const d = (r.Date || '');
     if (seasonFilter === '2024') return d.includes('/2024');
     if (seasonFilter === '2025') return d.includes('/2025');
+    if (seasonFilter === '2026') return d.includes('/2026');
     return true;
   });
 
