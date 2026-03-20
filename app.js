@@ -3520,7 +3520,12 @@ async function sendMessage() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({message:fullMessage,session_id:sessionId,mode:appMode}),
     });
-    const data=await res.json();
+    const rawText = await res.text();
+    let data;
+    try { data = JSON.parse(rawText); } catch(parseErr) {
+      console.error('Response not JSON:', rawText.substring(0, 500));
+      throw new Error('Server returned invalid response. Try again or use Dugout mode.');
+    }
     if (!res.ok) throw new Error(data.error||`Server error (${res.status})`);
     removeLoading(loadingEl);
     appendMessage('assistant', data.reply, charts);
