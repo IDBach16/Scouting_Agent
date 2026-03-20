@@ -1339,6 +1339,8 @@ function executeMenuReport(type, item) {
   }
 
   // Full mode or no card available — use API
+  // Reset session to avoid context overflow from previous queries
+  sessionId = 'session_' + Date.now();
   let query = '';
   if (type === 'hitter_report') query = `Give me a full scouting report on ${item.name} as a hitter`;
   else if (type === 'pitcher_report') query = `Give me a full scouting report on ${item.name} as a pitcher`;
@@ -3509,7 +3511,10 @@ async function sendMessage() {
     const fullMessage=`Here is the relevant data (context type: ${context.type}). Coach's question: "${text}"\n\n${dataPayload}`;
 
     // Generate charts only in full mode
-    const charts = appMode === 'full' ? generateCharts(text, context.type, context.data) : [];
+    let charts = [];
+    if (appMode === 'full') {
+      try { charts = generateCharts(text, context.type, context.data); } catch(chartErr) { console.warn('Chart generation error:', chartErr); }
+    }
 
     const res=await fetch('/api/chat',{
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -3521,6 +3526,7 @@ async function sendMessage() {
     appendMessage('assistant', data.reply, charts);
   } catch(err) {
     removeLoading(loadingEl);
+    console.error('sendMessage error:', err);
     showError(err.message);
   } finally {
     isLoading=true; sendBtn.disabled=false; userInput.focus();
