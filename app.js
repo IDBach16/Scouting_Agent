@@ -847,14 +847,20 @@ function computeTendencyData(category, teamName) {
 }
 
 // ===== QUESTION ROUTING =====
-function findBestMatch(query, candidates) {
-  let best=null, bestLen=0;
+function findBestMatch(query, candidates, excludeWords) {
+  let best=null, bestScore=0;
+  // excludeWords: array of lowercase words to ignore as first-name-only matches
+  // (prevents "conner" matching a player named "Conner Cuozzo" when we're looking for teams, etc.)
+  const excl = (excludeWords||[]).map(w=>w.toLowerCase());
   for (const name of candidates) {
     const lower=name.toLowerCase();
-    if (query.includes(lower)&&lower.length>bestLen) { best=name; bestLen=lower.length; }
+    // Full name match — strongest signal (score=3)
+    if (query.includes(lower)&&3>bestScore) { best=name; bestScore=3; }
     const parts=name.split(/\s+/);
-    if (parts.length>1) { const ln=parts[parts.length-1].toLowerCase(); if (ln.length>2&&query.includes(ln)&&ln.length>bestLen) { best=name; bestLen=ln.length; } }
-    if (parts.length>0) { const fn=parts[0].toLowerCase(); if (fn.length>3&&query.includes(fn)&&!best) best=name; }
+    // Last name match — strong signal (score=2)
+    if (parts.length>1) { const ln=parts[parts.length-1].toLowerCase(); if (ln.length>2&&query.includes(ln)&&2>bestScore) { best=name; bestScore=2; } }
+    // First name match — weakest, skip if it collides with an excluded word (score=1)
+    if (parts.length>0&&bestScore<1) { const fn=parts[0].toLowerCase(); if (fn.length>3&&query.includes(fn)&&!excl.includes(fn)) { best=name; bestScore=1; } }
   }
   return best;
 }
@@ -885,11 +891,18 @@ function getAllMoellerPitcherProfiles() {
 function routeQuestion(question) {
   const q=question.toLowerCase();
   const ctx={type:'',data:{}};
-  const oppP=findBestMatch(q,Object.keys(stats.opponentPitchers));
-  const oppB=findBestMatch(q,Object.keys(stats.opponentBatters));
-  const moeP=findBestMatch(q,stats.moellerPitcherList);
-  const moeH=findBestMatch(q,stats.moellerHitterList);
-  const team=findBestMatch(q,stats.teamList);
+  // Collect all player first names so team matching ignores them (e.g. "Conner" Cuozzo vs "Conner" High)
+  const allPlayerFirstNames = [
+    ...Object.keys(stats.opponentPitchers), ...Object.keys(stats.opponentBatters),
+    ...stats.moellerPitcherList, ...stats.moellerHitterList
+  ].map(n => n.split(/\s+/)[0].toLowerCase()).filter(n => n.length > 3);
+  // Collect all team name words so player first-name matching ignores them
+  const allTeamWords = stats.teamList.flatMap(t => t.toLowerCase().split(/\s+/)).filter(w => w.length > 3);
+  const oppP=findBestMatch(q,Object.keys(stats.opponentPitchers), allTeamWords);
+  const oppB=findBestMatch(q,Object.keys(stats.opponentBatters), allTeamWords);
+  const moeP=findBestMatch(q,stats.moellerPitcherList, allTeamWords);
+  const moeH=findBestMatch(q,stats.moellerHitterList, allTeamWords);
+  const team=findBestMatch(q,stats.teamList, allPlayerFirstNames);
 
   if ((q.includes('game plan')||q.includes('scouting report')||q.includes('prepare for')||q.includes('prep for')||q.includes('facing'))&&team) {
     ctx.type='game_plan'; ctx.data.teamSummary=computeTeamSummary(team);
