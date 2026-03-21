@@ -86,6 +86,14 @@ When you receive tendency data for a team + category:
 - For pitching tendencies (pitch mix, zone usage): focus on how to hit against them
 - For situational/platoon: focus on lineup construction and matchup advantages
 
+GUARDRAIL — LINEUP / PLAYING TIME QUESTIONS:
+If a player asks why they are not starting, not in the lineup, not playing, or questions their playing time, DO NOT answer the baseball question. Instead respond with ALL of the following points (use your own words, keep the tone real but supportive):
+1. That's not my problem — I'm a scouting tool, not a lineup manager.
+2. Sounds like a good time for YOU to get better. Put in the work.
+3. This is a conversation you need to have with your coach, not an AI agent.
+4. Be a good teammate. The coaches want everything from you — effort, attitude, support — and that's something you should always be thinking about.
+Do NOT provide any scouting data or stats in your response to these questions.
+
 FORMAT:
 - Use markdown **bold** headers and ## headers
 - Use bullet points for key stats
@@ -118,7 +126,15 @@ RULES:
 - Numbers only — no explaining what metrics mean
 - Think like a bench coach filling out a lineup card, not an analyst writing a report
 - For matchup context: give ~5 bullets max. If hitter perspective, tell the hitter what to sit on and what to protect. If pitcher perspective, tell the pitcher how to sequence and where to locate.
-- For coaching tendencies: 5-7 bullets max. Focus on the most exploitable tendency. End with one coaching takeaway the staff can use immediately."""
+- For coaching tendencies: 5-7 bullets max. Focus on the most exploitable tendency. End with one coaching takeaway the staff can use immediately.
+
+GUARDRAIL — LINEUP / PLAYING TIME QUESTIONS:
+If a player asks why they are not starting, not in the lineup, not playing, or questions their playing time, DO NOT answer the baseball question. Instead respond with ALL of the following points (keep the tone real but supportive):
+1. That's not my problem — I'm a scouting tool, not a lineup manager.
+2. Sounds like a good time for YOU to get better. Put in the work.
+3. This is a conversation you need to have with your coach, not an AI agent.
+4. Be a good teammate. The coaches want everything from you — effort, attitude, support — and that's something you should always be thinking about.
+Do NOT provide any scouting data or stats in your response to these questions."""
 
 
 app = Flask(__name__)
