@@ -3591,7 +3591,28 @@ async function sendMessage() {
 
   try {
     const context=routeQuestion(text);
-    const dataPayload=JSON.stringify(context.data,null,2);
+    let dataPayload=JSON.stringify(context.data,null,2);
+
+    // Trim payload if it's too large for the API (keep under ~40K chars ≈ ~10K tokens)
+    const MAX_PAYLOAD = 40000;
+    if (dataPayload.length > MAX_PAYLOAD) {
+      // Strip detailed per-count and per-pitch arrays to reduce size
+      const trimmed = JSON.parse(JSON.stringify(context.data));
+      const stripDetail = (obj) => {
+        if (!obj || typeof obj !== 'object') return;
+        for (const key of Object.keys(obj)) {
+          if (['pitchMixByCount','countTendencies','byCount','pitches','allPitches'].includes(key)) {
+            delete obj[key];
+          } else if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+            stripDetail(obj[key]);
+          }
+        }
+      };
+      stripDetail(trimmed);
+      dataPayload = JSON.stringify(trimmed, null, 2);
+      console.log(`Payload trimmed: ${dataPayload.length} chars (was over ${MAX_PAYLOAD})`);
+    }
+
     const fullMessage=`Here is the relevant data (context type: ${context.type}). Coach's question: "${text}"\n\n${dataPayload}`;
 
     // Generate charts only in full mode
