@@ -858,12 +858,11 @@ function findBestMatch(query, candidates, excludeWords) {
     // Full name match — strongest (score=4)
     if ((normQ.includes(normName)||normQ.includes(lower))&&4>bestScore) { best=name; bestScore=4; }
     // Candidate contained in query after stripping common suffixes like "High School" (score=3)
-    // e.g. "St. Xavier High School" -> check if query contains "st. xavier"
     if (bestScore<3) {
       const stripped = normName.replace(/\s*(high school|hs|h\.s\.)$/i, '').trim();
       if (stripped.length>3 && normQ.includes(stripped)) { best=name; bestScore=3; }
     }
-    // Query contained in candidate (score=2.5) — e.g. query has "xavier", candidate is "St. Xavier High School"
+    // Significant word matching (score=2-2.5)
     if (bestScore<2) {
       const significantWords = normName.split(/\s+/).filter(w => w.length > 3 && !['high','school'].includes(w));
       const matchCount = significantWords.filter(w => {
@@ -893,7 +892,12 @@ function findBestMatch(query, candidates, excludeWords) {
       }
     }
   }
-  return best;
+  return { name: best, score: bestScore };
+}
+
+// Wrapper for backward compat — returns just the name
+function findBestMatchName(query, candidates, excludeWords) {
+  return findBestMatch(query, candidates, excludeWords).name;
 }
 
 function getTeamPitcherProfiles(teamName) {
@@ -947,11 +951,18 @@ function routeQuestion(question) {
   ].map(n => n.split(/\s+/)[0].toLowerCase()).filter(n => n.length > 3);
   // Collect all team name words so player first-name matching ignores them
   const allTeamWords = stats.teamList.flatMap(t => t.toLowerCase().split(/\s+/)).filter(w => w.length > 3);
-  const oppP=findBestMatch(q,Object.keys(stats.opponentPitchers), allTeamWords);
-  const oppB=findBestMatch(q,Object.keys(stats.opponentBatters), allTeamWords);
-  const moeP=findBestMatch(q,stats.moellerPitcherList, allTeamWords);
-  const moeH=findBestMatch(q,stats.moellerHitterList, allTeamWords);
-  const team=findBestMatch(q,stats.teamList, allPlayerFirstNames);
+  const oppPMatch=findBestMatch(q,Object.keys(stats.opponentPitchers), allTeamWords);
+  const oppBMatch=findBestMatch(q,Object.keys(stats.opponentBatters), allTeamWords);
+  const moePMatch=findBestMatch(q,stats.moellerPitcherList, allTeamWords);
+  const moeHMatch=findBestMatch(q,stats.moellerHitterList, allTeamWords);
+  const teamMatch=findBestMatch(q,stats.teamList, allPlayerFirstNames);
+
+  // When a Moeller player has an equal or better match score than an opponent, prefer Moeller
+  const oppP = (moePMatch.name && moePMatch.score >= oppPMatch.score) ? null : oppPMatch.name;
+  const oppB = (moeHMatch.name && moeHMatch.score >= oppBMatch.score) ? null : oppBMatch.name;
+  const moeP = (moePMatch.name && moePMatch.score >= (oppPMatch.name ? oppPMatch.score : 0)) ? moePMatch.name : (oppPMatch.name ? null : moePMatch.name);
+  const moeH = (moeHMatch.name && moeHMatch.score >= (oppBMatch.name ? oppBMatch.score : 0)) ? moeHMatch.name : (oppBMatch.name ? null : moeHMatch.name);
+  const team=teamMatch.name;
 
   // "pitching coach" + team = they want to pitch AGAINST that team's hitters
   if ((q.includes('pitching coach')||q.includes('pitch against')||q.includes('how to pitch'))&&team) {
@@ -2704,11 +2715,17 @@ function buildTeamHittersQuickLook(teamName) {
 
 function tryQuickLook(question) {
   const q = question.toLowerCase();
-  const oppP = findBestMatch(q, Object.keys(stats.opponentPitchers));
-  const moeP = findBestMatch(q, stats.moellerPitcherList);
-  const moeH = findBestMatch(q, stats.moellerHitterList);
-  const oppB = findBestMatch(q, Object.keys(stats.opponentBatters));
-  const team = findBestMatch(q, stats.teamList);
+  const oppPM = findBestMatch(q, Object.keys(stats.opponentPitchers));
+  const moePM = findBestMatch(q, stats.moellerPitcherList);
+  const moeHM = findBestMatch(q, stats.moellerHitterList);
+  const oppBM = findBestMatch(q, Object.keys(stats.opponentBatters));
+  const teamM = findBestMatch(q, stats.teamList);
+  // Prefer Moeller matches when scores are equal
+  const oppP = (moePM.name && moePM.score >= oppPM.score) ? null : oppPM.name;
+  const moeP = (moePM.name && moePM.score >= (oppPM.name ? oppPM.score : 0)) ? moePM.name : (oppPM.name ? null : moePM.name);
+  const moeH = (moeHM.name && moeHM.score >= (oppBM.name ? oppBM.score : 0)) ? moeHM.name : (oppBM.name ? null : moeHM.name);
+  const oppB = (moeHM.name && moeHM.score >= oppBM.score) ? null : oppBM.name;
+  const team = teamM.name;
 
   // Hitter lookups
   if (q.includes('hitter') || q.includes('batter') || q.includes('lineup') || q.includes('hitting')) {
