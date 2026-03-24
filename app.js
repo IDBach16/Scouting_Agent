@@ -1019,11 +1019,30 @@ function routeQuestion(question) {
   const moeHMatch=findBestMatch(q,stats.moellerHitterList, allTeamWords);
   const teamMatch=findBestMatch(q,stats.teamList, allPlayerFirstNames);
 
-  // When a Moeller player has an equal or better match score than an opponent, prefer Moeller
-  const oppP = (moePMatch.name && moePMatch.score >= oppPMatch.score) ? null : oppPMatch.name;
-  const oppB = (moeHMatch.name && moeHMatch.score >= oppBMatch.score) ? null : oppBMatch.name;
-  const moeP = (moePMatch.name && moePMatch.score >= (oppPMatch.name ? oppPMatch.score : 0)) ? moePMatch.name : (oppPMatch.name ? null : moePMatch.name);
-  const moeH = (moeHMatch.name && moeHMatch.score >= (oppBMatch.name ? oppBMatch.score : 0)) ? moeHMatch.name : (oppBMatch.name ? null : moeHMatch.name);
+  // When a Moeller player has an equal or better match score than ANY opponent match, prefer Moeller
+  // This handles cross-role cases (e.g. Moeller hitter "Adam Maybury" vs opponent pitcher "Adam Zinser")
+  const bestMoeScore = Math.max(moePMatch.score, moeHMatch.score);
+  const bestOppScore = Math.max(oppPMatch.score, oppBMatch.score);
+
+  let oppP, oppB, moeP, moeH;
+  if (bestMoeScore >= bestOppScore && bestMoeScore > 0) {
+    // Moeller match wins — suppress all opponent matches
+    oppP = null;
+    oppB = null;
+    moeP = moePMatch.score >= moeHMatch.score ? moePMatch.name : null;
+    moeH = moeHMatch.score >= moePMatch.score ? moeHMatch.name : null;
+  } else if (bestOppScore > 0) {
+    // Opponent match wins — suppress Moeller matches only if weaker
+    oppP = oppPMatch.score >= oppBMatch.score ? oppPMatch.name : null;
+    oppB = oppBMatch.score > oppPMatch.score ? oppBMatch.name : null;
+    moeP = (moePMatch.score > oppPMatch.score) ? moePMatch.name : null;
+    moeH = (moeHMatch.score > oppBMatch.score) ? moeHMatch.name : null;
+  } else {
+    oppP = oppPMatch.name;
+    oppB = oppBMatch.name;
+    moeP = moePMatch.name;
+    moeH = moeHMatch.name;
+  }
   const team=teamMatch.name;
 
   // "pitching coach" + team = they want to pitch AGAINST that team's hitters
@@ -2782,11 +2801,22 @@ function tryQuickLook(question) {
   const moeHM = findBestMatch(q, stats.moellerHitterList);
   const oppBM = findBestMatch(q, Object.keys(stats.opponentBatters));
   const teamM = findBestMatch(q, stats.teamList);
-  // Prefer Moeller matches when scores are equal
-  const oppP = (moePM.name && moePM.score >= oppPM.score) ? null : oppPM.name;
-  const moeP = (moePM.name && moePM.score >= (oppPM.name ? oppPM.score : 0)) ? moePM.name : (oppPM.name ? null : moePM.name);
-  const moeH = (moeHM.name && moeHM.score >= (oppBM.name ? oppBM.score : 0)) ? moeHM.name : (oppBM.name ? null : moeHM.name);
-  const oppB = (moeHM.name && moeHM.score >= oppBM.score) ? null : oppBM.name;
+  // Cross-role disambiguation: Moeller hitter "Adam Maybury" vs opponent pitcher "Adam Zinser"
+  const bestMoeScoreQL = Math.max(moePM.score, moeHM.score);
+  const bestOppScoreQL = Math.max(oppPM.score, oppBM.score);
+  let oppP, oppB, moeP, moeH;
+  if (bestMoeScoreQL >= bestOppScoreQL && bestMoeScoreQL > 0) {
+    oppP = null; oppB = null;
+    moeP = moePM.score >= moeHM.score ? moePM.name : null;
+    moeH = moeHM.score >= moePM.score ? moeHM.name : null;
+  } else if (bestOppScoreQL > 0) {
+    oppP = oppPM.score >= oppBM.score ? oppPM.name : null;
+    oppB = oppBM.score > oppPM.score ? oppBM.name : null;
+    moeP = (moePM.score > oppPM.score) ? moePM.name : null;
+    moeH = (moeHM.score > oppBM.score) ? moeHM.name : null;
+  } else {
+    oppP = oppPM.name; oppB = oppBM.name; moeP = moePM.name; moeH = moeHM.name;
+  }
   const team = teamM.name;
 
   // Hitter lookups
