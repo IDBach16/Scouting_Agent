@@ -849,18 +849,49 @@ function computeTendencyData(category, teamName) {
 // ===== QUESTION ROUTING =====
 function findBestMatch(query, candidates, excludeWords) {
   let best=null, bestScore=0;
-  // excludeWords: array of lowercase words to ignore as first-name-only matches
-  // (prevents "conner" matching a player named "Conner Cuozzo" when we're looking for teams, etc.)
   const excl = (excludeWords||[]).map(w=>w.toLowerCase());
+  // Normalize: "St.Xavier" -> "st. xavier", collapse spaces
+  const normQ = query.replace(/\bst\./gi, 'st. ').replace(/\s+/g, ' ');
   for (const name of candidates) {
     const lower=name.toLowerCase();
-    // Full name match — strongest signal (score=3)
-    if (query.includes(lower)&&3>bestScore) { best=name; bestScore=3; }
+    const normName = lower.replace(/\bst\./gi, 'st. ').replace(/\s+/g, ' ');
+    // Full name match — strongest (score=4)
+    if ((normQ.includes(normName)||normQ.includes(lower))&&4>bestScore) { best=name; bestScore=4; }
+    // Candidate contained in query after stripping common suffixes like "High School" (score=3)
+    // e.g. "St. Xavier High School" -> check if query contains "st. xavier"
+    if (bestScore<3) {
+      const stripped = normName.replace(/\s*(high school|hs|h\.s\.)$/i, '').trim();
+      if (stripped.length>3 && normQ.includes(stripped)) { best=name; bestScore=3; }
+    }
+    // Query contained in candidate (score=2.5) — e.g. query has "xavier", candidate is "St. Xavier High School"
+    if (bestScore<2) {
+      const significantWords = normName.split(/\s+/).filter(w => w.length > 3 && !['high','school'].includes(w));
+      const matchCount = significantWords.filter(w => {
+        const wRegex = new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b');
+        return wRegex.test(normQ);
+      }).length;
+      if (matchCount > 0 && significantWords.length > 0) {
+        const s = 2 + (matchCount / significantWords.length) * 0.5;
+        if (s > bestScore) { best=name; bestScore=s; }
+      }
+    }
     const parts=name.split(/\s+/);
-    // Last name match — strong signal (score=2)
-    if (parts.length>1) { const ln=parts[parts.length-1].toLowerCase(); if (ln.length>2&&query.includes(ln)&&2>bestScore) { best=name; bestScore=2; } }
-    // First name match — weakest, skip if it collides with an excluded word (score=1)
-    if (parts.length>0&&bestScore<1) { const fn=parts[0].toLowerCase(); if (fn.length>3&&query.includes(fn)&&!excl.includes(fn)) { best=name; bestScore=1; } }
+    // Last name match — word boundary (score=1.5)
+    if (parts.length>1&&bestScore<1.5) {
+      const ln=parts[parts.length-1].toLowerCase();
+      if (ln.length>2 && !['school','high'].includes(ln)) {
+        const lnRegex = new RegExp('\\b'+ln.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b');
+        if (lnRegex.test(normQ)) { best=name; bestScore=1.5; }
+      }
+    }
+    // First name match — weakest, word boundary required (score=1)
+    if (parts.length>0&&bestScore<1) {
+      const fn=parts[0].toLowerCase();
+      if (fn.length>3&&!excl.includes(fn)) {
+        const fnRegex = new RegExp('\\b'+fn.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b');
+        if (fnRegex.test(normQ)) { best=name; bestScore=1; }
+      }
+    }
   }
   return best;
 }
@@ -888,8 +919,26 @@ function getAllMoellerPitcherProfiles() {
   const p={}; Object.keys(stats.moellerPitchers).forEach(n => { p[n]=computePitcherProfile(stats.moellerPitchers[n].pitches,n,stats.moellerPitchers[n].hand,'Moeller'); }); return p;
 }
 
+// Common team abbreviations/nicknames -> full names in the dataset
+const TEAM_ALIASES = {
+  'st.x': 'st. xavier', 'st x': 'st. xavier', 'stx': 'st. xavier', 'saint x': 'st. xavier', 'saint xavier': 'st. xavier',
+  'elder': 'elder', 'la salle': 'la salle', 'lasalle': 'la salle',
+  'colerain': 'colerain', 'mason': 'mason', 'lakota west': 'lakota west',
+  'lakota east': 'lakota east', 'fairfield': 'fairfield', 'princeton': 'princeton',
+  'sycamore': 'sycamore', 'milford': 'milford', 'anderson': 'anderson',
+};
+
+function expandTeamAliases(query) {
+  let q = query;
+  for (const [alias, full] of Object.entries(TEAM_ALIASES)) {
+    const regex = new RegExp('\\b' + alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+    if (regex.test(q)) { q = q.replace(regex, full); }
+  }
+  return q;
+}
+
 function routeQuestion(question) {
-  const q=question.toLowerCase();
+  const q=expandTeamAliases(question.toLowerCase());
   const ctx={type:'',data:{}};
   // Collect all player first names so team matching ignores them (e.g. "Conner" Cuozzo vs "Conner" High)
   const allPlayerFirstNames = [
@@ -904,11 +953,16 @@ function routeQuestion(question) {
   const moeH=findBestMatch(q,stats.moellerHitterList, allTeamWords);
   const team=findBestMatch(q,stats.teamList, allPlayerFirstNames);
 
-  if ((q.includes('game plan')||q.includes('scouting report')||q.includes('prepare for')||q.includes('prep for')||q.includes('facing'))&&team) {
+  // "pitching coach" + team = they want to pitch AGAINST that team's hitters
+  if ((q.includes('pitching coach')||q.includes('pitch against')||q.includes('how to pitch'))&&team) {
+    ctx.type='opponent_batters'; ctx.data.teamSummary=computeTeamSummary(team);
+    ctx.data.opponentBatters=getTeamBatterProfiles(team); ctx.data.moellerPitchers=getAllMoellerPitcherProfiles(); return ctx;
+  }
+  if ((q.includes('game plan')||q.includes('scouting report')||q.includes('prepare for')||q.includes('prep for')||q.includes('facing')||q.includes('playing'))&&team) {
     ctx.type='game_plan'; ctx.data.teamSummary=computeTeamSummary(team);
     ctx.data.opponentPitchers=getTeamPitcherProfiles(team); ctx.data.opponentBatters=getTeamBatterProfiles(team); ctx.data.moellerHitters=getAllMoellerHitterProfiles(); return ctx;
   }
-  if ((q.includes('batter')||q.includes('hitter')||q.includes('lineup')||q.includes('hitting'))&&team) {
+  if ((q.includes('batter')||q.includes('hitter')||q.includes('lineup')||q.includes('hitting')||q.includes('consistenc'))&&team) {
     ctx.type='opponent_batters'; ctx.data.teamSummary=computeTeamSummary(team);
     ctx.data.opponentBatters=getTeamBatterProfiles(team); return ctx;
   }
