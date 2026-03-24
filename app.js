@@ -4055,13 +4055,15 @@ function appendQuickLook(cardOrContainer, hitterName, pitcherName) {
   bubble.style.padding = '4px';
   bubble.style.background = 'transparent';
   bubble.style.border = 'none';
-  bubble.appendChild(cardOrContainer);
+  // Inject GCL links into the card content only (not the action buttons)
+  const cardWrapper = document.createElement('div');
+  cardWrapper.appendChild(cardOrContainer);
+  cardWrapper.innerHTML = injectGCLLinks(cardWrapper.innerHTML);
+  bubble.appendChild(cardWrapper);
   bubble.appendChild(buildNewAnalysisBar(hitterName, pitcherName));
   msg.appendChild(label);
   msg.appendChild(bubble);
   messagesEl.appendChild(msg);
-  // Inject GCL links into the quick-look card
-  bubble.innerHTML = injectGCLLinks(bubble.innerHTML);
   scrollToBottom();
 }
 
