@@ -4030,6 +4030,8 @@ function appendQuickLook(cardOrContainer, hitterName, pitcherName) {
   msg.appendChild(label);
   msg.appendChild(bubble);
   messagesEl.appendChild(msg);
+  // Inject GCL links into the quick-look card
+  bubble.innerHTML = injectGCLLinks(bubble.innerHTML);
   scrollToBottom();
 }
 
