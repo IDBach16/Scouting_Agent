@@ -13,6 +13,68 @@ let isLoading = false;
 let sessionId = 'session_' + Date.now();
 let allNames = []; // for autocomplete
 
+// GCL Conference player IDs — links to https://gcls.gclsports.com/bsPlayerStats.aspx?player={ID}
+const GCL_BASE = 'https://gcls.gclsports.com/';
+const GCL_PLAYERS = {
+  // Moeller
+  "Reggie Watson": "884406", "Kayde Ridley": "880249", "Teagan Cumberland": "880255",
+  "Gunnar Voellmecke": "884407", "Adam Holstein": "880251", "Adam Maybury": "880252",
+  "Ronnie Allen": "884408", "Matt Ponatoski": "880247", "Zac Wittenauer": "884409",
+  "Graham Cohen": "884410", "Seth Maybury": "884411", "Rudy Glotfelty": "884412",
+  "Ricky Maschinot": "884413", "Maddox Nelson": "884414", "Cooper Homoelle": "884415",
+  "Donovan Glosser": "880250", "Nathan McDowell": "880256", "Ryan Szitanko": "884416",
+  "Carson Fuhrer": "884417", "Sawyer Barhorst": "884418", "Connor Maupin": "884419",
+  "Jake Gaerke": "880254", "Jack Ujvagi": "884420", "Conner Cuozzo": "880248",
+  "Michael Weber": "884421", "Kendon Wilson": "884422",
+  // Elder
+  "Mason Chumbley": "882336", "Ryan Smith": "882333", "Luke Roell": "882332",
+  "Kyle Bien": "882339", "Brady Andriacco": "885353", "Charlie Schroeder": "885352",
+  "Jack Rosenacker": "882334", "Bradley Kammer": "882337", "Roger Waddell": "882335",
+  "Matthew Nguyen": "884593", "Justin Massa": "882329", "Carson Smith": "882331",
+  "Dylan Wullenweber": "882328", "Aidan Porzell": "884594", "Noah Gruen": "884595",
+  "Caleb McComas": "882326", "Jared Lammers": "882330", "Sam Theissen": "882338",
+  "Tucker Veldhaus": "882327", "Brandon Schapker": "884596",
+  // St. Xavier
+  "Dillon Brus": "884074", "Cullen O'Brien": "884066", "Griffin Doxsey": "884060",
+  "Sam Sprengard": "884077", "Logan Von Holle": "884075", "Graham Uran": "884078",
+  "Ryan Krause": "884070", "Dominick Dials": "884061", "Braden Bricking": "884058",
+  "Sam Vovak": "884079", "Jackson Sherrard": "884059", "Thomas George": "884063",
+  "Jack Ryan": "884068", "Eric Nienaber": "884062", "Matthew Schafer": "884076",
+  "Charlie Johnston": "884071", "Liam McGeady": "884069", "Will Holekamp": "884073",
+  "Cameron Kline": "884065", "Griffin Lyons": "884072", "William Sweeney": "884064",
+};
+
+const GCL_TEAMS = {
+  "Moeller": { id: 17, name: "Moeller" },
+  "Elder": { id: 14, name: "Elder" },
+  "Elder High School": { id: 14, name: "Elder" },
+  "La Salle": { id: 15, name: "La Salle" },
+  "La Salle High School": { id: 15, name: "La Salle" },
+  "St. Xavier": { id: 20, name: "St. Xavier" },
+  "St. Xavier High School": { id: 20, name: "St. Xavier" },
+};
+
+function injectGCLLinks(html) {
+  // Inject clickable GCL links for player names found in the output
+  // Sort by name length descending to avoid partial replacements
+  const names = Object.keys(GCL_PLAYERS).sort((a, b) => b.length - a.length);
+  for (const name of names) {
+    const id = GCL_PLAYERS[name];
+    const url = GCL_BASE + 'bsPlayerStats.aspx?player=' + id;
+    // Only replace names NOT already inside an <a> tag
+    const regex = new RegExp('(?<!<a[^>]*>)\\b(' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b(?![^<]*<\\/a>)', 'g');
+    html = html.replace(regex, `<a href="${url}" target="_blank" style="color:#4a90d9; text-decoration:underline; cursor:pointer;" title="View ${name} on GCL">$1</a>`);
+  }
+  // Also inject team links
+  for (const [teamName, info] of Object.entries(GCL_TEAMS)) {
+    if (teamName === 'Moeller') continue; // skip linking Moeller itself
+    const url = GCL_BASE + 'bsTeamStats.aspx?sat=21&schoolid=' + info.id + '&year=2025';
+    const regex = new RegExp('(?<!<a[^>]*>)\\b(' + teamName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b(?![^<]*<\\/a>)', 'g');
+    html = html.replace(regex, `<a href="${url}" target="_blank" style="color:#4a90d9; text-decoration:underline;" title="View ${info.name} on GCL">$1</a>`);
+  }
+  return html;
+}
+
 const chatArea = document.getElementById('chat-area');
 const messagesEl = document.getElementById('messages');
 const welcomeEl = document.getElementById('welcome');
@@ -3655,7 +3717,7 @@ function appendMessage(role, text, charts) {
   bubble.className='msg-bubble';
 
   if (role==='assistant') {
-    bubble.innerHTML=renderMarkdown(text);
+    bubble.innerHTML=injectGCLLinks(renderMarkdown(text));
     // Actions
     const actions=document.createElement('div');
     actions.className='msg-actions';
