@@ -75,6 +75,135 @@ function injectGCLLinks(html) {
   return html;
 }
 
+// ── GCL Stats Integration ──────────────────────────────────────
+const _gclCache = {};
+
+async function fetchGCLStats(teamName, year = 2025) {
+  const key = `${teamName.toLowerCase()}_${year}`;
+  if (_gclCache[key]) return _gclCache[key];
+  // Find matching GCL team
+  const match = Object.entries(GCL_TEAMS).find(([k]) => k.toLowerCase() === teamName.toLowerCase());
+  if (!match) return null;
+  const school = match[1].name;
+  try {
+    const resp = await fetch(`/api/gcl/team?school=${encodeURIComponent(school)}&year=${year}`);
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (data.error) return null;
+    _gclCache[key] = data;
+    return data;
+  } catch (e) { return null; }
+}
+
+function buildGCLStatsCard(gclData, showType = 'both') {
+  // showType: 'hitting', 'pitching', or 'both'
+  const card = document.createElement('div');
+  card.className = 'quick-look-card';
+  card.style.borderLeft = '3px solid #4a90d9';
+
+  const header = document.createElement('div');
+  header.className = 'quick-look-header';
+  header.innerHTML = `<span class="ql-name">📊 GCL Season Stats — ${gclData.school} ${gclData.year}</span>
+    <span class="ql-meta"><a href="${gclData.url}" target="_blank" style="color:#4a90d9;">View on GCL →</a></span>`;
+  card.appendChild(header);
+
+  if ((showType === 'hitting' || showType === 'both') && gclData.hitting?.players?.length) {
+    const section = document.createElement('div');
+    section.className = 'ql-relay-section';
+    section.innerHTML = '<div class="ql-relay-title">HITTING</div>';
+
+    const table = document.createElement('div');
+    table.className = 'ql-pitch-table';
+    table.innerHTML = `<div class="ql-pitch-header">
+      <span class="ql-pitch-val" style="flex:2;text-align:left">PLAYER</span>
+      <span class="ql-pitch-val">G</span>
+      <span class="ql-pitch-val">AB</span>
+      <span class="ql-pitch-val">AVG</span>
+      <span class="ql-pitch-val">OBP</span>
+      <span class="ql-pitch-val">HR</span>
+      <span class="ql-pitch-val">RBI</span>
+      <span class="ql-pitch-val">SB</span>
+    </div>`;
+
+    // Sort by AB descending (regulars first)
+    const hitters = [...gclData.hitting.players].sort((a, b) => b.AB - a.AB);
+    hitters.forEach(p => {
+      if (p.AB === 0) return; // skip 0 AB
+      const gclId = p.player_id ? `<a href="${GCL_BASE}bsPlayerStats.aspx?player=${p.player_id}" target="_blank" style="color:#4a90d9;">${p.name}</a>` : p.name;
+      const cls = p.class ? ` <span style="color:#888;font-size:0.8em">(${p.class})</span>` : '';
+      table.innerHTML += `<div class="ql-pitch-row">
+        <span class="ql-pitch-val" style="flex:2;text-align:left">${gclId}${cls}</span>
+        <span class="ql-pitch-val">${p.G}</span>
+        <span class="ql-pitch-val">${p.AB}</span>
+        <span class="ql-pitch-val" style="font-weight:bold;color:${p.AVG >= 0.300 ? '#2ECC71' : p.AVG >= 0.250 ? '#F1C40F' : '#ccc'}">${p.AVG != null ? p.AVG.toFixed(3) : '-'}</span>
+        <span class="ql-pitch-val">${p.OBP != null ? p.OBP.toFixed(3) : '-'}</span>
+        <span class="ql-pitch-val">${p.HR}</span>
+        <span class="ql-pitch-val">${p.RBI}</span>
+        <span class="ql-pitch-val">${p.SB}</span>
+      </div>`;
+    });
+    section.appendChild(table);
+    card.appendChild(section);
+  }
+
+  if ((showType === 'pitching' || showType === 'both') && gclData.pitching?.players?.length) {
+    const section = document.createElement('div');
+    section.className = 'ql-relay-section';
+    section.innerHTML = '<div class="ql-relay-title">PITCHING</div>';
+
+    const table = document.createElement('div');
+    table.className = 'ql-pitch-table';
+    table.innerHTML = `<div class="ql-pitch-header">
+      <span class="ql-pitch-val" style="flex:2;text-align:left">PLAYER</span>
+      <span class="ql-pitch-val">G</span>
+      <span class="ql-pitch-val">IP</span>
+      <span class="ql-pitch-val">W-L</span>
+      <span class="ql-pitch-val">ERA</span>
+      <span class="ql-pitch-val">WHIP</span>
+      <span class="ql-pitch-val">K</span>
+      <span class="ql-pitch-val">SV</span>
+    </div>`;
+
+    // Sort by IP descending
+    const pitchers = [...gclData.pitching.players].sort((a, b) => (b.IP || 0) - (a.IP || 0));
+    pitchers.forEach(p => {
+      if (!p.IP || p.IP === 0) return;
+      const gclId = p.player_id ? `<a href="${GCL_BASE}bsPlayerStats.aspx?player=${p.player_id}" target="_blank" style="color:#4a90d9;">${p.name}</a>` : p.name;
+      const cls = p.class ? ` <span style="color:#888;font-size:0.8em">(${p.class})</span>` : '';
+      table.innerHTML += `<div class="ql-pitch-row">
+        <span class="ql-pitch-val" style="flex:2;text-align:left">${gclId}${cls}</span>
+        <span class="ql-pitch-val">${p.G}</span>
+        <span class="ql-pitch-val">${p.IP}</span>
+        <span class="ql-pitch-val">${p.W}-${p.L}</span>
+        <span class="ql-pitch-val" style="font-weight:bold;color:${p.ERA != null && p.ERA <= 2.5 ? '#2ECC71' : p.ERA <= 4.0 ? '#F1C40F' : '#E63946'}">${p.ERA != null ? p.ERA.toFixed(2) : '-'}</span>
+        <span class="ql-pitch-val">${p.WHIP != null ? p.WHIP.toFixed(2) : '-'}</span>
+        <span class="ql-pitch-val">${p.K}</span>
+        <span class="ql-pitch-val">${p.SV}</span>
+      </div>`;
+    });
+    section.appendChild(table);
+    card.appendChild(section);
+  }
+
+  return card;
+}
+
+function tryInjectGCLStats(container, teamName, showType = 'both') {
+  // Check if this is a GCL team and async-inject stats card
+  const match = Object.entries(GCL_TEAMS).find(([k]) => k.toLowerCase() === teamName.toLowerCase());
+  if (!match) return;
+  fetchGCLStats(teamName).then(data => {
+    if (!data) return;
+    const gclCard = buildGCLStatsCard(data, showType);
+    // Insert as the first child (before charting data cards)
+    if (container.firstChild) {
+      container.insertBefore(gclCard, container.firstChild);
+    } else {
+      container.appendChild(gclCard);
+    }
+  });
+}
+
 const chatArea = document.getElementById('chat-area');
 const messagesEl = document.getElementById('messages');
 const welcomeEl = document.getElementById('welcome');
@@ -2111,6 +2240,9 @@ function buildTeamQuickLook(teamName) {
   if (names.length === 0) return null;
   const container = document.createElement('div');
 
+  // Inject GCL pitching stats if available (async)
+  tryInjectGCLStats(container, teamName, 'pitching');
+
   // Team pitching summary card first
   const summary = buildTeamPitchersSummaryCard(teamName, pitcherData);
   if (summary) container.appendChild(summary);
@@ -2779,6 +2911,9 @@ function buildTeamHittersQuickLook(teamName) {
   const names = Object.keys(hitters).sort((a,b) => (hitters[b]?.pitches?.length||0) - (hitters[a]?.pitches?.length||0));
   if (names.length === 0) return null;
   const container = document.createElement('div');
+
+  // Inject GCL hitting stats if available (async)
+  tryInjectGCLStats(container, teamName, 'hitting');
 
   // Team summary card first
   const summary = buildTeamHittersSummaryCard(teamName, hitters);

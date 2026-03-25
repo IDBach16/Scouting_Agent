@@ -3,3 +3,5 @@ anthropic
 gunicorn
 pandas
 openpyxl
+requests
+beautifulsoup4

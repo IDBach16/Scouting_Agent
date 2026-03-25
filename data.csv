@@ -15033,4 +15033,308 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 317,2026-03-18,19:16:04,17,3,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,0,1 and 0,Fast Ball,Strike Foul,,83.0,8.0,Heart,Rick Reynolds
 318,2026-03-18,19:16:33,18,4,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,1,2 and 0,Change Up,Strike Looking,,79.0,19.0,Shadow,Rick Reynolds
 319,2026-03-18,19:18:02,19,5,Ryan Szitanko,R,Moeller,Luke Holweger,R,Springboro High School,9,Top,2,2,2,2 and 1,Not Tracked,Strike In Play,Ground Out,,18.0,Shadow,Rick Reynolds
-320,,,9,1,TJ Brown,R,Springboro High School,Conner Cuozzo,R,Moeller,1,Bottom,0,0,0,2 and 2,Other,Ball,,,38.0,Waste,Rick Reynolds
+320,2026-03-19,19:18:03,9,1,TJ Brown,R,Springboro High School,Conner Cuozzo,R,Moeller,1,Bottom,0,0,0,2 and 2,Other,Ball,,,38.0,Waste,Rick Reynolds
+1,2026-03-23,16:58:51,1,1,Nathan McDowell,R,Moeller,Braydon Johnson,R,Lakota West High School,1,Top,0,0,0,0 and 0,Slider,Strike Looking,,79.0,5.0,Heart,Rob Lubanski
+2,2026-03-23,16:59:05,2,2,Nathan McDowell,R,Moeller,Braydon Johnson,R,Lakota West High School,1,Top,0,0,1,0 and 0,Slider,Strike Swing and Miss,,79.0,19.0,Shadow,Rob Lubanski
+3,2026-03-23,16:59:22,3,3,Nathan McDowell,R,Moeller,Braydon Johnson,R,Lakota West High School,1,Top,0,0,2,0 and 1,Fast Ball,Strike In Play,Fly Out,90.0,18.0,Shadow,Rob Lubanski
+4,2026-03-23,17:00:00,4,1,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,1,0,0,0 and 2,Fast Ball,Ball,,91.0,17.0,Shadow,Rob Lubanski
+5,2026-03-23,17:00:11,5,2,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,1,1,0,0 and 0,Fast Ball,Strike Swing and Miss,,91.0,17.0,Shadow,Rob Lubanski
+6,2026-03-23,17:00:25,6,3,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,1,1,1,1 and 0,Fast Ball,Strike Looking,,90.0,19.0,Shadow,Rob Lubanski
+7,2026-03-23,17:00:40,7,4,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,1,1,2,1 and 1,Change Up,Ball,,80.0,37.0,Waste,Rob Lubanski
+8,2026-03-23,17:00:57,8,5,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,1,2,2,1 and 2,Slider,Strike In Play,Ground Out,80.0,29.0,Chase,Rob Lubanski
+9,2026-03-23,17:01:30,9,1,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,2,0,0,2 and 2,Slider,Ball,,80.0,39.0,Waste,Rob Lubanski
+10,2026-03-23,17:01:46,10,2,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,2,1,0,0 and 0,Slider,Strike Swing and Miss,,79.0,19.0,Shadow,Rob Lubanski
+11,2026-03-23,17:02:02,11,3,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,2,1,1,1 and 0,Fast Ball,Strike Swing and Miss,,90.0,17.0,Shadow,Rob Lubanski
+12,2026-03-23,17:02:17,12,4,Nathan McDowell,R,Moeller,Kameron Gaalaas,R,Lakota West High School,1,Top,2,1,2,1 and 1,Fast Ball,Strike Swing and Miss,Strike Out,90.0,39.0,Waste,Rob Lubanski
+13,2026-03-23,17:04:07,1,1,,R,Lakota West High School,Reggie Watson III,L,Moeller,1,Bottom,0,0,0,1 and 2,Fast Ball,Ball,,74.0,29.0,Chase,Rob Lubanski
+14,2026-03-23,17:04:20,2,2,,R,Lakota West High School,Reggie Watson III,L,Moeller,1,Bottom,0,1,0,0 and 0,Fast Ball,Ball,,83.0,29.0,Chase,Rob Lubanski
+15,2026-03-23,17:04:34,3,3,,R,Lakota West High School,Reggie Watson III,L,Moeller,1,Bottom,0,2,0,1 and 0,Fast Ball,Ball,,82.0,37.0,Waste,Rob Lubanski
+16,2026-03-23,17:04:45,4,4,,R,Lakota West High School,Reggie Watson III,L,Moeller,1,Bottom,0,3,0,2 and 0,Fast Ball,Ball,BB,82.0,29.0,Chase,Rob Lubanski
+17,2026-03-23,17:05:21,5,1,,R,Lakota West High School,Matt Ponatoski,L,Moeller,1,Bottom,0,0,0,3 and 0,Fast Ball,Ball,,82.0,24.0,Chase,Rob Lubanski
+18,2026-03-23,17:05:35,6,2,,R,Lakota West High School,Matt Ponatoski,L,Moeller,1,Bottom,0,1,0,0 and 0,Fast Ball,Ball,,80.0,31.0,Waste,Rob Lubanski
+19,2026-03-23,17:06:09,7,3,,R,Lakota West High School,Matt Ponatoski,L,Moeller,1,Bottom,0,2,0,1 and 0,Fast Ball,Ball,,82.0,32.0,Waste,Rob Lubanski
+20,2026-03-23,17:06:24,8,4,,R,Lakota West High School,Matt Ponatoski,L,Moeller,1,Bottom,0,3,0,2 and 0,Fast Ball,Strike Foul,,81.0,9.0,Heart,Rob Lubanski
+21,2026-03-23,17:06:49,9,5,,R,Lakota West High School,Matt Ponatoski,L,Moeller,1,Bottom,0,3,1,3 and 0,Fast Ball,Strike Foul,,83.0,7.0,Heart,Rob Lubanski
+22,2026-03-23,17:07:10,10,6,,R,Lakota West High School,Matt Ponatoski,L,Moeller,1,Bottom,0,3,2,3 and 1,Fast Ball,Ball,BB,85.0,38.0,Waste,Rob Lubanski
+23,2026-03-23,17:07:49,11,1,,R,Lakota West High School,Conner Cuozzo,R,Moeller,1,Bottom,0,0,0,3 and 2,Breaking Ball,Ball,,71.0,26.0,Chase,Rob Lubanski
+24,2026-03-23,17:08:10,12,2,,R,Lakota West High School,Conner Cuozzo,R,Moeller,1,Bottom,0,1,0,0 and 0,Fast Ball,Strike Foul,,81.0,7.0,Heart,Rob Lubanski
+25,2026-03-23,17:08:35,13,3,,R,Lakota West High School,Conner Cuozzo,R,Moeller,1,Bottom,0,1,1,1 and 0,Breaking Ball,Ball,,74.0,28.0,Chase,Rob Lubanski
+26,2026-03-23,17:08:57,14,4,,R,Lakota West High School,Conner Cuozzo,R,Moeller,1,Bottom,0,2,1,1 and 1,Fast Ball,Ball,,82.0,37.0,Waste,Rob Lubanski
+27,2026-03-23,17:09:18,15,5,,R,Lakota West High School,Conner Cuozzo,R,Moeller,1,Bottom,0,3,1,2 and 1,Fast Ball,Strike In Play,Ground Out,82.0,28.0,Chase,Rob Lubanski
+28,2026-03-23,17:10:01,16,1,,R,Lakota West High School,Teagan Cumberland,L,Moeller,1,Bottom,1,0,0,3 and 1,Fast Ball,Ball,,83.0,38.0,Waste,Rob Lubanski
+29,2026-03-23,17:10:16,17,2,,R,Lakota West High School,Teagan Cumberland,L,Moeller,1,Bottom,1,1,0,0 and 0,Fast Ball,Strike In Play,Ground Out,82.0,8.0,Heart,Rob Lubanski
+30,2026-03-23,17:10:51,18,1,,R,Lakota West High School,Ronnie Allen,R,Moeller,1,Bottom,2,0,0,1 and 0,Fast Ball,Ball,,82.0,38.0,Waste,Rob Lubanski
+31,2026-03-23,17:11:06,19,2,,R,Lakota West High School,Ronnie Allen,R,Moeller,1,Bottom,2,1,0,0 and 0,Fast Ball,Ball,,82.0,24.0,Chase,Rob Lubanski
+32,2026-03-23,17:11:22,20,3,,R,Lakota West High School,Ronnie Allen,R,Moeller,1,Bottom,2,2,0,1 and 0,Fast Ball,Strike Looking,,81.0,7.0,Heart,Rob Lubanski
+33,2026-03-23,17:11:38,21,4,,R,Lakota West High School,Ronnie Allen,R,Moeller,1,Bottom,2,2,1,2 and 0,Fast Ball,Ball,,80.0,17.0,Shadow,Rob Lubanski
+34,2026-03-23,17:11:53,22,5,,R,Lakota West High School,Ronnie Allen,R,Moeller,1,Bottom,2,3,1,2 and 1,Fast Ball,Ball,BB,81.0,37.0,Waste,Rob Lubanski
+35,2026-03-23,17:12:25,23,1,,R,Lakota West High School,Ricky Maschinot,R,Moeller,1,Bottom,2,0,0,3 and 1,Fast Ball,Strike In Play,Line Out,80.0,7.0,Heart,Rob Lubanski
+36,2026-03-23,17:14:52,1,1,Nathan McDowell,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,2,Top,0,0,0,0 and 0,Curve,Ball,,73.0,27.0,Chase,Rob Lubanski
+37,2026-03-23,17:15:05,2,2,Nathan McDowell,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,2,Top,0,1,0,0 and 0,Curve,Strike Swing and Miss,,73.0,6.0,Heart,Rob Lubanski
+38,2026-03-23,17:15:18,3,3,Nathan McDowell,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,2,Top,0,1,1,1 and 0,Slider,Strike Looking,,75.0,9.0,Heart,Rob Lubanski
+39,2026-03-23,17:15:32,4,4,Nathan McDowell,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,2,Top,0,1,2,1 and 1,Change Up,Strike Swing and Miss,Strike Out,84.0,29.0,Chase,Rob Lubanski
+40,2026-03-23,17:15:57,5,1,Nathan McDowell,R,Moeller,Owen Herring,R,Lakota West High School,2,Top,1,0,0,1 and 2,Fast Ball,Strike Looking,,90.0,8.0,Heart,Rob Lubanski
+41,2026-03-23,17:16:12,6,2,Nathan McDowell,R,Moeller,Owen Herring,R,Lakota West High School,2,Top,1,0,1,0 and 0,Fast Ball,Ball,,90.0,38.0,Waste,Rob Lubanski
+42,2026-03-23,17:16:25,7,3,Nathan McDowell,R,Moeller,Owen Herring,R,Lakota West High School,2,Top,1,1,1,0 and 1,Change Up,Ball,,80.0,39.0,Waste,Rob Lubanski
+43,2026-03-23,17:16:49,8,4,Nathan McDowell,R,Moeller,Owen Herring,R,Lakota West High School,2,Top,1,2,1,1 and 1,Slider,Strike Looking,,79.0,29.0,Chase,Rob Lubanski
+44,2026-03-23,17:17:17,9,5,Nathan McDowell,R,Moeller,Owen Herring,R,Lakota West High School,2,Top,1,2,2,2 and 1,Slider,Ball,,79.0,9.0,Heart,Rob Lubanski
+45,2026-03-23,17:17:25,10,6,Nathan McDowell,R,Moeller,Owen Herring,R,Lakota West High School,2,Top,1,3,2,2 and 2,Slider,Ball,BB,79.0,39.0,Waste,Rob Lubanski
+46,2026-03-23,17:17:47,11,1,Nathan McDowell,R,Moeller,Joseph Issacs,R,Lakota West High School,2,Top,1,0,0,3 and 2,Fast Ball,Ball,,90.0,29.0,Chase,Rob Lubanski
+47,2026-03-23,17:18:04,12,2,Nathan McDowell,R,Moeller,Joseph Issacs,R,Lakota West High School,2,Top,1,1,0,0 and 0,Slider,Strike Swing and Miss,,78.0,29.0,Chase,Rob Lubanski
+48,2026-03-23,17:18:34,13,3,Nathan McDowell,R,Moeller,Joseph Issacs,R,Lakota West High School,2,Top,1,1,1,1 and 0,Slider,Strike In Play,1B,79.0,8.0,Heart,Rob Lubanski
+49,2026-03-23,17:19:15,14,1,Nathan McDowell,R,Moeller,Jacob Snow,R,Lakota West High School,2,Top,1,0,0,1 and 1,Curve,Ball,,75.0,9.0,Heart,Rob Lubanski
+50,2026-03-23,17:20:13,15,2,Nathan McDowell,R,Moeller,Jacob Snow,R,Lakota West High School,2,Top,2,1,0,0 and 0,Slider,Strike Looking,,79.0,28.0,Chase,Rob Lubanski
+51,2026-03-23,17:20:30,16,3,Nathan McDowell,R,Moeller,Jacob Snow,R,Lakota West High School,2,Top,2,1,1,1 and 0,Slider,Strike Swing and Miss,,79.0,4.0,Heart,Rob Lubanski
+52,2026-03-23,17:20:51,17,4,Nathan McDowell,R,Moeller,Jacob Snow,R,Lakota West High School,2,Top,2,1,2,1 and 1,Slider,Strike Looking,Strike Out,78.0,9.0,Heart,Rob Lubanski
+53,2026-03-23,17:22:54,1,1,,R,Lakota West High School,Donovan Glosser,R,Moeller,2,Bottom,0,0,0,1 and 2,Breaking Ball,Strike Foul,,69.0,4.0,Heart,Rob Lubanski
+54,2026-03-23,17:23:20,2,2,,R,Lakota West High School,Donovan Glosser,R,Moeller,2,Bottom,0,0,1,0 and 0,Breaking Ball,Ball,,73.0,4.0,Heart,Rob Lubanski
+55,2026-03-23,17:23:32,3,3,,R,Lakota West High School,Donovan Glosser,R,Moeller,2,Bottom,0,1,1,0 and 1,Fast Ball,Strike Swing and Miss,,82.0,29.0,Chase,Rob Lubanski
+56,2026-03-23,17:23:53,4,4,,R,Lakota West High School,Donovan Glosser,R,Moeller,2,Bottom,0,1,2,1 and 1,Breaking Ball,Strike In Play,Error,74.0,1.0,Heart,Rob Lubanski
+57,2026-03-23,17:24:35,5,1,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,0,0,0,1 and 2,Fast Ball,Ball,,80.0,8.0,Heart,Rob Lubanski
+58,2026-03-23,17:25:08,6,2,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,0,1,0,0 and 0,Fast Ball,Strike Swing and Miss,,80.0,38.0,Waste,Rob Lubanski
+59,2026-03-23,17:25:33,7,3,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,0,1,1,1 and 0,Fast Ball,Ball,,81.0,14.0,Shadow,Rob Lubanski
+60,2026-03-23,17:25:56,8,4,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,0,2,1,1 and 1,Fast Ball,Strike Looking,,79.0,39.0,Waste,Rob Lubanski
+61,2026-03-23,17:26:19,9,5,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,0,2,2,2 and 1,Fast Ball,Strike In Play,Error,82.0,7.0,Heart,Rob Lubanski
+62,2026-03-23,17:27:01,10,1,,R,Lakota West High School,Adam Maybury,L,Moeller,2,Bottom,0,0,0,2 and 2,Fast Ball,Strike Swing and Miss,,79.0,9.0,Heart,Rob Lubanski
+63,2026-03-23,17:27:18,11,2,,R,Lakota West High School,Adam Maybury,L,Moeller,2,Bottom,0,0,1,0 and 0,Fast Ball,Ball,,81.0,7.0,Heart,Rob Lubanski
+64,2026-03-23,17:27:38,12,3,,R,Lakota West High School,Adam Maybury,L,Moeller,2,Bottom,0,1,1,0 and 1,Fast Ball,Strike Looking,,80.0,37.0,Waste,Rob Lubanski
+65,2026-03-23,17:28:05,13,4,,R,Lakota West High School,Adam Maybury,L,Moeller,2,Bottom,0,1,2,1 and 1,Fast Ball,Ball,,81.0,5.0,Heart,Rob Lubanski
+66,2026-03-23,17:28:29,14,5,,R,Lakota West High School,Adam Maybury,L,Moeller,2,Bottom,0,2,2,1 and 2,Fast Ball,Strike In Play,1B,80.0,39.0,Waste,Rob Lubanski
+67,2026-03-23,17:29:07,15,1,,R,Lakota West High School,Adam Holstein,R,Moeller,2,Bottom,0,0,0,2 and 2,Fast Ball,Strike In Play,1B,80.0,8.0,Heart,Rob Lubanski
+68,2026-03-23,17:29:47,16,1,,R,Lakota West High School,Kayde Ridley,R,Moeller,2,Bottom,0,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,79.0,9.0,Heart,Rob Lubanski
+69,2026-03-23,17:30:23,17,1,,R,Lakota West High School,Matt Ponatoski,L,Moeller,2,Bottom,1,0,0,0 and 0,Change Up,Ball,,75.0,2.0,Heart,Rob Lubanski
+70,2026-03-23,17:30:38,18,2,,R,Lakota West High School,Matt Ponatoski,L,Moeller,2,Bottom,1,1,0,0 and 0,Fast Ball,Strike Foul,,75.0,16.0,Shadow,Rob Lubanski
+71,2026-03-23,17:30:58,19,3,,R,Lakota West High School,Matt Ponatoski,L,Moeller,2,Bottom,1,1,1,1 and 0,Breaking Ball,Ball,,72.0,5.0,Heart,Rob Lubanski
+72,2026-03-23,17:31:16,20,4,,R,Lakota West High School,Matt Ponatoski,L,Moeller,2,Bottom,1,2,1,1 and 1,Fast Ball,Ball,,81.0,18.0,Shadow,Rob Lubanski
+73,2026-03-23,17:31:35,21,5,,R,Lakota West High School,Matt Ponatoski,L,Moeller,2,Bottom,1,3,1,2 and 1,Fast Ball,Strike In Play,2B,81.0,27.0,Chase,Rob Lubanski
+74,2026-03-23,17:32:21,22,1,,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,2,Bottom,1,0,0,3 and 1,Breaking Ball,Strike Swing and Miss,,73.0,6.0,Heart,Rob Lubanski
+75,2026-03-23,17:32:42,23,2,,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,2,Bottom,1,0,1,0 and 0,Breaking Ball,Strike Looking,,73.0,4.0,Heart,Rob Lubanski
+76,2026-03-23,17:33:00,24,3,,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,2,Bottom,1,0,2,0 and 1,Breaking Ball,Strike In Play,1B,72.0,6.0,Heart,Rob Lubanski
+77,2026-03-23,17:33:35,25,1,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,0,0,0 and 2,Fast Ball,Ball,,81.0,8.0,Heart,Rob Lubanski
+78,2026-03-23,17:33:47,26,2,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,1,0,0 and 0,Breaking Ball,Ball,,81.0,1.0,Heart,Rob Lubanski
+79,2026-03-23,17:34:16,27,3,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,2,0,1 and 0,Fast Ball,Ball,,80.0,11.0,Shadow,Rob Lubanski
+80,2026-03-23,17:34:44,28,4,,R,Lakota West High School,Teagan Cumberland,L,Moeller,2,Bottom,1,3,0,2 and 0,Fast Ball,Ball,BB,81.0,11.0,Shadow,Rob Lubanski
+81,2026-03-23,17:35:32,29,1,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,0,0,3 and 0,Fast Ball,Strike Swing and Miss,,79.0,29.0,Chase,Rob Lubanski
+82,2026-03-23,17:35:51,30,2,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,0,1,0 and 0,Fast Ball,Ball,,81.0,4.0,Heart,Rob Lubanski
+83,2026-03-23,17:36:16,31,3,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,1,1,0 and 1,Fast Ball,Ball,,81.0,26.0,Chase,Rob Lubanski
+84,2026-03-23,17:36:32,32,4,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,2,1,1 and 1,Fast Ball,Strike Looking,,81.0,24.0,Chase,Rob Lubanski
+85,2026-03-23,17:36:51,33,5,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,2,2,2 and 1,Fast Ball,Ball,,78.0,9.0,Heart,Rob Lubanski
+86,2026-03-23,17:37:11,34,6,,R,Lakota West High School,Ronnie Allen,R,Moeller,2,Bottom,1,3,2,2 and 2,Fast Ball,Ball,BB,80.0,29.0,Chase,Rob Lubanski
+87,2026-03-23,17:37:39,35,1,,R,Lakota West High School,Ricky Maschinot,R,Moeller,2,Bottom,1,0,0,3 and 2,Fast Ball,Strike Swing and Miss,,80.0,29.0,Chase,Rob Lubanski
+88,2026-03-23,17:37:57,36,2,,R,Lakota West High School,Ricky Maschinot,R,Moeller,2,Bottom,1,0,1,0 and 0,Fast Ball,Ball,,79.0,7.0,Heart,Rob Lubanski
+89,2026-03-23,17:38:22,37,3,,R,Lakota West High School,Ricky Maschinot,R,Moeller,2,Bottom,1,1,1,0 and 1,Fast Ball,Strike Foul,,80.0,38.0,Waste,Rob Lubanski
+90,2026-03-23,17:38:47,38,4,,R,Lakota West High School,Ricky Maschinot,R,Moeller,2,Bottom,1,1,2,1 and 1,Breaking Ball,Strike In Play,Fly Out,72.0,5.0,Heart,Rob Lubanski
+91,2026-03-23,17:39:31,39,1,,R,Lakota West High School,Reggie Watson III,L,Moeller,2,Bottom,2,0,0,1 and 2,Fast Ball,Ball,HBP,78.0,19.0,Shadow,Rob Lubanski
+92,2026-03-23,17:40:08,40,1,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,2,0,0,0 and 0,Fast Ball,Ball,,78.0,37.0,Waste,Rob Lubanski
+93,2026-03-23,17:40:25,41,2,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,2,1,0,0 and 0,Fast Ball,Strike Looking,,79.0,11.0,Shadow,Rob Lubanski
+94,2026-03-23,17:40:45,42,3,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,2,1,1,1 and 0,Fast Ball,Strike Looking,,80.0,29.0,Chase,Rob Lubanski
+95,2026-03-23,17:41:06,43,4,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,2,1,2,1 and 1,Breaking Ball,Ball,,71.0,19.0,Shadow,Rob Lubanski
+96,2026-03-23,17:41:23,44,5,,R,Lakota West High School,Connor Maupin,R,Moeller,2,Bottom,2,2,2,1 and 2,Fast Ball,Ball,HBP,80.0,17.0,Shadow,Rob Lubanski
+97,2026-03-23,17:41:57,45,1,,R,Lakota West High School,Adam Maybury,L,Moeller,2,Bottom,2,0,0,2 and 2,Breaking Ball,Strike In Play,1B,71.0,34.0,Waste,Rob Lubanski
+98,2026-03-23,17:47:55,1,1,Joseph Issacs,R,Lakota West High School,Teagan Cumberland,L,Moeller,2,Bottom,2,0,0,0 and 0,Not Tracked,Strike Swing and Miss,,39.0,3.0,Heart,Rob Lubanski
+99,2026-03-23,17:47:59,2,2,Joseph Issacs,R,Lakota West High School,Teagan Cumberland,L,Moeller,2,Bottom,2,0,1,0 and 0,Not Tracked,Strike Swing and Miss,,82.0,3.0,Heart,Rob Lubanski
+100,2026-03-23,17:48:01,3,3,Joseph Issacs,R,Lakota West High School,Teagan Cumberland,L,Moeller,2,Bottom,2,0,2,0 and 1,Not Tracked,Strike Swing and Miss,Strike Out,82.0,3.0,Heart,Rob Lubanski
+101,2026-03-23,17:48:32,1,1,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,3,Top,0,0,0,0 and 2,Fast Ball,Ball,,85.0,21.0,Chase,Rob Lubanski
+102,2026-03-23,17:48:46,2,2,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,3,Top,0,1,0,0 and 0,Fast Ball,Ball,,84.0,29.0,Chase,Rob Lubanski
+103,2026-03-23,17:49:01,3,3,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,3,Top,0,2,0,1 and 0,Breaking Ball,Strike Looking,,84.0,7.0,Heart,Rob Lubanski
+104,2026-03-23,17:49:15,4,4,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,3,Top,0,2,1,2 and 0,Fast Ball,Ball,,77.0,22.0,Chase,Rob Lubanski
+105,2026-03-23,17:49:31,5,5,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,3,Top,0,3,1,2 and 1,Change Up,Ball,BB,84.0,27.0,Chase,Rob Lubanski
+106,2026-03-23,17:49:56,6,1,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,0,0,3 and 1,Breaking Ball,Strike Looking,,77.0,18.0,Shadow,Rob Lubanski
+107,2026-03-23,17:50:33,7,2,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,0,1,0 and 0,Breaking Ball,Ball,,77.0,38.0,Waste,Rob Lubanski
+108,2026-03-23,17:50:48,8,3,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,1,1,0 and 1,Fast Ball,Strike Looking,,85.0,9.0,Heart,Rob Lubanski
+109,2026-03-23,17:51:40,9,4,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,1,2,1 and 1,Fast Ball,Ball,,86.0,23.0,Chase,Rob Lubanski
+110,2026-03-23,17:51:56,10,5,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,2,2,1 and 2,Breaking Ball,Strike Foul,,86.0,4.0,Heart,Rob Lubanski
+111,2026-03-23,17:52:19,11,6,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,2,2,2 and 2,Change Up,Strike Foul,,79.0,4.0,Heart,Rob Lubanski
+112,2026-03-23,17:52:59,12,7,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,2,2,2 and 2,Fast Ball,Ball,,86.0,23.0,Chase,Rob Lubanski
+113,2026-03-23,17:53:26,13,8,Jake Gaerke,R,Moeller,Liam Feeney,R,Lakota West High School,3,Top,0,3,2,2 and 2,Breaking Ball,Ball,BB,78.0,21.0,Chase,Rob Lubanski
+114,2026-03-23,17:53:50,14,1,Jake Gaerke,R,Moeller,Gabriel Johnson,R,Lakota West High School,3,Top,0,0,0,3 and 2,Breaking Ball,Ball,,80.0,16.0,Shadow,Rob Lubanski
+115,2026-03-23,17:54:11,15,2,Jake Gaerke,R,Moeller,Gabriel Johnson,R,Lakota West High School,3,Top,0,1,0,0 and 0,Change Up,Strike Foul,,78.0,7.0,Heart,Rob Lubanski
+116,2026-03-23,17:54:48,16,3,Jake Gaerke,R,Moeller,Braydon Johnson,R,Lakota West High School,3,Top,0,1,1,1 and 0,Breaking Ball,Strike Foul,,81.0,4.0,Heart,Rob Lubanski
+117,2026-03-23,17:55:20,17,4,Jake Gaerke,R,Moeller,Braydon Johnson,R,Lakota West High School,3,Top,0,1,2,1 and 1,Fast Ball,Ball,,88.0,11.0,Shadow,Rob Lubanski
+118,2026-03-23,17:55:37,18,5,Jake Gaerke,R,Moeller,Braydon Johnson,R,Lakota West High School,3,Top,0,2,2,1 and 2,Change Up,Strike Foul,,79.0,4.0,Heart,Rob Lubanski
+119,2026-03-23,17:56:29,19,6,Jake Gaerke,R,Moeller,Braydon Johnson,R,Lakota West High School,3,Top,0,2,2,2 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,80.0,4.0,Heart,Rob Lubanski
+120,2026-03-23,17:57:00,20,1,Jake Gaerke,R,Moeller,Kameron Gaalaas,R,Lakota West High School,3,Top,1,0,0,2 and 2,Fast Ball,Strike In Play,Line Out,86.0,7.0,Heart,Rob Lubanski
+121,2026-03-23,17:57:39,21,1,Jake Gaerke,R,Moeller,Cooper Rhoads,R,Lakota West High School,3,Top,2,0,0,0 and 0,Change Up,Strike In Play,1B,79.0,9.0,Heart,Rob Lubanski
+122,2026-03-23,17:58:41,22,1,Jake Gaerke,R,Moeller,Evan Schorr,R,Lakota West High School,3,Top,2,0,0,0 and 0,Breaking Ball,Strike Looking,,80.0,18.0,Shadow,Rob Lubanski
+123,2026-03-23,17:59:10,23,2,Jake Gaerke,R,Moeller,Evan Schorr,R,Lakota West High School,3,Top,2,0,1,0 and 0,Breaking Ball,Strike Foul,,81.0,8.0,Heart,Rob Lubanski
+124,2026-03-23,17:59:32,24,3,Jake Gaerke,R,Moeller,Evan Schorr,R,Lakota West High School,3,Top,2,0,2,0 and 1,Fast Ball,Strike Foul,,87.0,1.0,Heart,Rob Lubanski
+125,2026-03-23,17:59:59,25,4,Jake Gaerke,R,Moeller,Evan Schorr,R,Lakota West High School,3,Top,2,0,2,0 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,82.0,7.0,Heart,Rob Lubanski
+126,2026-03-23,18:03:51,1,1,Joseph Issacs,R,Lakota West High School,Ronnie Allen,R,Moeller,3,Bottom,0,0,0,0 and 2,Fast Ball,Strike In Play,Fly Out,75.0,4.0,Heart,Rob Lubanski
+127,2026-03-23,18:04:21,1,1,Braydon Johnson,R,Lakota West High School,Ricky Maschinot,R,Moeller,3,Bottom,1,0,0,0 and 0,Fast Ball,Strike Foul,,75.0,7.0,Heart,Rob Lubanski
+128,2026-03-23,18:04:35,3,2,Joseph Issacs,R,Lakota West High School,Zac Wittenauer,R,Moeller,3,Bottom,1,0,1,0 and 0,Fast Ball,Ball,,75.0,37.0,Waste,Rob Lubanski
+129,2026-03-23,18:04:56,4,3,Joseph Issacs,R,Lakota West High School,Zac Wittenauer,R,Moeller,3,Bottom,1,1,1,0 and 1,Fast Ball,Ball,,75.0,16.0,Shadow,Rob Lubanski
+130,2026-03-23,18:05:07,5,4,Joseph Issacs,R,Lakota West High School,Zac Wittenauer,R,Moeller,3,Bottom,1,2,1,1 and 1,Fast Ball,Ball,,75.0,16.0,Shadow,Rob Lubanski
+131,2026-03-23,18:05:21,6,5,Joseph Issacs,R,Lakota West High School,Zac Wittenauer,R,Moeller,3,Bottom,1,3,1,2 and 1,Fast Ball,Strike Foul,,75.0,14.0,Shadow,Rob Lubanski
+132,2026-03-23,18:05:51,7,6,Joseph Issacs,R,Lakota West High School,Zac Wittenauer,R,Moeller,3,Bottom,1,3,2,3 and 1,Fast Ball,Strike Foul,,75.0,5.0,Heart,Rob Lubanski
+133,2026-03-23,18:06:18,8,7,Joseph Issacs,R,Lakota West High School,Zac Wittenauer,R,Moeller,3,Bottom,1,3,2,3 and 2,Fast Ball,Ball,BB,75.0,27.0,Chase,Rob Lubanski
+134,2026-03-23,18:06:46,1,1,Braydon Johnson,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,3,Bottom,1,0,0,3 and 2,Fast Ball,Strike Swing and Miss,,75.0,4.0,Heart,Rob Lubanski
+135,2026-03-23,18:07:01,2,2,Braydon Johnson,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,3,Bottom,1,0,1,0 and 0,Fast Ball,Strike Swing and Miss,,75.0,4.0,Heart,Rob Lubanski
+136,2026-03-23,18:07:15,3,3,Braydon Johnson,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,3,Bottom,1,0,2,0 and 1,Breaking Ball,Ball,,75.0,27.0,Chase,Rob Lubanski
+137,2026-03-23,18:07:34,4,4,Braydon Johnson,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,3,Bottom,1,1,2,0 and 2,Fast Ball,Strike Foul,,79.0,5.0,Heart,Rob Lubanski
+138,2026-03-23,18:08:03,5,5,Braydon Johnson,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,3,Bottom,1,1,2,1 and 2,Fast Ball,Strike Looking,Strike Out,81.0,19.0,Shadow,Rob Lubanski
+139,2026-03-23,18:09:44,9,1,Joseph Issacs,R,Lakota West High School,Connor Maupin,R,Moeller,3,Bottom,2,0,0,1 and 2,Fast Ball,Ball,,80.0,13.0,Shadow,Rob Lubanski
+140,2026-03-23,18:10:10,10,2,Joseph Issacs,R,Lakota West High School,Kendon Wilson,L,Moeller,3,Bottom,2,1,0,0 and 0,Fast Ball,Ball,,80.0,28.0,Chase,Rob Lubanski
+141,2026-03-23,18:10:35,11,3,Joseph Issacs,R,Lakota West High School,Kendon Wilson,L,Moeller,3,Bottom,2,2,0,1 and 0,Fast Ball,Strike Swing and Miss,,80.0,7.0,Heart,Rob Lubanski
+142,2026-03-23,18:10:54,12,4,Joseph Issacs,R,Lakota West High School,Kendon Wilson,L,Moeller,3,Bottom,2,2,1,2 and 0,Not Tracked,Strike Swing and Miss,,0.0,29.0,Chase,Rob Lubanski
+143,2026-03-23,18:10:57,13,5,Joseph Issacs,R,Lakota West High School,Kendon Wilson,L,Moeller,3,Bottom,2,2,2,2 and 1,Not Tracked,Strike Swing and Miss,Strike Out,0.0,19.0,Shadow,Rob Lubanski
+144,2026-03-23,18:12:25,1,1,Jake Gaerke,R,Moeller,Cooper Rhoads,R,Lakota West High School,4,Top,0,0,0,2 and 2,Fast Ball,Strike Looking,,87.0,13.0,Shadow,Rob Lubanski
+145,2026-03-23,18:12:39,2,2,Jake Gaerke,R,Moeller,Cooper Rhoads,R,Lakota West High School,4,Top,0,0,1,0 and 0,Fast Ball,Ball,,87.0,38.0,Waste,Rob Lubanski
+146,2026-03-23,18:12:55,3,3,Jake Gaerke,R,Moeller,Cooper Rhoads,R,Lakota West High School,4,Top,0,1,1,0 and 1,Breaking Ball,Strike Looking,,80.0,7.0,Heart,Rob Lubanski
+147,2026-03-23,18:13:08,4,4,Jake Gaerke,R,Moeller,Cooper Rhoads,R,Lakota West High School,4,Top,0,1,2,1 and 1,Breaking Ball,Ball,,82.0,39.0,Waste,Rob Lubanski
+148,2026-03-23,18:13:33,5,5,Jake Gaerke,R,Moeller,Cooper Rhoads,R,Lakota West High School,4,Top,0,2,2,1 and 2,Breaking Ball,Strike Looking,Strike Out,81.0,19.0,Shadow,Rob Lubanski
+149,2026-03-23,18:13:59,6,1,Jake Gaerke,R,Moeller,Kaleb Ratliff,R,Lakota West High School,4,Top,1,0,0,2 and 2,Breaking Ball,Strike Looking,,79.0,18.0,Shadow,Rob Lubanski
+150,2026-03-23,18:14:10,7,2,Jake Gaerke,R,Moeller,Kaleb Ratliff,R,Lakota West High School,4,Top,1,0,1,0 and 0,Breaking Ball,Ball,,81.0,23.0,Chase,Rob Lubanski
+151,2026-03-23,18:14:22,8,3,Jake Gaerke,R,Moeller,Kaleb Ratliff,R,Lakota West High School,4,Top,1,1,1,0 and 1,Fast Ball,Strike Looking,,87.0,19.0,Shadow,Rob Lubanski
+152,2026-03-23,18:14:33,9,4,Jake Gaerke,R,Moeller,Kaleb Ratliff,R,Lakota West High School,4,Top,1,1,2,1 and 1,Breaking Ball,Strike Swing and Miss,Strike Out,80.0,19.0,Shadow,Rob Lubanski
+153,2026-03-23,18:14:55,10,1,Jake Gaerke,R,Moeller,Jacob Snow,R,Lakota West High School,4,Top,2,0,0,1 and 2,Change Up,Ball,,78.0,21.0,Chase,Rob Lubanski
+154,2026-03-23,18:15:07,11,2,Jake Gaerke,R,Moeller,Jacob Snow,R,Lakota West High School,4,Top,2,1,0,0 and 0,Fast Ball,Ball,,85.0,23.0,Chase,Rob Lubanski
+155,2026-03-23,18:15:27,12,3,Jake Gaerke,R,Moeller,Jacob Snow,R,Lakota West High School,4,Top,2,2,0,1 and 0,Fast Ball,Ball,,86.0,11.0,Shadow,Rob Lubanski
+156,2026-03-23,18:15:41,13,4,Jake Gaerke,R,Moeller,Jacob Snow,R,Lakota West High School,4,Top,2,3,0,2 and 0,Fast Ball,Strike Looking,,86.0,9.0,Heart,Rob Lubanski
+157,2026-03-23,18:15:54,14,5,Jake Gaerke,R,Moeller,Jacob Snow,R,Lakota West High School,4,Top,2,3,1,3 and 0,Fast Ball,Ball,BB,85.0,12.0,Shadow,Rob Lubanski
+158,2026-03-23,18:16:15,15,1,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,0,0,3 and 1,Breaking Ball,Strike Looking,,79.0,18.0,Shadow,Rob Lubanski
+159,2026-03-23,18:16:29,16,2,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,0,1,0 and 0,Breaking Ball,Strike Swing and Miss,,80.0,19.0,Shadow,Rob Lubanski
+160,2026-03-23,18:16:41,17,3,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,0,2,0 and 1,Breaking Ball,Ball,,80.0,12.0,Shadow,Rob Lubanski
+161,2026-03-23,18:17:06,18,4,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,1,2,0 and 2,Fast Ball,Ball,,88.0,12.0,Shadow,Rob Lubanski
+162,2026-03-23,18:17:30,19,5,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,2,2,1 and 2,Breaking Ball,Strike Foul,,81.0,28.0,Chase,Rob Lubanski
+163,2026-03-23,18:17:52,20,6,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,2,2,2 and 2,Change Up,Strike Foul,,80.0,17.0,Shadow,Rob Lubanski
+164,2026-03-23,18:18:35,21,7,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,2,2,2 and 2,Fast Ball,Ball,,86.0,11.0,Shadow,Rob Lubanski
+165,2026-03-23,18:18:51,22,8,Jake Gaerke,R,Moeller,Jacob Bramel,R,Lakota West High School,4,Top,2,3,2,2 and 2,Breaking Ball,Strike Looking,Strike Out,79.0,7.0,Heart,Rob Lubanski
+166,2026-03-23,18:20:56,1,1,Joseph Issacs,R,Lakota West High School,Michael Weber,R,Moeller,4,Bottom,0,0,0,3 and 2,Fast Ball,Ball,,78.0,29.0,Chase,Rob Lubanski
+167,2026-03-23,18:21:08,2,2,Joseph Issacs,R,Lakota West High School,Michael Weber,R,Moeller,4,Bottom,0,1,0,0 and 0,Change Up,Ball,,72.0,29.0,Chase,Rob Lubanski
+168,2026-03-23,18:21:17,3,3,Joseph Issacs,R,Lakota West High School,Michael Weber,R,Moeller,4,Bottom,0,2,0,1 and 0,Fast Ball,Strike Looking,,80.0,19.0,Shadow,Rob Lubanski
+169,2026-03-23,18:21:30,4,4,Joseph Issacs,R,Lakota West High School,Michael Weber,R,Moeller,4,Bottom,0,2,1,2 and 0,Fast Ball,Ball,,78.0,27.0,Chase,Rob Lubanski
+170,2026-03-23,18:21:40,5,5,Joseph Issacs,R,Lakota West High School,Michael Weber,R,Moeller,4,Bottom,0,3,1,2 and 1,Fast Ball,Strike Swing and Miss,,79.0,9.0,Heart,Rob Lubanski
+171,2026-03-23,18:21:51,6,6,Joseph Issacs,R,Lakota West High School,Michael Weber,R,Moeller,4,Bottom,0,3,2,3 and 1,Fast Ball,Strike In Play,1B,79.0,7.0,Heart,Rob Lubanski
+172,2026-03-23,18:22:26,7,1,Joseph Issacs,R,Lakota West High School,Seth Maybury,R,Moeller,4,Bottom,0,0,0,3 and 2,Change Up,Ball,,73.0,23.0,Chase,Rob Lubanski
+173,2026-03-23,18:22:40,8,2,Joseph Issacs,R,Lakota West High School,Seth Maybury,R,Moeller,4,Bottom,0,1,0,0 and 0,Fast Ball,Ball,,81.0,29.0,Chase,Rob Lubanski
+174,2026-03-23,18:22:54,9,3,Joseph Issacs,R,Lakota West High School,Seth Maybury,R,Moeller,4,Bottom,0,2,0,1 and 0,Fast Ball,Strike Looking,,80.0,17.0,Shadow,Rob Lubanski
+175,2026-03-23,18:23:30,10,4,Joseph Issacs,R,Lakota West High School,Seth Maybury,R,Moeller,4,Bottom,0,2,1,2 and 0,Fast Ball,Ball,,80.0,37.0,Waste,Rob Lubanski
+176,2026-03-23,18:23:49,11,5,Joseph Issacs,R,Lakota West High School,Seth Maybury,R,Moeller,4,Bottom,0,3,1,2 and 1,Fast Ball,Ball,BB,79.0,24.0,Chase,Rob Lubanski
+177,2026-03-23,18:24:21,12,1,Joseph Issacs,R,Lakota West High School,Reggie Watson III,L,Moeller,4,Bottom,0,0,0,3 and 1,Fast Ball,Ball,,80.0,12.0,Shadow,Rob Lubanski
+178,2026-03-23,18:24:40,13,2,Joseph Issacs,R,Lakota West High School,Reggie Watson III,L,Moeller,4,Bottom,0,1,0,0 and 0,Fast Ball,Strike Looking,,80.0,17.0,Shadow,Rob Lubanski
+179,2026-03-23,18:25:02,14,3,Joseph Issacs,R,Lakota West High School,Reggie Watson III,L,Moeller,4,Bottom,0,1,1,1 and 0,Fast Ball,Ball,,79.0,29.0,Chase,Rob Lubanski
+180,2026-03-23,18:25:34,15,4,Joseph Issacs,R,Lakota West High School,Reggie Watson III,L,Moeller,4,Bottom,0,2,1,1 and 1,Fast Ball,Ball,,81.0,27.0,Chase,Rob Lubanski
+181,2026-03-23,18:25:51,16,5,Joseph Issacs,R,Lakota West High School,Reggie Watson III,L,Moeller,4,Bottom,0,3,1,2 and 1,Fast Ball,Ball,BB,78.0,24.0,Chase,Rob Lubanski
+182,2026-03-23,18:26:25,17,1,Joseph Issacs,R,Lakota West High School,Matt Ponatoski,L,Moeller,4,Bottom,0,0,0,3 and 1,Fast Ball,Ball,,82.0,27.0,Chase,Rob Lubanski
+183,2026-03-23,18:26:53,18,2,Joseph Issacs,R,Lakota West High School,Matt Ponatoski,L,Moeller,4,Bottom,0,1,0,0 and 0,Fast Ball,Ball,,81.0,17.0,Shadow,Rob Lubanski
+184,2026-03-23,18:27:19,19,3,Joseph Issacs,R,Lakota West High School,Matt Ponatoski,L,Moeller,4,Bottom,0,2,0,1 and 0,Fast Ball,Strike Looking,,80.0,8.0,Heart,Rob Lubanski
+185,2026-03-23,18:27:40,20,4,Joseph Issacs,R,Lakota West High School,Matt Ponatoski,L,Moeller,4,Bottom,0,2,1,2 and 0,Fast Ball,Strike Looking,,81.0,7.0,Heart,Rob Lubanski
+186,2026-03-23,18:28:00,21,5,Joseph Issacs,R,Lakota West High School,Matt Ponatoski,L,Moeller,4,Bottom,0,2,2,2 and 1,Fast Ball,Ball,,81.0,23.0,Chase,Rob Lubanski
+187,2026-03-23,18:28:21,22,6,Joseph Issacs,R,Lakota West High School,Matt Ponatoski,L,Moeller,4,Bottom,0,3,2,2 and 2,Fast Ball,Strike In Play,1B,80.0,19.0,Shadow,Rob Lubanski
+188,2026-03-23,18:29:28,23,1,Joseph Issacs,R,Lakota West High School,Conner Cuozzo,R,Moeller,4,Bottom,0,0,0,3 and 2,Change Up,Ball,,73.0,13.0,Shadow,Rob Lubanski
+189,2026-03-23,18:29:46,24,2,Joseph Issacs,R,Lakota West High School,Conner Cuozzo,R,Moeller,4,Bottom,0,1,0,0 and 0,Fast Ball,Strike Looking,,82.0,17.0,Shadow,Rob Lubanski
+190,2026-03-23,18:30:05,25,3,Joseph Issacs,R,Lakota West High School,Conner Cuozzo,R,Moeller,4,Bottom,0,1,1,1 and 0,Fast Ball,Strike Swing and Miss,,81.0,1.0,Heart,Rob Lubanski
+191,2026-03-23,18:30:25,26,4,Joseph Issacs,R,Lakota West High School,Conner Cuozzo,R,Moeller,4,Bottom,0,1,2,1 and 1,Fast Ball,Ball,,78.0,11.0,Shadow,Rob Lubanski
+192,2026-03-23,18:30:48,27,5,Joseph Issacs,R,Lakota West High School,Conner Cuozzo,R,Moeller,4,Bottom,0,2,2,1 and 2,Change Up,Ball,,72.0,28.0,Chase,Rob Lubanski
+193,2026-03-23,18:31:12,28,6,Joseph Issacs,R,Lakota West High School,Conner Cuozzo,R,Moeller,4,Bottom,0,3,2,2 and 2,Fast Ball,Ball,BB,81.0,27.0,Chase,Rob Lubanski
+194,2026-03-23,18:33:52,1,1,Evan Schorr,R,Lakota West High School,Kendon Wilson,L,Moeller,4,Bottom,0,0,0,3 and 2,Fast Ball,Strike Looking,,82.0,28.0,Chase,Rob Lubanski
+195,2026-03-23,18:34:10,2,2,Evan Schorr,R,Lakota West High School,Teagan Cumberland,L,Moeller,4,Bottom,0,0,1,0 and 0,Fast Ball,Strike Looking,,83.0,29.0,Chase,Rob Lubanski
+196,2026-03-23,18:34:26,3,3,Evan Schorr,R,Lakota West High School,Teagan Cumberland,L,Moeller,4,Bottom,0,0,2,0 and 1,Fast Ball,Ball,,83.0,27.0,Chase,Rob Lubanski
+197,2026-03-23,18:34:41,4,4,Evan Schorr,R,Lakota West High School,Teagan Cumberland,L,Moeller,4,Bottom,0,1,2,0 and 2,Fast Ball,Ball,,78.0,39.0,Waste,Rob Lubanski
+198,2026-03-23,18:35:08,5,5,Evan Schorr,R,Lakota West High School,Teagan Cumberland,L,Moeller,4,Bottom,0,2,2,1 and 2,Fast Ball,Strike Foul,,83.0,7.0,Heart,Rob Lubanski
+199,2026-03-23,18:35:41,6,6,Evan Schorr,R,Lakota West High School,Teagan Cumberland,L,Moeller,4,Bottom,0,2,2,2 and 2,Fast Ball,Strike In Play,Fly Out,82.0,1.0,Heart,Rob Lubanski
+200,2026-03-23,18:36:38,7,1,Evan Schorr,R,Lakota West High School,Ronnie Allen,R,Moeller,4,Bottom,1,0,0,2 and 2,Fast Ball,Ball,,78.0,33.0,Waste,Rob Lubanski
+201,2026-03-23,18:36:45,8,2,Evan Schorr,R,Lakota West High School,Ronnie Allen,R,Moeller,4,Bottom,1,1,0,0 and 0,Fast Ball,Strike Swing and Miss,,82.0,12.0,Shadow,Rob Lubanski
+202,2026-03-23,18:36:56,9,3,Evan Schorr,R,Lakota West High School,Ronnie Allen,R,Moeller,4,Bottom,1,1,1,1 and 0,Fast Ball,Strike Looking,,81.0,9.0,Heart,Rob Lubanski
+203,2026-03-23,18:37:06,10,4,Evan Schorr,R,Lakota West High School,Ronnie Allen,R,Moeller,4,Bottom,1,1,2,1 and 1,Fast Ball,Strike Looking,Strike Out,78.0,18.0,Shadow,Rob Lubanski
+204,2026-03-23,18:37:22,11,1,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,2,0,0,1 and 2,Fast Ball,Ball,,83.0,36.0,Waste,Rob Lubanski
+205,2026-03-23,18:37:31,12,2,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,2,1,0,0 and 0,Fast Ball,Strike Looking,,81.0,3.0,Heart,Rob Lubanski
+206,2026-03-23,18:37:46,13,3,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,2,1,1,1 and 0,Fast Ball,Ball,,83.0,27.0,Chase,Rob Lubanski
+207,2026-03-23,18:38:16,14,4,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,2,2,1,1 and 1,Breaking Ball,Ball,,67.0,9.0,Heart,Rob Lubanski
+208,2026-03-23,18:39:25,15,5,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,2,3,1,2 and 1,Fast Ball,Strike Looking,,81.0,27.0,Chase,Rob Lubanski
+209,2026-03-23,18:39:32,16,6,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,2,3,2,3 and 1,Fast Ball,Strike Looking,Strike Out,83.0,26.0,Chase,Rob Lubanski
+210,2026-03-23,18:41:54,17,7,Evan Schorr,R,Lakota West High School,Ricky Maschinot,R,Moeller,4,Bottom,0,3,2,3 and 2,Not Tracked,Strike Looking,Strike Out,0.0,3.0,Heart,Rob Lubanski
+211,2026-03-23,18:43:47,1,1,Carson Fuhrer,R,Moeller,Liam Feeney,R,Lakota West High School,6,Top,0,0,0,3 and 2,Fast Ball,Strike Looking,,82.0,19.0,Shadow,Rob Lubanski
+212,2026-03-23,18:43:54,2,2,Carson Fuhrer,R,Moeller,Liam Feeney,R,Lakota West High School,6,Top,0,0,1,0 and 0,Fast Ball,Strike Foul,,82.0,18.0,Shadow,Rob Lubanski
+213,2026-03-23,18:44:01,3,3,Carson Fuhrer,R,Moeller,Liam Feeney,R,Lakota West High School,6,Top,0,0,2,0 and 1,Fast Ball,Strike In Play,1B,90.0,13.0,Shadow,Rob Lubanski
+214,2026-03-23,18:45:04,4,1,Carson Fuhrer,R,Moeller,Noah Bramble,R,Lakota West High School,6,Top,0,0,0,0 and 2,Change Up,Strike Looking,,78.0,19.0,Shadow,Rob Lubanski
+215,2026-03-23,18:45:11,5,2,Carson Fuhrer,R,Moeller,Noah Bramble,R,Lakota West High School,6,Top,0,0,1,0 and 0,Change Up,Strike Looking,,78.0,16.0,Shadow,Rob Lubanski
+216,2026-03-23,18:45:19,6,3,Carson Fuhrer,R,Moeller,Noah Bramble,R,Lakota West High School,6,Top,0,0,2,0 and 1,Fast Ball,Ball,,88.0,39.0,Waste,Rob Lubanski
+217,2026-03-23,18:45:28,7,4,Carson Fuhrer,R,Moeller,Noah Bramble,R,Lakota West High School,6,Top,0,1,2,0 and 2,Change Up,Strike In Play,Fly Out,76.0,17.0,Shadow,Rob Lubanski
+218,2026-03-23,18:46:20,8,1,Carson Fuhrer,R,Moeller,Braydon Johnson,R,Lakota West High School,6,Top,1,0,0,1 and 2,Change Up,Ball,,73.0,28.0,Chase,Rob Lubanski
+219,2026-03-23,18:46:45,9,2,Carson Fuhrer,R,Moeller,Braydon Johnson,R,Lakota West High School,6,Top,2,1,0,0 and 0,Change Up,Strike Foul,,77.0,27.0,Chase,Rob Lubanski
+220,2026-03-23,18:47:06,10,3,Carson Fuhrer,R,Moeller,Braydon Johnson,R,Lakota West High School,6,Top,2,1,1,1 and 0,Breaking Ball,Strike Swing and Miss,,77.0,19.0,Shadow,Rob Lubanski
+221,2026-03-23,18:47:18,11,4,Carson Fuhrer,R,Moeller,Braydon Johnson,R,Lakota West High School,6,Top,2,1,2,1 and 1,Breaking Ball,Strike Swing and Miss,Strike Out,77.0,18.0,Shadow,Rob Lubanski
+222,2026-03-23,18:49:37,1,1,Jacob Bramel,R,Lakota West High School,Donovan Glosser,R,Moeller,6,Bottom,0,0,0,1 and 2,Breaking Ball,Ball,,70.0,39.0,Waste,Rob Lubanski
+223,2026-03-23,18:49:46,2,2,Jacob Bramel,R,Lakota West High School,Donovan Glosser,R,Moeller,6,Bottom,0,1,0,0 and 0,Breaking Ball,Ball,,68.0,38.0,Waste,Rob Lubanski
+224,2026-03-23,18:49:54,3,3,Jacob Bramel,R,Lakota West High School,Donovan Glosser,R,Moeller,6,Bottom,0,2,0,1 and 0,Fast Ball,Strike Foul,,79.0,19.0,Shadow,Rob Lubanski
+225,2026-03-23,18:50:18,4,4,Jacob Bramel,R,Lakota West High School,Donovan Glosser,R,Moeller,6,Bottom,0,2,1,2 and 0,Fast Ball,Ball,,80.0,39.0,Waste,Rob Lubanski
+226,2026-03-23,18:50:39,5,5,Jacob Bramel,R,Lakota West High School,Donovan Glosser,R,Moeller,6,Bottom,0,3,1,2 and 1,Breaking Ball,Strike In Play,Fly Out,80.0,18.0,Shadow,Rob Lubanski
+227,2026-03-23,18:51:11,6,1,Jacob Bramel,R,Lakota West High School,Connor Maupin,R,Moeller,6,Bottom,1,0,0,3 and 1,Fast Ball,Strike In Play,Ground Out,80.0,28.0,Chase,Rob Lubanski
+228,2026-03-23,18:51:46,7,1,Jacob Bramel,R,Lakota West High School,Adam Maybury,L,Moeller,6,Bottom,2,0,0,0 and 0,Fast Ball,Strike Swing and Miss,,79.0,17.0,Shadow,Rob Lubanski
+229,2026-03-23,18:51:59,8,2,Jacob Bramel,R,Lakota West High School,Adam Maybury,L,Moeller,6,Bottom,2,0,1,0 and 0,Change Up,Ball,,74.0,27.0,Chase,Rob Lubanski
+230,2026-03-23,18:52:14,9,3,Jacob Bramel,R,Lakota West High School,Adam Maybury,L,Moeller,6,Bottom,2,1,1,0 and 1,Fast Ball,Strike In Play,Fly Out,79.0,9.0,Heart,Rob Lubanski
+231,2026-03-23,18:54:39,1,1,Carson Fuhrer,R,Moeller,Kameron Gaalaas,R,Lakota West High School,7,Top,0,0,0,1 and 1,Fast Ball,Strike Looking,,88.0,17.0,Shadow,Rob Lubanski
+232,2026-03-23,18:54:56,2,2,Carson Fuhrer,R,Moeller,Kameron Gaalaas,R,Lakota West High School,7,Top,0,0,1,0 and 0,Breaking Ball,Ball,,75.0,29.0,Chase,Rob Lubanski
+233,2026-03-23,18:55:11,3,3,Carson Fuhrer,R,Moeller,Kameron Gaalaas,R,Lakota West High School,7,Top,0,1,1,0 and 1,Fast Ball,Ball,,87.0,11.0,Shadow,Rob Lubanski
+234,2026-03-23,18:55:27,4,4,Carson Fuhrer,R,Moeller,Kameron Gaalaas,R,Lakota West High School,7,Top,0,2,1,1 and 1,Fast Ball,Ball,,87.0,16.0,Shadow,Rob Lubanski
+235,2026-03-23,18:55:47,5,5,Carson Fuhrer,R,Moeller,Kameron Gaalaas,R,Lakota West High School,7,Top,0,3,1,2 and 1,Fast Ball,Strike In Play,1B,88.0,19.0,Shadow,Rob Lubanski
+236,2026-03-23,18:56:21,6,1,Carson Fuhrer,R,Moeller,,R,Lakota West High School,7,Top,0,0,0,3 and 1,Breaking Ball,Strike Swing and Miss,,72.0,7.0,Heart,Rob Lubanski
+237,2026-03-23,18:56:40,7,2,Carson Fuhrer,R,Moeller,,R,Lakota West High School,7,Top,0,0,1,0 and 0,Breaking Ball,Strike Foul,,75.0,17.0,Shadow,Rob Lubanski
+238,2026-03-23,18:57:03,8,3,Carson Fuhrer,R,Moeller,,R,Lakota West High School,7,Top,0,0,2,0 and 1,Fast Ball,Ball,,86.0,37.0,Waste,Rob Lubanski
+239,2026-03-23,18:57:19,9,4,Carson Fuhrer,R,Moeller,,R,Lakota West High School,7,Top,0,1,2,0 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,76.0,39.0,Waste,Rob Lubanski
+240,2026-03-23,18:57:46,10,1,Carson Fuhrer,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,7,Top,1,0,0,1 and 2,Breaking Ball,Ball,,75.0,29.0,Chase,Rob Lubanski
+241,2026-03-23,18:58:01,11,2,Carson Fuhrer,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,7,Top,1,1,0,0 and 0,Breaking Ball,Ball,,73.0,4.0,Heart,Rob Lubanski
+242,2026-03-23,18:58:20,12,3,Carson Fuhrer,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,7,Top,1,2,0,1 and 0,Fast Ball,Strike Foul,,86.0,7.0,Heart,Rob Lubanski
+243,2026-03-23,18:58:51,13,4,Carson Fuhrer,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,7,Top,1,2,1,2 and 0,Fast Ball,Ball,,87.0,33.0,Waste,Rob Lubanski
+244,2026-03-23,18:59:05,14,5,Carson Fuhrer,R,Moeller,Jeffrey Zimmerman,R,Lakota West High School,7,Top,1,3,1,2 and 1,Breaking Ball,Ball,BB,73.0,31.0,Waste,Rob Lubanski
+245,2026-03-23,18:59:29,15,1,Carson Fuhrer,R,Moeller,Cooper Rhoads,R,Lakota West High School,7,Top,1,0,0,3 and 1,Fast Ball,Ball,,87.0,28.0,Chase,Rob Lubanski
+246,2026-03-23,18:59:45,16,2,Carson Fuhrer,R,Moeller,Cooper Rhoads,R,Lakota West High School,7,Top,1,1,0,0 and 0,Fast Ball,Strike Looking,,88.0,23.0,Chase,Rob Lubanski
+247,2026-03-23,18:59:58,17,3,Carson Fuhrer,R,Moeller,Cooper Rhoads,R,Lakota West High School,7,Top,1,1,1,1 and 0,Breaking Ball,Strike Foul,,75.0,14.0,Shadow,Rob Lubanski
+248,2026-03-23,19:00:21,18,4,Carson Fuhrer,R,Moeller,Cooper Rhoads,R,Lakota West High School,7,Top,1,1,2,1 and 1,Fast Ball,Ball,,89.0,39.0,Waste,Rob Lubanski
+249,2026-03-23,19:00:40,19,5,Carson Fuhrer,R,Moeller,Cooper Rhoads,R,Lakota West High School,7,Top,1,2,2,1 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,74.0,17.0,Shadow,Rob Lubanski
+250,2026-03-23,19:01:06,20,1,Carson Fuhrer,R,Moeller,Kaleb Ratliff,R,Lakota West High School,7,Top,2,0,0,2 and 2,Fast Ball,Strike Looking,,87.0,19.0,Shadow,Rob Lubanski
+251,2026-03-23,19:01:19,21,2,Carson Fuhrer,R,Moeller,Kaleb Ratliff,R,Lakota West High School,7,Top,2,0,1,0 and 0,Fast Ball,Strike Looking,,89.0,16.0,Shadow,Rob Lubanski
+252,2026-03-23,19:01:35,22,3,Carson Fuhrer,R,Moeller,Kaleb Ratliff,R,Lakota West High School,7,Top,2,0,2,0 and 1,Breaking Ball,Strike Foul,,74.0,14.0,Shadow,Rob Lubanski
+253,2026-03-23,19:01:52,23,4,Carson Fuhrer,R,Moeller,Kaleb Ratliff,R,Lakota West High School,7,Top,2,0,2,0 and 2,Fast Ball,Ball,,90.0,23.0,Chase,Rob Lubanski
+254,2026-03-23,19:02:06,24,5,Carson Fuhrer,R,Moeller,Kaleb Ratliff,R,Lakota West High School,7,Top,2,1,2,0 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,76.0,7.0,Heart,Rob Lubanski
+255,2026-03-23,19:05:07,1,1,Cooper Rhoads,R,Lakota West High School,Adam Holstein,R,Moeller,7,Bottom,0,0,0,1 and 2,Fast Ball,Strike In Play,Ground Out,81.0,14.0,Shadow,Rob Lubanski
+256,2026-03-23,19:05:46,2,1,Cooper Rhoads,R,Lakota West High School,Kayde Ridley,R,Moeller,7,Bottom,1,0,0,0 and 0,Fast Ball,Ball,,79.0,38.0,Waste,Rob Lubanski
+257,2026-03-23,19:06:13,3,2,Cooper Rhoads,R,Lakota West High School,Kayde Ridley,R,Moeller,7,Bottom,1,1,0,0 and 0,Fast Ball,Ball,,81.0,39.0,Waste,Rob Lubanski
+258,2026-03-23,19:06:28,4,3,Cooper Rhoads,R,Lakota West High School,Kayde Ridley,R,Moeller,7,Bottom,1,2,0,1 and 0,Fast Ball,Strike In Play,Ground Out,78.0,2.0,Heart,Rob Lubanski
+259,2026-03-23,19:11:04,1,1,Seth Maybury,R,Moeller,Caleb Binder,R,Lakota West High School,8,Top,0,0,0,2 and 0,Fast Ball,Ball,,85.0,11.0,Shadow,Rob Lubanski
+260,2026-03-23,19:11:17,2,2,Seth Maybury,R,Moeller,Caleb Binder,R,Lakota West High School,8,Top,0,1,0,0 and 0,Fast Ball,Strike In Play,Line Out,84.0,1.0,Heart,Rob Lubanski
+261,2026-03-23,19:11:45,3,1,Seth Maybury,R,Moeller,Liam Feeney,R,Lakota West High School,8,Top,1,0,0,1 and 0,Breaking Ball,Strike Swing and Miss,,74.0,28.0,Chase,Rob Lubanski
+262,2026-03-23,19:12:01,4,2,Seth Maybury,R,Moeller,Liam Feeney,R,Lakota West High School,8,Top,1,0,1,0 and 0,Fast Ball,Strike Foul,,86.0,17.0,Shadow,Rob Lubanski
+263,2026-03-23,19:12:48,5,3,Seth Maybury,R,Moeller,Liam Feeney,R,Lakota West High School,8,Top,1,0,2,0 and 1,Breaking Ball,Strike Looking,Strike Out,73.0,9.0,Heart,Rob Lubanski
+264,2026-03-23,19:12:59,6,1,Seth Maybury,R,Moeller,Gabriel Johnson,R,Lakota West High School,8,Top,2,0,0,0 and 2,Fast Ball,Strike In Play,Fly Out,84.0,1.0,Heart,Rob Lubanski
+265,2026-03-23,19:16:12,1,1,Owen Herring,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,8,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,84.0,13.0,Shadow,Rob Lubanski
+266,2026-03-23,19:16:23,2,2,Owen Herring,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,8,Bottom,0,1,0,0 and 0,Fast Ball,Ball,,84.0,11.0,Shadow,Rob Lubanski
+267,2026-03-23,19:16:34,3,3,Owen Herring,R,Lakota West High School,Gunnar Voellmecke,R,Moeller,8,Bottom,0,2,0,1 and 0,Fast Ball,Ball,HBP,85.0,24.0,Chase,Rob Lubanski
+268,2026-03-23,19:17:07,4,1,Owen Herring,R,Lakota West High School,Kendon Wilson,L,Moeller,8,Bottom,0,0,0,2 and 0,Fast Ball,Strike Looking,,83.0,17.0,Shadow,Rob Lubanski
+269,2026-03-23,19:17:25,5,2,Owen Herring,R,Lakota West High School,Kendon Wilson,L,Moeller,8,Bottom,0,0,1,0 and 0,Fast Ball,Strike Foul,,82.0,17.0,Shadow,Rob Lubanski
+270,2026-03-23,19:17:56,6,3,Owen Herring,R,Lakota West High School,Kendon Wilson,L,Moeller,8,Bottom,0,0,2,0 and 1,Fast Ball,Strike In Play,Error,84.0,7.0,Heart,Rob Lubanski
+271,2026-03-23,19:18:47,7,1,Owen Herring,R,Lakota West High School,Michael Weber,R,Moeller,8,Bottom,0,0,0,0 and 2,Fast Ball,Strike Foul,,83.0,3.0,Heart,Rob Lubanski
+272,2026-03-23,19:19:06,8,2,Owen Herring,R,Lakota West High School,Michael Weber,R,Moeller,8,Bottom,0,0,1,0 and 0,Fast Ball,Ball,,83.0,13.0,Shadow,Rob Lubanski
+273,2026-03-23,19:19:18,9,3,Owen Herring,R,Lakota West High School,Michael Weber,R,Moeller,8,Bottom,0,1,1,0 and 1,Fast Ball,Strike Swing and Miss,,83.0,11.0,Shadow,Rob Lubanski
+274,2026-03-23,19:19:33,10,4,Owen Herring,R,Lakota West High School,Michael Weber,R,Moeller,8,Bottom,0,1,2,1 and 1,Fast Ball,Ball,,84.0,27.0,Chase,Rob Lubanski
+275,2026-03-23,19:19:50,11,5,Owen Herring,R,Lakota West High School,Michael Weber,R,Moeller,8,Bottom,0,2,2,1 and 2,Fast Ball,Strike In Play,Fly Out,84.0,17.0,Shadow,Rob Lubanski
+276,2026-03-23,19:20:22,12,1,Owen Herring,R,Lakota West High School,Seth Maybury,R,Moeller,8,Bottom,1,0,0,2 and 2,Fast Ball,Strike In Play,1B,82.0,8.0,Heart,Rob Lubanski
+277,2026-03-23,19:21:02,13,1,Owen Herring,R,Lakota West High School,Sawyer Barhorst,R,Moeller,8,Bottom,1,0,0,0 and 0,Fast Ball,Strike Looking,,84.0,2.0,Heart,Rob Lubanski
+278,2026-03-23,19:21:18,14,2,Owen Herring,R,Lakota West High School,Sawyer Barhorst,R,Moeller,8,Bottom,1,0,1,0 and 0,Breaking Ball,Ball,,72.0,11.0,Shadow,Rob Lubanski
+279,2026-03-23,19:21:31,15,3,Owen Herring,R,Lakota West High School,Sawyer Barhorst,R,Moeller,8,Bottom,1,1,1,0 and 1,Fast Ball,Ball,,83.0,11.0,Shadow,Rob Lubanski
+280,2026-03-23,19:21:48,16,4,Owen Herring,R,Lakota West High School,Sawyer Barhorst,R,Moeller,8,Bottom,1,2,1,1 and 1,Fast Ball,Strike Foul,,82.0,11.0,Shadow,Rob Lubanski
+281,2026-03-23,19:22:19,17,5,Owen Herring,R,Lakota West High School,Sawyer Barhorst,R,Moeller,8,Bottom,1,2,2,2 and 1,Breaking Ball,Strike Foul,,72.0,19.0,Shadow,Rob Lubanski
+282,2026-03-23,19:22:44,18,6,Owen Herring,R,Lakota West High School,Sawyer Barhorst,R,Moeller,8,Bottom,1,2,2,2 and 2,Fast Ball,Strike Swing and Miss,Strike Out,83.0,11.0,Shadow,Rob Lubanski
+283,2026-03-23,19:23:11,19,1,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,0,0,2 and 2,Fast Ball,Ball,,83.0,21.0,Chase,Rob Lubanski
+284,2026-03-23,19:23:27,20,2,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,1,0,0 and 0,Fast Ball,Strike Looking,,82.0,7.0,Heart,Rob Lubanski
+285,2026-03-23,19:23:44,21,3,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,1,1,1 and 0,Breaking Ball,Ball,,72.0,23.0,Chase,Rob Lubanski
+286,2026-03-23,19:24:00,22,4,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,2,1,1 and 1,Fast Ball,Strike Foul,,82.0,4.0,Heart,Rob Lubanski
+287,2026-03-23,19:24:30,23,5,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,2,2,2 and 1,Breaking Ball,Strike Foul,,73.0,17.0,Shadow,Rob Lubanski
+288,2026-03-23,19:24:56,24,6,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,2,2,2 and 2,Fast Ball,Ball,,83.0,11.0,Shadow,Rob Lubanski
+289,2026-03-23,19:25:11,25,7,Owen Herring,R,Lakota West High School,Reggie Watson III,L,Moeller,8,Bottom,2,3,2,2 and 2,Fast Ball,Ball,BB,83.0,12.0,Shadow,Rob Lubanski
+290,2026-03-23,19:25:41,26,1,Owen Herring,R,Lakota West High School,Matt Ponatoski,L,Moeller,8,Bottom,2,0,0,3 and 2,Fast Ball,Ball,,85.0,31.0,Waste,Rob Lubanski
+291,2026-03-23,19:25:58,27,2,Owen Herring,R,Lakota West High School,Matt Ponatoski,L,Moeller,8,Bottom,2,1,0,0 and 0,Fast Ball,Ball,,85.0,22.0,Chase,Rob Lubanski
+292,2026-03-23,19:26:11,28,3,Owen Herring,R,Lakota West High School,Matt Ponatoski,L,Moeller,8,Bottom,2,2,0,1 and 0,Fast Ball,Ball,,84.0,37.0,Waste,Rob Lubanski
+293,2026-03-23,19:26:33,29,4,Owen Herring,R,Lakota West High School,Matt Ponatoski,L,Moeller,8,Bottom,2,3,0,2 and 0,Fast Ball,Strike Looking,,83.0,4.0,Heart,Rob Lubanski
+294,2026-03-23,19:26:46,30,5,Owen Herring,R,Lakota West High School,Matt Ponatoski,L,Moeller,8,Bottom,2,3,1,3 and 0,Fast Ball,Ball,BB,84.0,14.0,Shadow,Rob Lubanski
+295,2026-03-23,19:28:43,1,1,Seth Maybury,R,Moeller,Gabriel Johnson,R,Lakota West High School,9,Top,0,0,0,3 and 1,Breaking Ball,Strike Looking,,74.0,9.0,Heart,Rob Lubanski
+296,2026-03-23,19:28:56,2,2,Seth Maybury,R,Moeller,Gabriel Johnson,R,Lakota West High School,9,Top,0,0,1,0 and 0,Change Up,Ball,,76.0,39.0,Waste,Rob Lubanski
+297,2026-03-23,19:29:09,3,3,Seth Maybury,R,Moeller,Gabriel Johnson,R,Lakota West High School,9,Top,0,1,1,0 and 1,Fast Ball,Strike In Play,Fly Out,83.0,7.0,Heart,Rob Lubanski
+298,2026-03-23,19:29:36,4,1,Seth Maybury,R,Moeller,Sam Sanchez,R,Lakota West High School,9,Top,1,0,0,1 and 1,Change Up,Strike Foul,,77.0,17.0,Shadow,Rob Lubanski
+299,2026-03-23,19:29:54,5,2,Seth Maybury,R,Moeller,Sam Sanchez,R,Lakota West High School,9,Top,1,0,1,0 and 0,Fast Ball,Ball,,86.0,17.0,Shadow,Rob Lubanski
+300,2026-03-23,19:30:10,6,3,Seth Maybury,R,Moeller,Sam Sanchez,R,Lakota West High School,9,Top,1,1,1,0 and 1,Change Up,Strike Swing and Miss,,76.0,27.0,Chase,Rob Lubanski
+301,2026-03-23,19:30:30,7,4,Seth Maybury,R,Moeller,Sam Sanchez,R,Lakota West High School,9,Top,1,1,2,1 and 1,Breaking Ball,Strike Looking,Strike Out,72.0,14.0,Shadow,Rob Lubanski
+302,2026-03-23,19:30:56,8,1,Seth Maybury,R,Moeller,Bailey Zannoni,R,Lakota West High School,9,Top,2,0,0,1 and 2,Fast Ball,Strike Looking,,85.0,17.0,Shadow,Rob Lubanski
+303,2026-03-23,19:31:12,9,2,Seth Maybury,R,Moeller,Bailey Zannoni,R,Lakota West High School,9,Top,2,0,1,0 and 0,Breaking Ball,Strike Swing and Miss,,74.0,19.0,Shadow,Rob Lubanski
+304,2026-03-23,19:31:32,10,3,Seth Maybury,R,Moeller,Bailey Zannoni,R,Lakota West High School,9,Top,2,0,2,0 and 1,Fast Ball,Strike In Play,Ground Out,86.0,19.0,Shadow,Rob Lubanski

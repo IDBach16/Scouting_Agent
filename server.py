@@ -234,6 +234,23 @@ def git_push():
         return jsonify({"ok": False, "message": str(e)}), 500
 
 
+# ── GCL Stats Endpoints ─────────────────────────────────────────
+from gcl_client import get_team_stats as gcl_team_stats
+
+
+@app.route("/api/gcl/team", methods=["GET"])
+def gcl_team():
+    """Get GCL stats for a team. Query params: school (required), year (optional, default 2025)."""
+    school = request.args.get("school", "")
+    year = request.args.get("year", 2025, type=int)
+    if not school:
+        return jsonify({"error": "Missing 'school' parameter. Use: Elder, Moeller, La Salle, St. Xavier"}), 400
+    data = gcl_team_stats(school, year)
+    if "error" in data and "players" not in data.get("hitting", {}):
+        return jsonify(data), 404
+    return jsonify(data)
+
+
 @app.route("/")
 def index():
     return send_from_directory(STATIC_DIR, "index.html")
