@@ -251,6 +251,37 @@ def gcl_team():
     return jsonify(data)
 
 
+# ── AWRE Spray Chart Endpoints (reads from local CSV) ───────────
+from awre_client import generate_spray_chart, list_hitters as awre_list_hitters, reload_data as awre_reload
+
+
+@app.route("/api/awre/spray-chart", methods=["GET"])
+def awre_spray_chart():
+    """Generate spray chart PNG for a hitter. Query param: name (required)."""
+    from flask import Response
+    name = request.args.get("name", "")
+    if not name:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    png = generate_spray_chart(name)
+    if not png:
+        return jsonify({"error": f"No batted ball data for '{name}'"}), 404
+    return Response(png, mimetype="image/png")
+
+
+@app.route("/api/awre/hitters", methods=["GET"])
+def awre_hitters():
+    """List all hitters with AWRE BIP data."""
+    hitters = awre_list_hitters()
+    return jsonify({"hitters": hitters, "count": len(hitters)})
+
+
+@app.route("/api/awre/refresh", methods=["POST"])
+def awre_refresh():
+    """Reload AWRE data from CSV (after running awre_pull.py)."""
+    data = awre_reload()
+    return jsonify({"status": "ok", "pitches": len(data)})
+
+
 @app.route("/")
 def index():
     return send_from_directory(STATIC_DIR, "index.html")

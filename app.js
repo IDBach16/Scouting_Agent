@@ -2542,6 +2542,20 @@ function buildHitterQuickLookCard(profile, pitches) {
     card.appendChild(zoneDiv);
   }
 
+  // AWRE Spray Chart
+  if (profile.name) {
+    const sprayDiv = document.createElement('div');
+    sprayDiv.className = 'ql-zone-section';
+    sprayDiv.innerHTML = '<div class="ql-zone-title">SPRAY CHART</div>';
+    const sprayImg = document.createElement('img');
+    sprayImg.src = '/api/awre/spray-chart?name=' + encodeURIComponent(profile.name);
+    sprayImg.alt = '';
+    sprayImg.style.cssText = 'width:100%;max-width:500px;display:block;margin:6px auto;border-radius:8px;background:#16213e;';
+    sprayImg.onerror = function() { sprayDiv.remove(); };
+    sprayDiv.appendChild(sprayImg);
+    card.appendChild(sprayDiv);
+  }
+
   // Sample size warning
   if (profile.sampleSizeWarning) {
     const warn = document.createElement('div');
