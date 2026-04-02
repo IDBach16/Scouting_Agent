@@ -53,13 +53,18 @@
   </div>
 
   <div class="container">
-    <h2>AWRE Pitcher Report</h2>
-    <p class="subtitle">Generate a Synergy-style PDF report for any Moeller pitcher from AWRE charting data</p>
+    <h2>Opponent Pitcher Scouting Report</h2>
+    <p class="subtitle">Generate a PDF scouting report on any opponent pitcher from AWRE charting data</p>
 
     <div class="card">
-      <label>Select Pitcher</label>
-      <select id="pitcherSelect">
-        <option value="">Loading pitchers...</option>
+      <label>Select Team</label>
+      <select id="teamSelect">
+        <option value="">Loading teams...</option>
+      </select>
+
+      <label style="margin-top:16px">Select Pitcher</label>
+      <select id="pitcherSelect" disabled>
+        <option value="">-- Select a team first --</option>
       </select>
       <div class="pitcher-count" id="pitcherCount"></div>
 
@@ -83,30 +88,54 @@
   </div>
 
   <script>
-    const select = document.getElementById('pitcherSelect');
+    const teamSelect = document.getElementById('teamSelect');
+    const pitcherSelect = document.getElementById('pitcherSelect');
     const viewBtn = document.getElementById('viewBtn');
     const downloadBtn = document.getElementById('downloadBtn');
 
-    fetch('/api/awre/pitchers-list')
+    // Load teams
+    fetch('/api/awre/teams')
       .then(r => r.json())
       .then(data => {
-        select.innerHTML = '<option value="">-- Select a pitcher --</option>' +
-          data.pitchers.map(p => `<option value="${p}">${p}</option>`).join('');
-        document.getElementById('pitcherCount').textContent = data.count + ' pitchers available';
+        teamSelect.innerHTML = '<option value="">-- Select a team --</option>' +
+          data.teams.filter(t => t !== 'Moeller').map(t => `<option value="${t}">${t}</option>`).join('');
       })
       .catch(() => {
-        select.innerHTML = '<option value="">Failed to load pitchers</option>';
+        teamSelect.innerHTML = '<option value="">Failed to load teams</option>';
       });
 
-    select.addEventListener('change', () => {
-      const has = !!select.value;
+    teamSelect.addEventListener('change', () => {
+      const team = teamSelect.value;
+      viewBtn.disabled = true;
+      downloadBtn.disabled = true;
+      document.getElementById('preview').style.display = 'none';
+      if (!team) {
+        pitcherSelect.innerHTML = '<option value="">-- Select a team first --</option>';
+        pitcherSelect.disabled = true;
+        document.getElementById('pitcherCount').textContent = '';
+        return;
+      }
+      pitcherSelect.innerHTML = '<option value="">Loading...</option>';
+      pitcherSelect.disabled = true;
+      fetch('/api/awre/pitchers-list?team=' + encodeURIComponent(team))
+        .then(r => r.json())
+        .then(data => {
+          pitcherSelect.innerHTML = '<option value="">-- Select a pitcher --</option>' +
+            data.pitchers.map(p => `<option value="${p}">${p}</option>`).join('');
+          pitcherSelect.disabled = false;
+          document.getElementById('pitcherCount').textContent = data.count + ' pitchers available';
+        });
+    });
+
+    pitcherSelect.addEventListener('change', () => {
+      const has = !!pitcherSelect.value;
       viewBtn.disabled = !has;
       downloadBtn.disabled = !has;
       document.getElementById('preview').style.display = 'none';
     });
 
     function viewPdf() {
-      const name = select.value;
+      const name = pitcherSelect.value;
       if (!name) return;
       const url = '/api/awre/pitcher-pdf?name=' + encodeURIComponent(name);
       document.getElementById('loading').classList.add('active');
@@ -121,7 +150,7 @@
     }
 
     function downloadPdf() {
-      const name = select.value;
+      const name = pitcherSelect.value;
       if (!name) return;
       const a = document.createElement('a');
       a.href = '/api/awre/pitcher-pdf?name=' + encodeURIComponent(name);

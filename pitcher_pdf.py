@@ -48,11 +48,12 @@ def _load_data(csv_path: str) -> pd.DataFrame:
     return pd.read_csv(full, low_memory=False)
 
 
-def list_pitchers(csv_path: str = "awre_data.csv") -> list[str]:
-    """Return list of Moeller pitcher names available in AWRE data."""
+def list_pitchers(csv_path: str = "awre_data.csv", team: str = None) -> list[str]:
+    """Return list of pitcher names available in AWRE data. Optionally filter by team."""
     df = _load_data(csv_path)
-    moeller = df[df["pitcher_team"] == "Moeller"]
-    return sorted(moeller["pitcher_name"].dropna().unique().tolist())
+    if team:
+        df = df[df["pitcher_team"] == team]
+    return sorted(df["pitcher_name"].dropna().unique().tolist())
 
 
 def _is_in_zone(locside, locheight):
@@ -162,9 +163,18 @@ def _compute_pitch_result_breakdown(pdf: pd.DataFrame) -> list[dict]:
 
 
 def _compute_bip_breakdown(pdf: pd.DataFrame) -> list[dict]:
-    """BIP type breakdown."""
+    """BIP type breakdown — infer from distance if hittype is missing."""
     bip = pdf[pdf["pitch_result"] == "Strike In Play"].copy()
     total = len(bip)
+
+    # Fill missing hittype using distance-based inference
+    if bip["hittype"].isna().all() or bip["hittype"].dropna().empty:
+        bip["hittype"] = bip.apply(_infer_hittype, axis=1)
+    else:
+        bip["hittype"] = bip.apply(
+            lambda r: r["hittype"] if pd.notna(r["hittype"]) and r["hittype"] != "Undefined"
+            else _infer_hittype(r), axis=1)
+
     cats = ["GroundBall", "FlyBall", "LineDrive", "Undefined"]
     labels = {"GroundBall": "Ground Ball", "FlyBall": "Fly Ball",
               "LineDrive": "Line Drive", "Undefined": "Pop Up / Other"}
@@ -263,6 +273,20 @@ def _draw_strike_zone(ax, pdf: pd.DataFrame):
         spine.set_linewidth(0.5)
 
 
+def _infer_hittype(row):
+    """Infer hit type from distance and hit_location if hittype is missing."""
+    dist = row.get("ball_in_play_distance", 0) or 0
+    loc = str(row.get("hit_location", ""))
+    if dist <= 0:
+        return "Undefined"
+    if dist < 150:
+        return "GroundBall"
+    elif dist > 250:
+        return "FlyBall"
+    else:
+        return "LineDrive"
+
+
 def _draw_spray_chart(ax, pdf: pd.DataFrame):
     """Draw spray chart for batted balls."""
     ax.set_facecolor(BG_DARK)
@@ -271,14 +295,26 @@ def _draw_spray_chart(ax, pdf: pd.DataFrame):
               (pdf["ball_in_play_distance"].notna()) &
               (pdf["ball_in_play_distance"] > 0)].copy()
 
-    # Convert direction (degrees) and distance to x, y
-    # Direction: 0 = center field, negative = left field, positive = right field
-    if len(bip) > 0:
-        angle_rad = np.radians(bip["ball_in_play_direction"])
-        bip_x = bip["ball_in_play_distance"] * np.sin(angle_rad)
-        bip_y = bip["ball_in_play_distance"] * np.cos(angle_rad)
+    if len(bip) == 0:
+        ax.text(0.5, 0.5, "No spray chart data", ha="center", va="center",
+                color=GRAY, fontsize=9, transform=ax.transAxes)
+        ax.set_title("Spray Chart", color=GOLD, fontsize=9, fontweight="bold", pad=6)
+        ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
+        for spine in ax.spines.values():
+            spine.set_color(GRAY)
+            spine.set_linewidth(0.5)
+        return
+
+    # Fill missing hittype
+    if bip["hittype"].isna().all() or bip["hittype"].dropna().empty:
+        bip["hittype"] = bip.apply(_infer_hittype, axis=1)
     else:
-        bip_x, bip_y = [], []
+        bip["hittype"] = bip["hittype"].fillna("Undefined")
+
+    # Convert direction (degrees) and distance to x, y
+    angle_rad = np.radians(bip["ball_in_play_direction"].astype(float))
+    bip["bip_x"] = bip["ball_in_play_distance"].astype(float) * np.sin(angle_rad)
+    bip["bip_y"] = bip["ball_in_play_distance"].astype(float) * np.cos(angle_rad)
 
     # Draw field outline
     theta = np.linspace(-np.pi / 4, np.pi / 4, 100)
@@ -297,18 +333,23 @@ def _draw_spray_chart(ax, pdf: pd.DataFrame):
     ax.plot(infield_r * np.sin(theta), infield_r * np.cos(theta),
             color=GRAY, linewidth=0.5, alpha=0.3)
 
-    # Plot BIP
-    if len(bip) > 0:
-        for ht in bip["hittype"].dropna().unique():
-            mask = bip["hittype"] == ht
-            color = HIT_COLORS.get(ht, "#888888")
-            ax.scatter(bip_x[mask], bip_y[mask], c=color, s=22, alpha=0.8,
-                       edgecolors="none", label=ht, zorder=3)
+    # Plot BIP colored by hit type
+    labels = {"GroundBall": "Ground Ball", "FlyBall": "Fly Ball",
+              "LineDrive": "Line Drive", "Undefined": "Other"}
+    for ht in ["GroundBall", "LineDrive", "FlyBall", "Undefined"]:
+        mask = bip["hittype"] == ht
+        if mask.sum() == 0:
+            continue
+        color = HIT_COLORS.get(ht, "#888888")
+        ax.scatter(bip.loc[mask, "bip_x"], bip.loc[mask, "bip_y"],
+                   c=color, s=22, alpha=0.8, edgecolors="none",
+                   label=f"{labels.get(ht, ht)} ({mask.sum()})", zorder=3)
 
     ax.set_xlim(-380, 380)
     ax.set_ylim(-30, 420)
     ax.set_aspect("equal")
-    ax.set_title("Spray Chart (vs Pitcher)", color=GOLD, fontsize=9, fontweight="bold", pad=6)
+    ax.set_title(f"Spray Chart ({len(bip)} BIP)", color=GOLD, fontsize=9,
+                 fontweight="bold", pad=6)
     ax.legend(fontsize=5.5, loc="upper right", facecolor=BG_CARD, edgecolor=GOLD,
               labelcolor=WHITE, framealpha=0.9)
     ax.tick_params(colors=GRAY, labelsize=5)
@@ -320,11 +361,10 @@ def _draw_spray_chart(ax, pdf: pd.DataFrame):
 def generate_pitcher_pdf(pitcher_name: str, csv_path: str = "awre_data.csv") -> bytes:
     """Generate a 1-page pitcher report PDF. Returns PDF bytes."""
     df = _load_data(csv_path)
-    pdf_data = df[(df["pitcher_team"] == "Moeller") &
-                  (df["pitcher_name"] == pitcher_name)].copy()
+    pdf_data = df[df["pitcher_name"] == pitcher_name].copy()
 
     if len(pdf_data) == 0:
-        raise ValueError(f"No data found for pitcher '{pitcher_name}' on Moeller")
+        raise ValueError(f"No data found for pitcher '{pitcher_name}'")
 
     # Compute all stats
     basic = _compute_basic_stats(pdf_data)
@@ -344,14 +384,18 @@ def generate_pitcher_pdf(pitcher_name: str, csv_path: str = "awre_data.csv") -> 
     throws = pdf_data["pitcherthrows"].dropna().mode()
     hand = throws.iloc[0] if len(throws) > 0 else "?"
 
+    # Team
+    team_name = pdf_data["pitcher_team"].dropna().mode()
+    team_str = team_name.iloc[0] if len(team_name) > 0 else "Unknown"
+
     # Opponents faced
     opponents = sorted(pdf_data["opponent"].dropna().unique())
     opp_str = ", ".join(opponents[:6])
     if len(opponents) > 6:
         opp_str += f" (+{len(opponents) - 6} more)"
 
-    # ── Build figure ───────────────────────────────────────────────
-    fig = plt.figure(figsize=(11, 8.5), facecolor=BG_DARK)
+    # ── Build figure (landscape for more horizontal space) ─────────
+    fig = plt.figure(figsize=(14, 10), facecolor=BG_DARK)
 
     # Layout grid: 6 rows x 4 cols
     # Row 0: header (full width)
@@ -359,88 +403,83 @@ def generate_pitcher_pdf(pitcher_name: str, csv_path: str = "awre_data.csv") -> 
     # Row 2-3: pitch type table (left 2.5 cols) | strike zone (right 1.5 cols)
     # Row 4: pitch result (left) | BIP breakdown (mid) | spray chart (right)
 
-    # ── HEADER ─────────────────────────────────────────────────────
-    ax_header = fig.add_axes([0.02, 0.90, 0.96, 0.08])
-    ax_header.set_facecolor(BG_DARK)
-    ax_header.axis("off")
-    ax_header.text(0.5, 0.72, f"{pitcher_name}  ({hand}, {year_str})  vs All Hitters",
-                   ha="center", va="center", fontsize=16, fontweight="bold",
-                   color=GOLD, transform=ax_header.transAxes)
-    ax_header.text(0.5, 0.22,
-                   f"Moeller Crusaders — AWRE Pitch Tracking Data  |  {len(pdf_data)} pitches  |  {basic['G']}G",
-                   ha="center", va="center", fontsize=9, color=GRAY,
-                   transform=ax_header.transAxes)
-    # Gold line
-    ax_header.plot([0.1, 0.9], [0.02, 0.02], color=GOLD, linewidth=1.5,
-                   transform=ax_header.transAxes, clip_on=False)
+    # ── HEADER (y: 0.94-1.0) ─────────────────────────────────────
+    fig.text(0.5, 0.975, f"{pitcher_name}  ({hand}, {year_str})",
+             ha="center", va="center", fontsize=20, fontweight="bold", color=GOLD)
+    fig.text(0.5, 0.95,
+             f"{team_str}  |  AWRE Pitch Tracking  |  {len(pdf_data)} pitches  |  {basic['G']}G",
+             ha="center", va="center", fontsize=10, color=GRAY)
+    # Gold divider
+    line_ax = fig.add_axes([0.05, 0.935, 0.90, 0.001])
+    line_ax.set_facecolor(GOLD)
+    line_ax.axis("off")
 
-    # ── BASIC STATS TABLE ──────────────────────────────────────────
-    ax_basic = fig.add_axes([0.03, 0.82, 0.94, 0.08])
+    # ── BASIC STATS (y: 0.87-0.93) ────────────────────────────────
+    fig.text(0.03, 0.92, "RESULTS VS THIS PITCHER",
+             fontsize=8, color=GRAY, fontweight="bold", va="center")
+
+    ax_basic = fig.add_axes([0.03, 0.875, 0.94, 0.04])
     basic_headers = ["G", "PA", "AB", "H", "1B", "2B", "3B", "HR", "BB", "K", "HBP",
                      "AVG", "OBP", "SLG", "OPS"]
     basic_row = [basic[h] for h in basic_headers]
     basic_widths = [0.055, 0.055, 0.055, 0.055, 0.055, 0.055, 0.055, 0.055,
                     0.055, 0.055, 0.055, 0.08, 0.08, 0.08, 0.08]
     _draw_table(ax_basic, basic_headers, [basic_row], col_widths=basic_widths,
-                font_size=7)
+                font_size=7.5)
 
-    # "Against" label
-    ax_lbl = fig.add_axes([0.03, 0.895, 0.94, 0.02])
-    ax_lbl.axis("off")
-    ax_lbl.text(0.0, 0.5, "BATTING AGAINST (opponents' results vs this pitcher)",
-                fontsize=7, color=GRAY, va="center", transform=ax_lbl.transAxes)
+    # ── MIDDLE ROW: Pitch Arsenal (left) + Strike Zone (right) ────
+    # y: 0.48-0.84
+    mid_top = 0.84
+    mid_bot = 0.48
 
-    # ── PITCH TYPE TABLE ───────────────────────────────────────────
-    ax_pt_label = fig.add_axes([0.03, 0.785, 0.55, 0.025])
+    ax_pt_label = fig.add_axes([0.03, mid_top - 0.005, 0.55, 0.02])
     ax_pt_label.axis("off")
-    ax_pt_label.text(0.0, 0.5, "PITCH ARSENAL", fontsize=8, fontweight="bold",
+    ax_pt_label.text(0.0, 0.5, "PITCH ARSENAL", fontsize=9, fontweight="bold",
                      color=GOLD, va="center", transform=ax_pt_label.transAxes)
 
-    n_pt_rows = len(pitch_types) + 1  # +1 header
-    pt_height = min(0.30, 0.035 * n_pt_rows + 0.02)
-    ax_pt = fig.add_axes([0.03, 0.79 - pt_height, 0.55, pt_height])
+    pt_height = mid_top - mid_bot - 0.03
+    ax_pt = fig.add_axes([0.03, mid_bot, 0.55, pt_height])
     pt_headers = ["Pitch", "Avg Velo", "#", "Usage%", "Ball%", "Strike%",
                   "Swing%", "Whiff%", "Chase%"]
     pt_rows = pitch_types[pt_headers].values.tolist()
     pt_widths = [0.16, 0.10, 0.08, 0.10, 0.10, 0.10, 0.10, 0.13, 0.13]
-    _draw_table(ax_pt, pt_headers, pt_rows, col_widths=pt_widths, font_size=6.5)
+    _draw_table(ax_pt, pt_headers, pt_rows, col_widths=pt_widths, font_size=7)
 
-    # ── STRIKE ZONE ────────────────────────────────────────────────
-    zone_bottom = 0.79 - pt_height
-    zone_height = pt_height + 0.025
-    ax_zone = fig.add_axes([0.62, zone_bottom, 0.36, zone_height])
+    ax_zone = fig.add_axes([0.62, mid_bot, 0.36, mid_top - mid_bot])
     _draw_strike_zone(ax_zone, pdf_data)
 
-    # ── BOTTOM ROW ─────────────────────────────────────────────────
-    bottom_top = zone_bottom - 0.04
-    bottom_h = min(0.25, bottom_top - 0.04)
+    # ── BOTTOM ROW: Pitch Results + BIP Type + Spray Chart ────────
+    # y: 0.05-0.44
+    bot_top = 0.44
+    bot_bot = 0.05
+    bot_h = bot_top - bot_bot
 
     # Pitch Result Table
-    ax_pr_label = fig.add_axes([0.03, bottom_top, 0.25, 0.025])
+    ax_pr_label = fig.add_axes([0.03, bot_top, 0.25, 0.02])
     ax_pr_label.axis("off")
-    ax_pr_label.text(0.0, 0.5, "PITCH RESULTS", fontsize=8, fontweight="bold",
+    ax_pr_label.text(0.0, 0.5, "PITCH RESULTS", fontsize=9, fontweight="bold",
                      color=GOLD, va="center", transform=ax_pr_label.transAxes)
 
-    ax_pr = fig.add_axes([0.03, bottom_top - bottom_h, 0.25, bottom_h])
+    ax_pr = fig.add_axes([0.03, bot_bot, 0.25, bot_h - 0.02])
     pr_headers = ["Result", "#", "%"]
     pr_rows = [[r["Result"], r["#"], r["%"]] for r in pitch_results]
     pr_widths = [0.45, 0.25, 0.30]
-    _draw_table(ax_pr, pr_headers, pr_rows, col_widths=pr_widths, font_size=6.5)
+    _draw_table(ax_pr, pr_headers, pr_rows, col_widths=pr_widths, font_size=7)
 
     # BIP Breakdown Table
-    ax_bip_label = fig.add_axes([0.31, bottom_top, 0.25, 0.025])
+    ax_bip_label = fig.add_axes([0.31, bot_top, 0.25, 0.02])
     ax_bip_label.axis("off")
-    ax_bip_label.text(0.0, 0.5, "BATTED BALL TYPE", fontsize=8, fontweight="bold",
+    ax_bip_label.text(0.0, 0.5, "BATTED BALL TYPE", fontsize=9, fontweight="bold",
                       color=GOLD, va="center", transform=ax_bip_label.transAxes)
 
-    ax_bip = fig.add_axes([0.31, bottom_top - bottom_h, 0.25, bottom_h])
+    ax_bip = fig.add_axes([0.31, bot_bot, 0.25, bot_h - 0.02])
     bip_headers = ["Type", "#", "%"]
     bip_rows = [[r["Type"], r["#"], r["%"]] for r in bip_breakdown]
     bip_widths = [0.45, 0.25, 0.30]
-    _draw_table(ax_bip, bip_headers, bip_rows, col_widths=bip_widths, font_size=6.5)
+    _draw_table(ax_bip, bip_headers, bip_rows, col_widths=bip_widths, font_size=7)
 
     # Spray Chart
-    ax_spray = fig.add_axes([0.60, bottom_top - bottom_h, 0.38, bottom_h + 0.025])
+    ax_spray = fig.add_axes([0.60, bot_bot, 0.38, bot_top - bot_bot + 0.02])
     _draw_spray_chart(ax_spray, pdf_data)
 
     # ── FOOTER ─────────────────────────────────────────────────────

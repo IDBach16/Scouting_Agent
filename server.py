@@ -455,10 +455,20 @@ def awre_hls_proxy():
 from pitcher_pdf import list_pitchers as awre_list_pitchers, generate_pitcher_pdf
 
 
+@app.route("/api/awre/teams", methods=["GET"])
+def awre_teams():
+    """List all teams with AWRE data."""
+    import pandas as pd
+    df = pd.read_csv(os.path.join(STATIC_DIR, "awre_data.csv"), low_memory=False, usecols=["pitcher_team"])
+    teams = sorted(df["pitcher_team"].dropna().unique().tolist())
+    return jsonify({"teams": teams})
+
+
 @app.route("/api/awre/pitchers-list", methods=["GET"])
 def awre_pitchers_list():
-    """List all Moeller pitchers with AWRE data."""
-    pitchers = awre_list_pitchers()
+    """List all pitchers with AWRE data. Optional ?team= filter."""
+    team = request.args.get("team")
+    pitchers = awre_list_pitchers(team=team if team else None)
     return jsonify({"pitchers": pitchers, "count": len(pitchers)})
 
 
