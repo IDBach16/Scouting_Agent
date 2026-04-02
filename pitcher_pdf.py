@@ -380,9 +380,19 @@ def generate_pitcher_pdf(pitcher_name: str, csv_path: str = "awre_data.csv") -> 
     else:
         year_str = ""
 
-    # Handedness
-    throws = pdf_data["pitcherthrows"].dropna().mode()
-    hand = throws.iloc[0] if len(throws) > 0 else "?"
+    # Handedness — try pitcherthrows first, fall back to pitcher_lefty
+    throws = pdf_data["pitcherthrows"].dropna()
+    throws = throws[throws != "Undefined"]
+    if len(throws) > 0:
+        hand = throws.mode().iloc[0]
+    elif "pitcher_lefty" in pdf_data.columns:
+        lefty_vals = pdf_data["pitcher_lefty"].dropna()
+        if len(lefty_vals) > 0:
+            hand = "Left" if lefty_vals.mode().iloc[0] else "Right"
+        else:
+            hand = "RHP"
+    else:
+        hand = "RHP"
 
     # Team
     team_name = pdf_data["pitcher_team"].dropna().mode()
