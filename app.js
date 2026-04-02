@@ -3871,17 +3871,34 @@ async function sendMessage() {
       try { charts = generateCharts(text, context.type, context.data); } catch(chartErr) { console.warn('Chart generation error:', chartErr); }
     }
 
-    const res=await fetch('/api/chat',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:fullMessage,session_id:sessionId,mode:appMode}),
-    });
-    const rawText = await res.text();
     let data;
-    try { data = JSON.parse(rawText); } catch(parseErr) {
-      console.error('Response not JSON:', rawText.substring(0, 500));
-      throw new Error('Server returned invalid response. Try again or use Dugout mode.');
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 180000); // 3 min timeout
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message: fullMessage, session_id: sessionId, mode: appMode}),
+          signal: controller.signal,
+        });
+        clearTimeout(timer);
+        const rawText = await res.text();
+        try { data = JSON.parse(rawText); } catch(parseErr) {
+          console.error('Response not JSON (attempt ' + (attempt+1) + '):', rawText.substring(0, 300));
+          if (attempt === 0) continue; // retry once
+          throw new Error('Server timed out. Try a simpler question or use Dugout mode.');
+        }
+        if (!res.ok) throw new Error(data.error || `Server error (${res.status})`);
+        break;
+      } catch(fetchErr) {
+        clearTimeout(timer);
+        if (fetchErr.name === 'AbortError') {
+          if (attempt === 0) continue;
+          throw new Error('Request timed out. Try a simpler question or use Dugout mode.');
+        }
+        throw fetchErr;
+      }
     }
-    if (!res.ok) throw new Error(data.error||`Server error (${res.status})`);
     removeLoading(loadingEl);
     appendMessage('assistant', data.reply, charts);
   } catch(err) {
