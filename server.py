@@ -17,7 +17,8 @@ if _env_path.exists():
             os.environ.setdefault(k.strip(), v.strip())
 
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-MODEL = "claude-sonnet-4-6"  # Sonnet: better analysis and writing quality
+MODEL_FULL = "claude-haiku-4-5-20251001"   # Haiku for full analysis (fast with big data)
+MODEL_DUGOUT = "claude-sonnet-4-6"        # Sonnet for dugout mode (better quick analysis)
 PORT = 3000
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -181,8 +182,9 @@ def chat():
         conversation_histories[session_id] = history
     prompt = SYSTEM_PROMPT_DUGOUT if mode == "dugout" else SYSTEM_PROMPT_FULL
     try:
+        model = MODEL_DUGOUT if mode == "dugout" else MODEL_FULL
         response = c.messages.create(
-            model=MODEL,
+            model=model,
             max_tokens=4096 if mode == "full" else 1024,
             system=[{
                 "type": "text",
