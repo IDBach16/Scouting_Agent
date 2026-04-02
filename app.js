@@ -293,6 +293,15 @@ function loadCSV() {
     complete: r => {
       rawData = r.data;
       reprocessData();
+      // Show last-updated date from CSV file
+      fetch('data.csv', { method: 'HEAD' }).then(resp => {
+        const lm = resp.headers.get('Last-Modified');
+        if (lm) {
+          const d = new Date(lm);
+          document.getElementById('last-updated-text').textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+          document.getElementById('last-updated').style.display = '';
+        }
+      }).catch(() => {});
     },
     error: () => {
       updateStatus('error', 'CSV failed');

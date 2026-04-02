@@ -204,8 +204,14 @@ def chat():
 
 @app.route("/api/status", methods=["GET"])
 def status():
+    from datetime import datetime
     key = API_KEY or os.environ.get("ANTHROPIC_API_KEY", "")
-    return jsonify({"ready": bool(key)})
+    last_updated = None
+    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.csv")
+    if os.path.exists(csv_path):
+        mtime = os.path.getmtime(csv_path)
+        last_updated = datetime.fromtimestamp(mtime).strftime("%m/%d/%Y %I:%M %p")
+    return jsonify({"ready": bool(key), "last_updated": last_updated})
 
 
 @app.route("/api/git-push", methods=["POST"])
@@ -280,6 +286,203 @@ def awre_refresh():
     """Reload AWRE data from CSV (after running awre_pull.py)."""
     data = awre_reload()
     return jsonify({"status": "ok", "pitches": len(data)})
+
+
+@app.route("/api/awre/pitches", methods=["GET"])
+def awre_pitches():
+    """Filter pitches from AWRE CSV. Returns pitches + filter options."""
+    from awre_client import get_all_pitches
+    all_p = get_all_pitches()
+
+    # Collect filter options from full dataset
+    opts = {"opponents": set(), "pitchers": set(), "batters": set(),
+            "pitch_types": set(), "games": set()}
+    for p in all_p:
+        if p.get("opponent"): opts["opponents"].add(p["opponent"])
+        if p.get("pitcher_name"): opts["pitchers"].add(p["pitcher_name"])
+        if p.get("batter_name"): opts["batters"].add(p["batter_name"])
+        if p.get("pitch_type_name"): opts["pitch_types"].add(p["pitch_type_name"])
+        if p.get("game_date") and p.get("opponent"):
+            opts["games"].add(f"{p['game_date']} vs {p['opponent']}")
+
+    # Apply filters
+    filters = {
+        "opponent": request.args.get("opponent", ""),
+        "pitcher": request.args.get("pitcher", ""),
+        "batter": request.args.get("batter", ""),
+        "pitch_type": request.args.get("pitch_type", ""),
+        "pitch_result": request.args.get("pitch_result", ""),
+        "atbat_result": request.args.get("atbat_result", ""),
+        "count": request.args.get("count", ""),
+        "inning": request.args.get("inning", ""),
+        "game_date": request.args.get("game_date", ""),
+        "pitcher_team": request.args.get("pitcher_team", ""),
+    }
+
+    filtered = all_p
+    if filters["opponent"]:
+        filtered = [p for p in filtered if p.get("opponent", "") == filters["opponent"]]
+    if filters["pitcher"]:
+        filtered = [p for p in filtered if p.get("pitcher_name", "") == filters["pitcher"]]
+    if filters["batter"]:
+        filtered = [p for p in filtered if p.get("batter_name", "") == filters["batter"]]
+    if filters["pitch_type"]:
+        filtered = [p for p in filtered if p.get("pitch_type_name", "") == filters["pitch_type"]]
+    if filters["pitch_result"]:
+        filtered = [p for p in filtered if filters["pitch_result"].lower() in p.get("pitch_result", "").lower()]
+    if filters["atbat_result"]:
+        filtered = [p for p in filtered if p.get("atbat_result", "") == filters["atbat_result"]]
+    if filters["count"]:
+        b, s = filters["count"].split("-")
+        filtered = [p for p in filtered if p.get("balls", "") == b and p.get("strikes", "") == s]
+    if filters["inning"]:
+        filtered = [p for p in filtered if p.get("inning_number", "") == filters["inning"]]
+    if filters["game_date"]:
+        filtered = [p for p in filtered if p.get("game_date", "") == filters["game_date"]]
+    if filters["pitcher_team"]:
+        filtered = [p for p in filtered if p.get("pitcher_team", "") == filters["pitcher_team"]]
+
+    # Build slim pitch objects for response
+    slim = []
+    for p in filtered[:500]:  # cap at 500
+        slim.append({
+            "ph_key": p.get("performance_data_key", ""),
+            "game_date": p.get("game_date", ""),
+            "opponent": p.get("opponent", ""),
+            "inning": p.get("inning_number", ""),
+            "top_bottom": p.get("top_or_bottom", ""),
+            "pitcher": p.get("pitcher_name", ""),
+            "pitcher_team": p.get("pitcher_team", ""),
+            "batter": p.get("batter_name", ""),
+            "batter_team": p.get("batter_team", ""),
+            "pitch_type": p.get("pitch_type_name", ""),
+            "velo": p.get("velo", ""),
+            "balls": p.get("balls", ""),
+            "strikes": p.get("strikes", ""),
+            "result": p.get("pitch_result", ""),
+            "ab_result": p.get("atbat_result", ""),
+        })
+
+    return jsonify({
+        "pitches": slim,
+        "total": len(filtered),
+        "showing": len(slim),
+        "filters": {
+            "opponents": sorted(opts["opponents"]),
+            "pitchers": sorted(opts["pitchers"]),
+            "batters": sorted(opts["batters"]),
+            "pitch_types": sorted(opts["pitch_types"]),
+            "games": sorted(opts["games"], reverse=True),
+        }
+    })
+
+
+import time as _time
+_video_cache = {}
+_VIDEO_TTL = 1800
+
+@app.route("/api/awre/video/<ph_key>", methods=["GET"])
+def awre_video(ph_key):
+    """Proxy AWRE video angles API. Caches for 30 min."""
+    now = _time.time()
+    if ph_key in _video_cache and (now - _video_cache[ph_key]["ts"]) < _VIDEO_TTL:
+        return jsonify(_video_cache[ph_key]["data"])
+    try:
+        import requests as _req
+        api_key = os.environ.get("AWRE_API_KEY", "gM6K9SFn.tPP3vQBNYTbSXx8wX2zNcipPGT24EkNA")
+        team_id = os.environ.get("AWRE_TEAM_ID", "58177")
+        resp = _req.get(
+            f"https://www.pitchaware.com/api/exchange/v2/team/{team_id}/clip/{ph_key}/angles",
+            headers={"Authorization": f"Api-Key {api_key}"}, timeout=10
+        )
+        data = resp.json()
+        _video_cache[ph_key] = {"data": data, "ts": now}
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/awre/hls-proxy", methods=["GET"])
+def awre_hls_proxy():
+    """Proxy HLS m3u8/ts requests to bypass CORS."""
+    from flask import Response
+    import requests as _req
+    url = request.args.get("url", "")
+    if not url or "pitchaware.com" not in url and "awresports" not in url:
+        return jsonify({"error": "Invalid URL"}), 400
+    try:
+        resp = _req.get(url, timeout=15, stream=True)
+        content = resp.content
+        ct = resp.headers.get("Content-Type", "application/octet-stream")
+
+        # Rewrite m3u8 to proxy sub-requests too
+        if "mpegurl" in ct or url.endswith(".m3u8"):
+            text = content.decode("utf-8", errors="replace")
+            # Rewrite absolute URLs to go through our proxy
+            import re
+            def rewrite_url(match):
+                orig = match.group(0)
+                if orig.startswith("http"):
+                    return "/api/awre/hls-proxy?url=" + requests_quote(orig)
+                return orig
+            from urllib.parse import quote as requests_quote
+            lines = text.split("\n")
+            rewritten = []
+            for line in lines:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    # This is a URL line
+                    if line.startswith("http"):
+                        line = "/api/awre/hls-proxy?url=" + requests_quote(line, safe="")
+                elif "URI=" in line:
+                    # Rewrite URI= references in tags
+                    def replace_uri(m):
+                        return 'URI="' + "/api/awre/hls-proxy?url=" + requests_quote(m.group(1), safe="") + '"'
+                    line = re.sub(r'URI="([^"]+)"', replace_uri, line)
+                rewritten.append(line)
+            content = "\n".join(rewritten).encode("utf-8")
+            ct = "application/vnd.apple.mpegurl"
+
+        return Response(content, content_type=ct, headers={
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "no-cache",
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ── AWRE Pitcher PDF Report ────────────────────────────────────────
+from pitcher_pdf import list_pitchers as awre_list_pitchers, generate_pitcher_pdf
+
+
+@app.route("/api/awre/pitchers-list", methods=["GET"])
+def awre_pitchers_list():
+    """List all Moeller pitchers with AWRE data."""
+    pitchers = awre_list_pitchers()
+    return jsonify({"pitchers": pitchers, "count": len(pitchers)})
+
+
+@app.route("/api/awre/pitcher-pdf", methods=["GET"])
+def awre_pitcher_pdf():
+    """Generate and return a pitcher PDF report. Query param: name (required)."""
+    from flask import Response
+    name = request.args.get("name", "")
+    if not name:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    try:
+        pdf_bytes = generate_pitcher_pdf(name)
+        safe_name = name.replace(" ", "_")
+        return Response(
+            pdf_bytes,
+            mimetype="application/pdf",
+            headers={
+                "Content-Disposition": f'inline; filename="{safe_name}_report.pdf"',
+            }
+        )
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": f"PDF generation failed: {str(e)}"}), 500
 
 
 @app.route("/")
