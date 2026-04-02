@@ -189,7 +189,8 @@ def chat():
                 "text": prompt,
                 "cache_control": {"type": "ephemeral"}
             }],
-            messages=history
+            messages=history,
+            timeout=120.0,
         )
         reply = response.content[0].text
         history.append({"role": "assistant", "content": reply})
@@ -197,8 +198,11 @@ def chat():
     except Exception as e:
         history.pop()
         error_msg = str(e)
+        print(f"[CHAT ERROR] {error_msg}")
         if "authentication" in error_msg.lower() or "api key" in error_msg.lower():
             return jsonify({"error": "Invalid API key. Check your ANTHROPIC_API_KEY."}), 401
+        if "overloaded" in error_msg.lower() or "529" in error_msg:
+            return jsonify({"error": "Claude is overloaded. Try again in a moment."}), 503
         return jsonify({"error": f"API error: {error_msg}"}), 500
 
 
