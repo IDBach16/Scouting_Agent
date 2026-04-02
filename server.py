@@ -17,7 +17,7 @@ if _env_path.exists():
             os.environ.setdefault(k.strip(), v.strip())
 
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-MODEL = "claude-haiku-4-5-20251001"  # Haiku: ~10x cheaper than Sonnet, great for data lookups
+MODEL = "claude-sonnet-4-6"  # Sonnet: better analysis and writing quality
 PORT = 3000
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
