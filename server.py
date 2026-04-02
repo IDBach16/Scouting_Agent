@@ -485,6 +485,11 @@ def awre_pitcher_pdf():
         return jsonify({"error": f"PDF generation failed: {str(e)}"}), 500
 
 
+@app.route("/reports")
+def reports_page():
+    return send_from_directory(STATIC_DIR, "reports.html")
+
+
 @app.route("/")
 def index():
     return send_from_directory(STATIC_DIR, "index.html")
