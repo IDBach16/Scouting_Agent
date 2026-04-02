@@ -4245,10 +4245,13 @@ function appendQuickLook(cardOrContainer, hitterName, pitcherName) {
 function showLoading() {
   const el=document.createElement('div');
   el.className='loading-indicator';
+  const loadingMessages=['Scouting...','Crunching numbers...','Analyzing tendencies...','Building game plan...','Ian is still my favorite...'];
   el.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div><span class="loading-text">Scouting...</span>';
+  let _msgIdx=0;const _loadTxt=el.querySelector('.loading-text');
+  el._interval=setInterval(()=>{_msgIdx=(_msgIdx+1)%loadingMessages.length;_loadTxt.textContent=loadingMessages[_msgIdx];},3000);
   messagesEl.appendChild(el); scrollToBottom(); return el;
 }
-function removeLoading(el) { if (el&&el.parentNode) el.parentNode.removeChild(el); }
+function removeLoading(el) { if(el&&el._interval)clearInterval(el._interval); if (el&&el.parentNode) el.parentNode.removeChild(el); }
 function scrollToBottom() { requestAnimationFrame(()=>{chatArea.scrollTop=chatArea.scrollHeight;}); }
 function showError(msg) {
   const t=document.createElement('div'); t.className='error-toast'; t.textContent=msg;
