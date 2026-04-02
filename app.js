@@ -1210,6 +1210,26 @@ function routeQuestion(question) {
     ctx.data.batter.team=b.team;
     ctx.data.moellerPitchers=getAllMoellerPitcherProfiles(); return ctx;
   }
+  // For dual-role Moeller players, use query keywords + data volume to pick hitter vs pitcher
+  if (moeP && moeH && moeP === moeH) {
+    const hitterHints = /improv|hit|bat|swing|at.bat|plate|approach|slug|average|obp|ops|launch|contact|chase|whiff|strikeout rate|lineup/i.test(question);
+    const pitcherHints = /pitch|throw|arm|mound|era|whip|stuff|arsenal|velocity|slider|fastball|curve|changeup/i.test(question);
+    const hPitches = stats.moellerHitters[moeH] ? stats.moellerHitters[moeH].pitches.length : 0;
+    const pPitches = stats.moellerPitchers[moeP] ? stats.moellerPitchers[moeP].pitches.length : 0;
+    if (hitterHints && !pitcherHints) {
+      ctx.type='moeller_hitter';
+      ctx.data.hitter=computeHitterProfile(stats.moellerHitters[moeH].pitches,moeH,stats.moellerHitters[moeH].hand); return ctx;
+    }
+    if (pitcherHints && !hitterHints) {
+      ctx.type='moeller_pitcher'; const p=stats.moellerPitchers[moeP];
+      ctx.data.pitcher=computePitcherProfile(p.pitches,moeP,p.hand,'Moeller'); return ctx;
+    }
+    // No clear hint — pick by data volume (more pitches = primary role)
+    if (hPitches >= pPitches) {
+      ctx.type='moeller_hitter';
+      ctx.data.hitter=computeHitterProfile(stats.moellerHitters[moeH].pitches,moeH,stats.moellerHitters[moeH].hand); return ctx;
+    }
+  }
   if (moeP) {
     ctx.type='moeller_pitcher'; const p=stats.moellerPitchers[moeP];
     ctx.data.pitcher=computePitcherProfile(p.pitches,moeP,p.hand,'Moeller'); return ctx;
