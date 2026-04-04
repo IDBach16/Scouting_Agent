@@ -382,6 +382,161 @@ function preprocessData(data) {
   window.appStats = stats;
 }
 
+// ===== CROSS-YEAR COMPARISON HELPERS =====
+function filterByYear(data, year) {
+  return data.filter(r => {
+    const d = (r.Date || '');
+    return d.includes('/' + year) || d.startsWith(year + '-');
+  });
+}
+
+function buildYearStats(year) {
+  const yearData = filterByYear(rawData, year);
+  const ys = { opponentPitchers:{}, moellerHitters:{}, moellerPitchers:{}, opponentTeams:{}, opponentBatters:{} };
+  yearData.forEach(row => {
+    const pTeam = (row.PitcherTeam||'').trim();
+    const bTeam = (row.BatterTeam||'').trim();
+    const pitcher = (row.Pitcher||'').trim();
+    const batter = (row.Batter||'').trim();
+    const isMoeP = /moeller/i.test(pTeam);
+    const isMoeB = /moeller/i.test(bTeam);
+    if (!isMoeP && pitcher) {
+      if (!ys.opponentPitchers[pitcher]) ys.opponentPitchers[pitcher] = { team: pTeam, hand: row.PitcherHand, pitches: [] };
+      ys.opponentPitchers[pitcher].pitches.push(row);
+    }
+    if (isMoeB && batter) {
+      if (!ys.moellerHitters[batter]) ys.moellerHitters[batter] = { hand: row['Batter Hand'], pitches: [] };
+      ys.moellerHitters[batter].pitches.push(row);
+    }
+    if (!isMoeB && batter) {
+      if (!ys.opponentBatters[batter]) ys.opponentBatters[batter] = { team: bTeam, hand: row['Batter Hand'], pitches: [] };
+      ys.opponentBatters[batter].pitches.push(row);
+    }
+    if (isMoeP && pitcher) {
+      if (!ys.moellerPitchers[pitcher]) ys.moellerPitchers[pitcher] = { hand: row.PitcherHand, pitches: [] };
+      ys.moellerPitchers[pitcher].pitches.push(row);
+    }
+  });
+  return ys;
+}
+
+function buildCrossYearContext(question) {
+  const q = question.toLowerCase();
+  // Match patterns like "2024 pitcher vs 2026 hitters" or "compare Ben Hanley 2024 to 2026 Moeller hitters"
+  const yearPattern = /\b(20\d{2})\b/g;
+  const years = [];
+  let m;
+  while ((m = yearPattern.exec(q)) !== null) years.push(m[1]);
+  if (years.length < 2) return null;
+
+  const year1 = years[0];
+  const year2 = years[1];
+  const ys1 = buildYearStats(year1);
+  const ys2 = buildYearStats(year2);
+
+  // Figure out what the user wants to compare
+  // Look for player names in each year's data
+  const allPlayerFirstNames = [];
+  const allTeamWords = [];
+  const allOppPitchers1 = Object.keys(ys1.opponentPitchers);
+  const allOppPitchers2 = Object.keys(ys2.opponentPitchers);
+  const allOppBatters1 = Object.keys(ys1.opponentBatters);
+  const allOppBatters2 = Object.keys(ys2.opponentBatters);
+  const allMoePitchers1 = Object.keys(ys1.moellerPitchers);
+  const allMoePitchers2 = Object.keys(ys2.moellerPitchers);
+  const allMoeHitters1 = Object.keys(ys1.moellerHitters);
+  const allMoeHitters2 = Object.keys(ys2.moellerHitters);
+
+  // Try to find named players/teams near each year mention
+  const ctx = { type: 'cross_year_comparison', data: {} };
+
+  // Build profiles from both years
+  // Strategy: find pitcher references (opponent or Moeller) and hitter references
+  const allPitcherNames = [...allOppPitchers1, ...allOppPitchers2, ...allMoePitchers1, ...allMoePitchers2];
+  const allHitterNames = [...allOppBatters1, ...allOppBatters2, ...allMoeHitters1, ...allMoeHitters2];
+
+  const pitcherMatch = findBestMatch(q, [...new Set(allPitcherNames)], []);
+  const hitterMatch = findBestMatch(q, [...new Set(allHitterNames)], []);
+
+  // Check for team-level references (e.g. "2026 Moeller hitters", "2024 Elder pitchers")
+  const wantsMoellerHitters = /moeller\s*(hitter|batter|lineup|hitting|offense)/i.test(question);
+  const wantsMoellerPitchers = /moeller\s*(pitcher|pitching|staff|arm)/i.test(question);
+
+  // Determine which year goes with which side
+  // Common pattern: "[pitcher/team] [year1] vs/to/against [year2] [hitters/team]"
+  // The first year mentioned typically goes with what precedes it
+
+  ctx.data.year1 = year1;
+  ctx.data.year2 = year2;
+
+  // If a specific pitcher is named, pull their profile from whichever year has them
+  if (pitcherMatch.name && pitcherMatch.score > 0) {
+    const pName = pitcherMatch.name;
+    // Check which year(s) have this pitcher
+    const inOpp1 = ys1.opponentPitchers[pName];
+    const inOpp2 = ys2.opponentPitchers[pName];
+    const inMoe1 = ys1.moellerPitchers[pName];
+    const inMoe2 = ys2.moellerPitchers[pName];
+    // Pick the year the pitcher is associated with (prefer earlier year mentioned)
+    const pData = inOpp1 || inMoe1 || inOpp2 || inMoe2;
+    const pYear = (inOpp1 || inMoe1) ? year1 : year2;
+    if (pData) {
+      ctx.data.pitcher = computePitcherProfile(pData.pitches, pName, pData.hand, pData.team || 'Moeller');
+      ctx.data.pitcher.year = pYear;
+    }
+  }
+
+  // If a specific hitter is named, pull their profile
+  if (hitterMatch.name && hitterMatch.score > 0) {
+    const hName = hitterMatch.name;
+    const inOppB1 = ys1.opponentBatters[hName];
+    const inOppB2 = ys2.opponentBatters[hName];
+    const inMoeH1 = ys1.moellerHitters[hName];
+    const inMoeH2 = ys2.moellerHitters[hName];
+    const hData = inOppB1 || inMoeH1 || inOppB2 || inMoeH2;
+    const hYear = (inOppB1 || inMoeH1) ? year1 : year2;
+    if (hData) {
+      ctx.data.hitter = computeHitterProfile(hData.pitches, hName, hData.hand);
+      ctx.data.hitter.year = hYear;
+    }
+  }
+
+  // If user wants Moeller hitters from a year, pull them all
+  if (wantsMoellerHitters || (!hitterMatch.name && !ctx.data.hitter)) {
+    // Use the year that doesn't have the pitcher (or year2 by default)
+    const hYear = ctx.data.pitcher?.year === year2 ? year1 : year2;
+    const ysH = buildYearStats(hYear);
+    const profiles = {};
+    Object.keys(ysH.moellerHitters).forEach(n => {
+      profiles[n] = computeHitterProfile(ysH.moellerHitters[n].pitches, n, ysH.moellerHitters[n].hand);
+    });
+    if (Object.keys(profiles).length > 0) {
+      ctx.data.moellerHitters = profiles;
+      ctx.data.moellerHittersYear = hYear;
+    }
+  }
+
+  // If user wants Moeller pitchers from a year
+  if (wantsMoellerPitchers || (!pitcherMatch.name && !ctx.data.pitcher)) {
+    const pYear = ctx.data.hitter?.year === year1 ? year2 : year1;
+    const ysP = buildYearStats(pYear);
+    const profiles = {};
+    Object.keys(ysP.moellerPitchers).forEach(n => {
+      profiles[n] = computePitcherProfile(ysP.moellerPitchers[n].pitches, n, ysP.moellerPitchers[n].hand, 'Moeller');
+    });
+    if (Object.keys(profiles).length > 0) {
+      ctx.data.moellerPitchers = profiles;
+      ctx.data.moellerPitchersYear = pYear;
+    }
+  }
+
+  // Only return if we actually found data from both sides
+  const hasPitchSide = ctx.data.pitcher || ctx.data.moellerPitchers;
+  const hasHitSide = ctx.data.hitter || ctx.data.moellerHitters;
+  if (hasPitchSide || hasHitSide) return ctx;
+  return null;
+}
+
 // ===== NORMALIZE PITCH TYPE (global for charts.js too) =====
 function normalizePitchType(pt) {
   const t = (pt||'').trim().toLowerCase();
@@ -1144,6 +1299,14 @@ function expandTeamAliases(query) {
 function routeQuestion(question) {
   const q=expandTeamAliases(question.toLowerCase());
   const ctx={type:'',data:{}};
+
+  // Cross-year comparison: detect when two different years are mentioned
+  const yearMatches = q.match(/\b(20\d{2})\b/g);
+  if (yearMatches && new Set(yearMatches).size >= 2) {
+    const crossCtx = buildCrossYearContext(question);
+    if (crossCtx) return crossCtx;
+  }
+
   // Collect all player first names so team matching ignores them (e.g. "Conner" Cuozzo vs "Conner" High)
   const allPlayerFirstNames = [
     ...Object.keys(stats.opponentPitchers), ...Object.keys(stats.opponentBatters),
