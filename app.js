@@ -4228,6 +4228,40 @@ async function downloadAnalysisPDF(bubbleEl, triggerBtn) {
   .chart-card { margin: 12px 0; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; page-break-inside: avoid; }
   .chart-card-title { font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #1a1a1a; }
   .chart-group-title { font-size: 12px; font-weight: bold; color: #7B5A1F; text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 6px; padding-bottom: 3px; border-bottom: 1px solid #ddd; }
+  /* Dugout / Quick Look cards */
+  .quick-look-card { background: #fff; border: 2px solid #C5A55A; border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; page-break-inside: avoid; }
+  .quick-look-header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid #C5A55A; }
+  .quick-look-name { font-size: 15px; font-weight: bold; color: #1a1a1a; }
+  .quick-look-meta { font-size: 11px; color: #666; }
+  .quick-look-stats { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; }
+  .quick-look-stat { text-align: center; }
+  .quick-look-stat .ql-val { font-size: 14px; font-weight: bold; color: #7B5A1F; display: block; }
+  .quick-look-stat .ql-lbl { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: .04em; }
+  .ql-relay-section { background: #fdf3f3; border: 1px solid #f1c5c5; border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; page-break-inside: avoid; }
+  .ql-relay-title { font-size: 11px; font-weight: 800; color: #c0392b; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .ql-relay-bullets { list-style: none; padding: 0; margin: 0; }
+  .ql-relay-bullets li { font-size: 12px; color: #222; padding: 4px 0 4px 14px; position: relative; line-height: 1.4; border-bottom: 1px solid #f0e0e0; }
+  .ql-relay-bullets li:last-child { border-bottom: none; }
+  .ql-relay-bullets li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: #c0392b; }
+  .ql-relay-bullets li strong { color: #7B5A1F; font-weight: 700; }
+  .ql-pitch-table, .ql-count-table { margin-bottom: 10px; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; }
+  .ql-pitch-header, .ql-count-header { display: flex; padding: 5px 10px; background: #f0e6d0; font-size: 10px; font-weight: bold; color: #555; text-transform: uppercase; letter-spacing: .04em; gap: 2px; }
+  .ql-pitch-header span, .ql-count-header span { flex: 1; text-align: center; }
+  .ql-pitch-header span:first-child, .ql-count-header span:first-child { flex: 1.5; text-align: left; }
+  .ql-count-header span:first-child { flex: 0 0 70px; }
+  .ql-pitch-row, .ql-count-row { display: flex; padding: 5px 10px; font-size: 11px; border-top: 1px solid #eee; gap: 2px; }
+  .ql-pitch-row span, .ql-count-row span { flex: 1; text-align: center; }
+  .ql-pitch-row .ql-pitch-name { flex: 1.5; text-align: left; }
+  .ql-count-label { flex: 0 0 70px !important; text-align: left !important; font-weight: 600; color: #222; font-size: 10px; }
+  .ql-pitch-name { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #222; }
+  .ql-pitch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .ql-pitch-val { color: #555; font-weight: 500; text-align: center; }
+  .quick-look-bullets { list-style: none; padding: 0; margin: 6px 0; }
+  .quick-look-bullets li { padding: 3px 0 3px 14px; position: relative; font-size: 12px; }
+  .quick-look-bullets li::before { content: '•'; position: absolute; left: 2px; color: #C5A55A; }
+  .quick-look-bullets .ql-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; margin-left: 4px; }
+  .ql-tag.hot { background: #d4f4dd; color: #1a7a3a; }
+  .ql-tag.cold { background: #cfe5ff; color: #1d5fa5; }
   .pdf-footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 10px; color: #888; text-align: center; }
   .print-hint { background: #fff8e1; border: 1px solid #C5A55A; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 12px; color: #444; }
   .print-hint button { margin-left: 8px; padding: 5px 14px; background: #C5A55A; color: #1a1a1a; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
@@ -4574,6 +4608,17 @@ function appendQuickLook(cardOrContainer, hitterName, pitcherName) {
   cardWrapper.appendChild(cardOrContainer);
   cardWrapper.innerHTML = injectGCLLinks(cardWrapper.innerHTML);
   bubble.appendChild(cardWrapper);
+
+  // Export PDF button — also for Quick Look (dugout) cards
+  const pdfBar = document.createElement('div');
+  pdfBar.className = 'pdf-export-bar';
+  const pdfBtn = document.createElement('button');
+  pdfBtn.className = 'pdf-export-btn';
+  pdfBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right:6px;vertical-align:-3px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Export to PDF';
+  pdfBtn.onclick = () => downloadAnalysisPDF(bubble, pdfBtn);
+  pdfBar.appendChild(pdfBtn);
+  bubble.appendChild(pdfBar);
+
   bubble.appendChild(buildNewAnalysisBar(hitterName, pitcherName));
   msg.appendChild(label);
   msg.appendChild(bubble);
