@@ -4119,6 +4119,16 @@ function appendMessage(role, text, charts) {
       });
     };
     actions.appendChild(copyBtn);
+
+    // Download PDF — only for full-analysis output
+    if (appMode === 'full') {
+      const pdfBtn=document.createElement('button');
+      pdfBtn.className='action-btn';
+      pdfBtn.textContent='Download PDF';
+      pdfBtn.onclick=()=>downloadAnalysisPDF(bubble, pdfBtn);
+      actions.appendChild(pdfBtn);
+    }
+
     bubble.appendChild(actions);
 
     // Charts
@@ -4136,6 +4146,121 @@ function appendMessage(role, text, charts) {
   msg.appendChild(bubble);
   messagesEl.appendChild(msg);
   scrollToBottom();
+}
+
+function downloadAnalysisPDF(bubbleEl, triggerBtn) {
+  if (typeof html2pdf === 'undefined') {
+    alert('PDF library not loaded. Refresh the page and try again.');
+    return;
+  }
+
+  const originalLabel = triggerBtn ? triggerBtn.textContent : null;
+  if (triggerBtn) { triggerBtn.disabled = true; triggerBtn.textContent = 'Building PDF…'; }
+
+  // Snapshot any live chart canvases first — once cloned, the canvas pixels are lost.
+  const liveCanvases = bubbleEl.querySelectorAll('canvas');
+  const canvasImages = [];
+  liveCanvases.forEach(c => {
+    try { canvasImages.push(c.toDataURL('image/png')); }
+    catch(e) { canvasImages.push(null); }
+  });
+
+  // Pull the last user prompt as the report subject
+  const userBubbles = document.querySelectorAll('.message.user .msg-bubble');
+  const subject = userBubbles.length ? userBubbles[userBubbles.length-1].textContent.trim() : '';
+
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'padding:32px 36px;background:#fff;color:#222;font-family:Arial,Helvetica,sans-serif;width:780px;box-sizing:border-box;';
+
+  // Header
+  const now = new Date();
+  const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;border-bottom:2px solid #C5A55A;padding-bottom:12px;margin-bottom:18px;';
+  header.innerHTML = `
+    <img src="moeller-logo.png" style="width:48px;height:48px;margin-right:14px;object-fit:contain;">
+    <div style="flex:1;">
+      <div style="font-size:18px;font-weight:bold;color:#1a1a1a;">Moeller Game Prep — Scouting Report</div>
+      <div style="font-size:11px;color:#666;margin-top:3px;">Generated ${stamp}</div>
+    </div>`;
+  wrapper.appendChild(header);
+
+  if (subject) {
+    const subj = document.createElement('div');
+    subj.style.cssText = 'font-size:12px;color:#444;margin:0 0 16px 0;padding:8px 10px;background:#f7f3e8;border-left:3px solid #C5A55A;';
+    subj.innerHTML = `<strong>Question:</strong> ${escapeHtml(subject)}`;
+    wrapper.appendChild(subj);
+  }
+
+  // Clone bubble content; strip action and nav bars
+  const content = bubbleEl.cloneNode(true);
+  content.querySelectorAll('.msg-actions, .new-analysis-bar').forEach(el => el.remove());
+
+  // Replace cloned (blank) canvases with snapshot images
+  const cloneCanvases = content.querySelectorAll('canvas');
+  cloneCanvases.forEach((c, i) => {
+    if (canvasImages[i]) {
+      const img = document.createElement('img');
+      img.src = canvasImages[i];
+      img.style.cssText = 'max-width:100%;height:auto;display:block;margin:8px auto;';
+      c.replaceWith(img);
+    }
+  });
+
+  // Apply print-friendly typography over the dark theme
+  content.style.cssText = 'color:#222;font-size:12px;line-height:1.55;';
+  content.querySelectorAll('h1,h2,h3,h4').forEach(h => { h.style.color = '#1a1a1a'; h.style.marginTop = '14px'; });
+  content.querySelectorAll('strong,b').forEach(s => s.style.color = '#000');
+  content.querySelectorAll('em,i').forEach(s => s.style.color = '#333');
+  content.querySelectorAll('ul,ol').forEach(l => { l.style.paddingLeft = '22px'; l.style.margin = '6px 0'; });
+  content.querySelectorAll('li').forEach(li => li.style.margin = '2px 0');
+  content.querySelectorAll('a').forEach(a => { a.style.color = '#7B5A1F'; a.style.textDecoration = 'underline'; });
+  content.querySelectorAll('table').forEach(t => {
+    t.style.cssText = 'border-collapse:collapse;width:100%;font-size:11px;margin:10px 0;page-break-inside:avoid;';
+  });
+  content.querySelectorAll('th,td').forEach(c => { c.style.border = '1px solid #c8c8c8'; c.style.padding = '4px 6px'; });
+  content.querySelectorAll('th').forEach(c => { c.style.background = '#f0e6d0'; c.style.color = '#000'; c.style.textAlign = 'left'; });
+  content.querySelectorAll('code,pre').forEach(c => { c.style.background = '#f4f4f4'; c.style.color = '#222'; c.style.padding = '2px 4px'; c.style.borderRadius = '3px'; c.style.fontSize = '11px'; });
+
+  wrapper.appendChild(content);
+
+  // Footer
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;padding-top:10px;border-top:1px solid #ddd;font-size:10px;color:#888;text-align:center;';
+  footer.textContent = 'Moeller Baseball — Game Prep Agent';
+  wrapper.appendChild(footer);
+
+  // html2pdf needs the node in DOM; park it off-screen
+  wrapper.style.position = 'fixed';
+  wrapper.style.left = '-10000px';
+  wrapper.style.top = '0';
+  document.body.appendChild(wrapper);
+
+  const safeSubject = (subject || 'Scouting_Report').replace(/[^a-z0-9]+/gi,'_').slice(0,50).replace(/^_|_$/g,'') || 'Scouting_Report';
+  const filename = `Moeller_${safeSubject}_${now.toISOString().slice(0,10)}.pdf`;
+
+  html2pdf().set({
+    margin:       [0.5, 0.5, 0.6, 0.5],
+    filename:     filename,
+    image:        { type: 'jpeg', quality: 0.95 },
+    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+    pagebreak:    { mode: ['css','legacy','avoid-all'] }
+  }).from(wrapper).save()
+    .then(() => {
+      document.body.removeChild(wrapper);
+      if (triggerBtn) { triggerBtn.disabled = false; triggerBtn.textContent = 'Downloaded!'; triggerBtn.classList.add('copied'); setTimeout(()=>{ triggerBtn.textContent = originalLabel; triggerBtn.classList.remove('copied'); }, 2000); }
+    })
+    .catch(err => {
+      console.error('PDF generation failed:', err);
+      if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+      alert('Sorry, PDF generation failed: ' + (err.message || err));
+      if (triggerBtn) { triggerBtn.disabled = false; triggerBtn.textContent = originalLabel; }
+    });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function buildHowToPitchCard(hitterName) {
