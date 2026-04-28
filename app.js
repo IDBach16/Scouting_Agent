@@ -4152,154 +4152,140 @@ function appendMessage(role, text, charts) {
 }
 
 async function downloadAnalysisPDF(bubbleEl, triggerBtn) {
-  if (typeof html2pdf === 'undefined') {
-    alert('PDF library not loaded. Hard-refresh the page (Ctrl+Shift+R) and try again.');
-    console.error('html2pdf is undefined — check that the CDN script tag in index.html loaded.');
-    return;
-  }
-
   const originalLabel = triggerBtn ? triggerBtn.innerHTML : null;
-  if (triggerBtn) { triggerBtn.disabled = true; triggerBtn.textContent = 'Building PDF…'; }
+  if (triggerBtn) { triggerBtn.disabled = true; triggerBtn.textContent = 'Preparing PDF…'; }
 
   try {
-    // Make sure the chart container is expanded so canvases are laid out and drawn
+    // Expand the chart container so canvases are laid out and drawn
     const chartContainer = bubbleEl.querySelector('.chart-container');
-    if (chartContainer && chartContainer.classList.contains('collapsed')) {
-      chartContainer.classList.remove('collapsed');
-      const arrow = bubbleEl.querySelector('.chart-toggle .arrow');
-      if (arrow) arrow.classList.remove('collapsed');
-    }
-    // Give Chart.js a tick to finish any pending render
-    await new Promise(r => setTimeout(r, 250));
+    const wasCollapsed = chartContainer && chartContainer.classList.contains('collapsed');
+    if (wasCollapsed) chartContainer.classList.remove('collapsed');
+    // Give Chart.js a tick to finish drawing
+    await new Promise(r => setTimeout(r, wasCollapsed ? 350 : 100));
 
-    // Snapshot any live chart canvases first — once cloned, the canvas pixels are lost.
+    // Snapshot live chart canvases — cloned canvases come out blank
     const liveCanvases = Array.from(bubbleEl.querySelectorAll('canvas'));
     const canvasImages = liveCanvases.map(c => {
-      try {
-        const dataUrl = c.toDataURL('image/png');
-        return { dataUrl, width: c.width, height: c.height };
-      } catch(e) {
-        console.warn('Failed to snapshot canvas:', e);
-        return null;
-      }
+      try { return c.toDataURL('image/png'); }
+      catch(e) { console.warn('Canvas snapshot failed:', e); return null; }
     });
+
+    // Restore collapsed state in the live UI
+    if (wasCollapsed && chartContainer) chartContainer.classList.add('collapsed');
 
     // Pull the last user prompt as the report subject
     const userBubbles = document.querySelectorAll('.message.user .msg-bubble');
     const subject = userBubbles.length ? userBubbles[userBubbles.length-1].textContent.trim() : '';
 
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'padding:32px 36px;background:#fff;color:#222;font-family:Arial,Helvetica,sans-serif;width:780px;box-sizing:border-box;';
-
-    // Header
-    const now = new Date();
-    const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    const header = document.createElement('div');
-    header.style.cssText = 'display:flex;align-items:center;border-bottom:2px solid #C5A55A;padding-bottom:12px;margin-bottom:18px;';
-    header.innerHTML = `
-      <img src="moeller-logo.png" style="width:48px;height:48px;margin-right:14px;object-fit:contain;" crossorigin="anonymous">
-      <div style="flex:1;">
-        <div style="font-size:18px;font-weight:bold;color:#1a1a1a;">Moeller Game Prep — Scouting Report</div>
-        <div style="font-size:11px;color:#666;margin-top:3px;">Generated ${stamp}</div>
-      </div>`;
-    wrapper.appendChild(header);
-
-    if (subject) {
-      const subj = document.createElement('div');
-      subj.style.cssText = 'font-size:12px;color:#444;margin:0 0 16px 0;padding:8px 10px;background:#f7f3e8;border-left:3px solid #C5A55A;';
-      subj.innerHTML = `<strong>Question:</strong> ${escapeHtml(subject)}`;
-      wrapper.appendChild(subj);
-    }
-
-    // Clone bubble content; strip action bars, the PDF button, and nav bars
+    // Clone the bubble; strip UI bars and replace canvases with snapshot images
     const content = bubbleEl.cloneNode(true);
-    content.querySelectorAll('.msg-actions, .new-analysis-bar, .pdf-export-bar, .chart-toggle').forEach(el => el.remove());
-    // Force the chart container to be visible in the clone
+    content.querySelectorAll('.msg-actions, .new-analysis-bar, .pdf-export-bar, .chart-toggle, .chart-dl-btn').forEach(el => el.remove());
     const clonedContainer = content.querySelector('.chart-container');
-    if (clonedContainer) {
-      clonedContainer.classList.remove('collapsed');
-      clonedContainer.style.display = 'block';
-      clonedContainer.style.maxHeight = 'none';
-      clonedContainer.style.overflow = 'visible';
-    }
-
-    // Replace cloned (blank) canvases with snapshot images
-    const cloneCanvases = content.querySelectorAll('canvas');
-    cloneCanvases.forEach((c, i) => {
-      const snap = canvasImages[i];
-      if (snap && snap.dataUrl) {
+    if (clonedContainer) clonedContainer.classList.remove('collapsed');
+    content.querySelectorAll('canvas').forEach((c, i) => {
+      if (canvasImages[i]) {
         const img = document.createElement('img');
-        img.src = snap.dataUrl;
-        img.style.cssText = 'max-width:100%;height:auto;display:block;margin:10px auto;page-break-inside:avoid;';
+        img.src = canvasImages[i];
+        img.alt = 'chart';
         c.replaceWith(img);
       }
     });
 
-    // Add a "Visual Breakdown" heading above the charts so it's clear in the PDF
-    const chartSection = content.querySelector('.chart-section');
-    if (chartSection) {
-      const heading = document.createElement('h3');
-      heading.textContent = 'Visual Breakdown';
-      heading.style.cssText = 'color:#1a1a1a;font-size:14px;margin:18px 0 8px 0;padding-bottom:4px;border-bottom:1px solid #C5A55A;';
-      chartSection.insertBefore(heading, chartSection.firstChild);
+    const now = new Date();
+    const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const logoUrl = window.location.origin + '/moeller-logo.png';
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Moeller Scouting Report — ${escapeHtml(subject || 'Full Analysis')}</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #222; padding: 28px 32px; max-width: 820px; margin: 0 auto; line-height: 1.5; font-size: 12px; }
+  .pdf-header { display: flex; align-items: center; border-bottom: 2px solid #C5A55A; padding-bottom: 12px; margin-bottom: 18px; }
+  .pdf-header img.logo { width: 48px; height: 48px; margin-right: 14px; object-fit: contain; }
+  .pdf-header h1 { margin: 0; font-size: 18px; color: #1a1a1a; }
+  .pdf-header .stamp { font-size: 11px; color: #666; margin-top: 3px; }
+  .pdf-question { font-size: 12px; color: #444; padding: 8px 10px; background: #f7f3e8; border-left: 3px solid #C5A55A; margin: 0 0 16px; }
+  h1, h2, h3, h4 { color: #1a1a1a; margin-top: 14px; line-height: 1.3; }
+  h2 { font-size: 16px; }
+  h3 { font-size: 14px; }
+  h4 { font-size: 13px; }
+  strong, b { color: #000; }
+  p { margin: 6px 0; }
+  ul, ol { padding-left: 22px; margin: 6px 0; }
+  li { margin: 3px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 11px; margin: 10px 0; page-break-inside: avoid; }
+  th, td { border: 1px solid #c8c8c8; padding: 4px 6px; text-align: left; vertical-align: top; }
+  th { background: #f0e6d0; color: #000; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 12px 0; }
+  a { color: #7B5A1F; text-decoration: underline; }
+  code, pre { background: #f4f4f4; color: #222; padding: 2px 4px; border-radius: 3px; font-size: 11px; font-family: Consolas, monospace; }
+  img { max-width: 100%; height: auto; display: block; margin: 10px auto; page-break-inside: avoid; }
+  .chart-section { margin-top: 22px; padding-top: 12px; border-top: 1px solid #ddd; }
+  .chart-section-title { font-size: 14px; font-weight: bold; color: #1a1a1a; margin: 0 0 10px; padding-bottom: 4px; border-bottom: 1px solid #C5A55A; }
+  .chart-card { margin: 12px 0; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; page-break-inside: avoid; }
+  .chart-card-title { font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #1a1a1a; }
+  .chart-group-title { font-size: 12px; font-weight: bold; color: #7B5A1F; text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 6px; padding-bottom: 3px; border-bottom: 1px solid #ddd; }
+  .pdf-footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 10px; color: #888; text-align: center; }
+  .print-hint { background: #fff8e1; border: 1px solid #C5A55A; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 12px; color: #444; }
+  .print-hint button { margin-left: 8px; padding: 5px 14px; background: #C5A55A; color: #1a1a1a; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+  @media print {
+    body { padding: 0; max-width: none; }
+    .print-hint { display: none !important; }
+    @page { size: letter; margin: 0.5in; }
+  }
+</style>
+</head>
+<body>
+  <div class="print-hint">
+    <strong>Tip:</strong> In the print dialog, set <strong>Destination</strong> to "Save as PDF" then click Save.
+    <button onclick="window.print()">Open Print Dialog</button>
+  </div>
+  <div class="pdf-header">
+    <img class="logo" src="${logoUrl}" alt="Moeller" onerror="this.style.display='none'">
+    <div>
+      <h1>Moeller Game Prep — Scouting Report</h1>
+      <div class="stamp">Generated ${stamp}</div>
+    </div>
+  </div>
+  ${subject ? `<div class="pdf-question"><strong>Question:</strong> ${escapeHtml(subject)}</div>` : ''}
+  ${content.innerHTML}
+  <div class="pdf-footer">Moeller Baseball — Game Prep Agent</div>
+  <script>
+    // Wait for images to load before auto-printing
+    function waitImages() {
+      const imgs = Array.from(document.images);
+      if (imgs.length === 0) return Promise.resolve();
+      return Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise(res => { img.onload = img.onerror = res; })));
     }
-
-    // Apply print-friendly typography over the dark theme
-    content.style.cssText = 'color:#222;font-size:12px;line-height:1.55;';
-    content.querySelectorAll('h1,h2,h3,h4').forEach(h => { h.style.color = '#1a1a1a'; h.style.marginTop = '14px'; });
-    content.querySelectorAll('strong,b').forEach(s => s.style.color = '#000');
-    content.querySelectorAll('em,i').forEach(s => s.style.color = '#333');
-    content.querySelectorAll('p').forEach(p => p.style.margin = '6px 0');
-    content.querySelectorAll('ul,ol').forEach(l => { l.style.paddingLeft = '22px'; l.style.margin = '6px 0'; });
-    content.querySelectorAll('li').forEach(li => li.style.margin = '2px 0');
-    content.querySelectorAll('a').forEach(a => { a.style.color = '#7B5A1F'; a.style.textDecoration = 'underline'; });
-    content.querySelectorAll('table').forEach(t => {
-      t.style.cssText = 'border-collapse:collapse;width:100%;font-size:11px;margin:10px 0;page-break-inside:avoid;';
+    window.addEventListener('load', () => {
+      waitImages().then(() => setTimeout(() => window.print(), 300));
     });
-    content.querySelectorAll('th,td').forEach(c => { c.style.border = '1px solid #c8c8c8'; c.style.padding = '4px 6px'; });
-    content.querySelectorAll('th').forEach(c => { c.style.background = '#f0e6d0'; c.style.color = '#000'; c.style.textAlign = 'left'; });
-    content.querySelectorAll('code,pre').forEach(c => { c.style.background = '#f4f4f4'; c.style.color = '#222'; c.style.padding = '2px 4px'; c.style.borderRadius = '3px'; c.style.fontSize = '11px'; });
+  <\/script>
+</body>
+</html>`;
 
-    wrapper.appendChild(content);
+    const printWin = window.open('', '_blank', 'width=900,height=900');
+    if (!printWin) {
+      alert('Pop-up blocked.\n\nPlease allow pop-ups for this site and try again. (Click the pop-up icon in the address bar.)');
+      if (triggerBtn) { triggerBtn.disabled = false; triggerBtn.innerHTML = originalLabel; }
+      return;
+    }
+    printWin.document.open();
+    printWin.document.write(html);
+    printWin.document.close();
 
-    // Footer
-    const footer = document.createElement('div');
-    footer.style.cssText = 'margin-top:20px;padding-top:10px;border-top:1px solid #ddd;font-size:10px;color:#888;text-align:center;';
-    footer.textContent = 'Moeller Baseball — Game Prep Agent';
-    wrapper.appendChild(footer);
-
-    // html2pdf needs the node in DOM and not display:none. Park it off-screen but visible.
-    wrapper.style.position = 'fixed';
-    wrapper.style.left = '-10000px';
-    wrapper.style.top = '0';
-    wrapper.style.zIndex = '-1';
-    document.body.appendChild(wrapper);
-
-    const safeSubject = (subject || 'Scouting_Report').replace(/[^a-z0-9]+/gi,'_').slice(0,50).replace(/^_|_$/g,'') || 'Scouting_Report';
-    const filename = `Moeller_${safeSubject}_${now.toISOString().slice(0,10)}.pdf`;
-
-    try {
-      await html2pdf().set({
-        margin:       [0.5, 0.5, 0.6, 0.5],
-        filename:     filename,
-        image:        { type: 'jpeg', quality: 0.95 },
-        html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-        pagebreak:    { mode: ['css','legacy','avoid-all'] }
-      }).from(wrapper).save();
-
-      if (triggerBtn) {
-        triggerBtn.disabled = false;
-        triggerBtn.textContent = 'Downloaded!';
-        triggerBtn.classList.add('copied');
-        setTimeout(() => { triggerBtn.innerHTML = originalLabel; triggerBtn.classList.remove('copied'); }, 2000);
-      }
-    } finally {
-      if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+    if (triggerBtn) {
+      triggerBtn.disabled = false;
+      triggerBtn.textContent = 'PDF window opened';
+      triggerBtn.classList.add('copied');
+      setTimeout(() => { triggerBtn.innerHTML = originalLabel; triggerBtn.classList.remove('copied'); }, 2500);
     }
   } catch(err) {
     console.error('PDF generation failed:', err);
-    alert('PDF generation failed: ' + (err && err.message ? err.message : err) + '\n\nCheck the browser console for details.');
+    alert('PDF export failed: ' + (err && err.message ? err.message : err) + '\n\nCheck the browser console for details.');
     if (triggerBtn) { triggerBtn.disabled = false; triggerBtn.innerHTML = originalLabel; }
   }
 }
