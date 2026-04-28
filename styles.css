@@ -106,6 +106,13 @@ body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,
 .action-btn:hover{color:var(--gold);border-color:var(--border-strong);background:var(--gold-dim)}
 .action-btn.copied{color:#4ADE80;border-color:rgba(74,222,128,.3)}
 
+/* Big PDF export button at the bottom of full-analysis output */
+.pdf-export-bar{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:center}
+.pdf-export-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;border:1px solid var(--gold);border-radius:8px;background:var(--gold-dim);color:var(--gold);font-size:.85rem;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.pdf-export-btn:hover{background:var(--gold);color:#1a1a1a;border-color:var(--gold)}
+.pdf-export-btn:disabled{opacity:.6;cursor:wait}
+.pdf-export-btn.copied{background:rgba(74,222,128,.15);color:#4ADE80;border-color:rgba(74,222,128,.4)}
+
 /* CHART SECTION */
 .chart-section{margin-top:12px;border-left:3px solid var(--gold);padding-left:12px;animation:fadeIn .4s ease-out}
 .chart-toggle{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--gold);font-size:.8rem;font-weight:700;cursor:pointer;padding:4px 0;font-family:var(--font)}
