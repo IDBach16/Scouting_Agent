@@ -18658,3 +18658,452 @@ PitchNo,Date,Time,PAofInning,PAofInning.1,Pitcher,PitcherHand,PitcherTeam,Batter
 166,4/27/2026,6:26:35 PM,15,2,Noah Gruen,R,Elder High School,Matt Ponatoski,L,Moeller,5,Bottom,2,1,0,1 and 0,Fast Ball,Ball,,74,21,Chase,
 167,4/27/2026,6:26:52 PM,16,3,Noah Gruen,R,Elder High School,Matt Ponatoski,L,Moeller,5,Bottom,2,2,0,2 and 0,Breaking Ball,Ball,,65,29,Chase,
 168,4/27/2026,6:27:13 PM,17,4,Noah Gruen,R,Elder High School,Matt Ponatoski,L,Moeller,5,Bottom,2,3,0,3 and 0,Fast Ball,Ball,BB,74,21,Chase,
+1,4/30/2026,5:00:10 PM,1,1,Caleb McComas,R,Elder High School,Reggie Watson III,L,Moeller,1,Top,0,0,0,0 and 0,Fast Ball,Strike In Play,1B,84,8,Heart,
+2,4/30/2026,5:00:48 PM,2,1,Caleb McComas,R,Elder High School,Matt Ponatoski,L,Moeller,1,Top,0,0,0,0 and 0,Fast Ball,Strike Looking,,83,11,Shadow,
+3,4/30/2026,5:01:10 PM,3,2,Caleb McComas,R,Elder High School,Matt Ponatoski,L,Moeller,1,Top,0,0,1,0 and 1,Fast Ball,Strike Foul,,83,11,Shadow,
+4,4/30/2026,5:01:37 PM,4,3,Caleb McComas,R,Elder High School,Matt Ponatoski,L,Moeller,1,Top,0,0,2,0 and 2,Fast Ball,Ball,,83,31,Waste,
+5,4/30/2026,5:02:00 PM,5,4,Caleb McComas,R,Elder High School,Matt Ponatoski,L,Moeller,1,Top,0,1,2,1 and 2,Fast Ball,Strike In Play,Fly Out,83,16,Shadow,
+6,4/30/2026,5:02:49 PM,6,1,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,1,Top,1,0,0,0 and 0,Fast Ball,Strike Foul,,85,1,Heart,
+7,4/30/2026,5:03:14 PM,7,2,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,1,Top,1,0,1,0 and 1,Breaking Ball,Strike In Play,Fly Out,70,29,Chase,
+8,4/30/2026,5:04:00 PM,8,1,Caleb McComas,R,Elder High School,Donovan Glosser,R,Moeller,1,Top,2,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,85,19,Shadow,
+9,4/30/2026,5:06:31 PM,1,1,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,1,Bottom,0,0,0,0 and 0,Sinker,Ball,,90,33,Waste,
+10,4/30/2026,5:06:58 PM,2,2,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,1,Bottom,0,1,0,1 and 0,Slider,Strike Looking,,81,29,Chase,
+11,4/30/2026,5:07:11 PM,3,3,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,1,Bottom,0,1,1,1 and 1,Slider,Ball,,80,16,Shadow,
+12,4/30/2026,5:07:24 PM,4,4,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,1,Bottom,0,2,1,2 and 1,Sinker,Strike Foul,,91,1,Heart,
+13,4/30/2026,5:07:49 PM,5,5,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,1,Bottom,0,2,2,2 and 2,Slider,Strike Looking,Strike Out,80,29,Chase,
+14,4/30/2026,5:08:24 PM,6,1,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,0,0,0 and 0,Sinker,Strike Looking,,92,27,Chase,
+15,4/30/2026,5:08:40 PM,7,2,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,0,1,0 and 1,Slider,Ball,,79,18,Shadow,
+16,4/30/2026,5:09:01 PM,8,3,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,1,1,1 and 1,Sinker,Strike Foul,,89,29,Chase,
+17,4/30/2026,5:09:20 PM,9,4,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,1,2,1 and 2,Sinker,Strike Foul,,91,3,Heart,
+18,4/30/2026,5:09:42 PM,10,5,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,1,2,1 and 2,Change Up,Ball,,88,38,Waste,
+19,4/30/2026,5:09:57 PM,11,6,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,2,2,2 and 2,Slider,Ball,,81,38,Waste,
+20,4/30/2026,5:10:17 PM,12,7,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,1,Bottom,1,3,2,3 and 2,Curve,Strike Looking,Strike Out,78,17,Shadow,
+21,4/30/2026,5:10:44 PM,13,1,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,1,Bottom,2,0,0,0 and 0,Slider,Ball,,81,19,Shadow,
+22,4/30/2026,5:10:59 PM,14,2,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,1,Bottom,2,1,0,1 and 0,Sinker,Strike Swing and Miss,,91,17,Shadow,
+23,4/30/2026,5:11:13 PM,15,3,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,1,Bottom,2,1,1,1 and 1,Slider,Ball,,81,27,Chase,
+24,4/30/2026,5:11:26 PM,16,4,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,1,Bottom,2,2,1,2 and 1,Sinker,Strike In Play,Ground Out,90,29,Chase,
+25,4/30/2026,5:14:24 PM,1,1,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,2,Top,0,0,0,0 and 0,Fast Ball,Strike In Play,Error,84,4,Heart,
+26,4/30/2026,5:15:05 PM,2,1,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,2,Top,1,0,0,0 and 0,Fast Ball,Strike Foul,,84,7,Heart,
+27,4/30/2026,5:15:34 PM,3,2,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,2,Top,1,0,1,0 and 1,Breaking Ball,Strike Foul,,68,7,Heart,
+28,4/30/2026,5:15:56 PM,4,3,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,2,Top,1,0,2,0 and 2,Fast Ball,Ball,,86,21,Chase,
+29,4/30/2026,5:16:07 PM,5,4,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,2,Top,1,1,2,1 and 2,Change Up,Strike Swing and Miss,Strike Out,76,27,Chase,
+30,4/30/2026,5:16:35 PM,6,1,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,2,Top,2,0,0,0 and 0,Fast Ball,Strike Looking,,85,4,Heart,
+31,4/30/2026,5:16:47 PM,7,2,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,2,Top,2,0,1,0 and 1,Breaking Ball,Ball,,71,27,Chase,
+32,4/30/2026,5:17:01 PM,8,3,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,2,Top,2,1,1,1 and 1,Fast Ball,Ball,,86,21,Chase,
+33,4/30/2026,5:17:13 PM,9,4,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,2,Top,2,2,1,2 and 1,Fast Ball,Strike Swing and Miss,,85,21,Chase,
+34,4/30/2026,5:17:27 PM,10,5,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,2,Top,2,2,2,2 and 2,Breaking Ball,Ball,,71,37,Waste,
+35,4/30/2026,5:17:42 PM,11,6,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,2,Top,2,3,2,3 and 2,Fast Ball,Strike Swing and Miss,Strike Out,86,21,Chase,
+36,4/30/2026,5:20:00 PM,1,1,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,2,Bottom,0,0,0,0 and 0,Curve,Ball,,78,29,Chase,
+37,4/30/2026,5:20:13 PM,2,2,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,2,Bottom,0,1,0,1 and 0,Sinker,Strike Looking,,90,4,Heart,
+38,4/30/2026,5:20:30 PM,3,3,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,2,Bottom,0,1,1,1 and 1,Slider,Strike Looking,,81,29,Chase,
+39,4/30/2026,5:20:47 PM,4,4,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,2,Bottom,0,1,2,1 and 2,Slider,Ball,,78,39,Waste,
+40,4/30/2026,5:21:01 PM,5,5,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,2,Bottom,0,2,2,2 and 2,Sinker,Strike In Play,Fly Out,90,14,Shadow,
+41,4/30/2026,5:21:38 PM,6,1,Nathan McDowell,R,Moeller,Tucker Veldhaus,R,Elder High School,2,Bottom,1,0,0,0 and 0,Curve,Strike Swing and Miss,,76,14,Shadow,
+42,4/30/2026,5:21:57 PM,7,2,Nathan McDowell,R,Moeller,Tucker Veldhaus,R,Elder High School,2,Bottom,1,0,1,0 and 1,Slider,Strike In Play,Line Out,81,19,Shadow,
+43,4/30/2026,5:22:26 PM,8,1,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,2,Bottom,2,0,0,0 and 0,Sinker,Ball,,91,37,Waste,
+44,4/30/2026,5:22:40 PM,9,2,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,2,Bottom,2,1,0,1 and 0,Sinker,Ball,,91,29,Chase,
+45,4/30/2026,5:22:53 PM,10,3,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,2,Bottom,2,2,0,2 and 0,Sinker,Strike Looking,,91,11,Shadow,
+46,4/30/2026,5:23:08 PM,11,4,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,2,Bottom,2,2,1,2 and 1,Curve,Strike Foul,,77,17,Shadow,
+47,4/30/2026,5:23:27 PM,12,5,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,2,Bottom,2,2,2,2 and 2,Slider,Strike In Play,Ground Out,80,39,Waste,
+48,4/30/2026,5:25:33 PM,1,1,Caleb McComas,R,Elder High School,Zac Wittenauer,R,Moeller,3,Top,0,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,84,19,Shadow,
+49,4/30/2026,5:26:04 PM,2,1,Caleb McComas,R,Elder High School,Connor Maupin,R,Moeller,3,Top,1,0,0,0 and 0,Fast Ball,Ball,HBP,84,34,Waste,
+50,4/30/2026,5:26:57 PM,3,1,Caleb McComas,R,Elder High School,Reggie Watson III,L,Moeller,3,Top,1,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,84,8,Heart,
+51,4/30/2026,5:27:34 PM,4,1,Caleb McComas,R,Elder High School,Matt Ponatoski,L,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike In Play,1B,85,19,Shadow,
+52,4/30/2026,5:28:20 PM,5,1,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike Foul,,84,11,Shadow,
+53,4/30/2026,5:28:46 PM,6,2,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,0,1,0 and 1,Fast Ball,Ball,,84,11,Shadow,
+54,4/30/2026,5:29:06 PM,7,3,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,1,1,1 and 1,Fast Ball,Strike Looking,,84,6,Heart,
+55,4/30/2026,5:29:28 PM,8,4,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,1,2,1 and 2,Fast Ball,Ball,,84,17,Shadow,
+56,4/30/2026,5:29:55 PM,9,5,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,2,2,2 and 2,Fast Ball,Ball,,85,32,Waste,
+57,4/30/2026,5:30:19 PM,10,6,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,3,2,3 and 2,Fast Ball,Strike Foul,,85,4,Heart,
+58,4/30/2026,5:30:45 PM,11,7,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,3,Top,2,3,2,3 and 2,Fast Ball,Strike In Play,1B,86,18,Shadow,
+59,4/30/2026,5:31:35 PM,12,1,Caleb McComas,R,Elder High School,Donovan Glosser,R,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike In Play,Error,85,18,Shadow,
+60,4/30/2026,5:32:06 PM,13,1,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,3,Top,2,0,0,0 and 0,Fast Ball,Strike Looking,,85,21,Chase,
+61,4/30/2026,5:32:37 PM,14,2,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,3,Top,2,0,1,0 and 1,Breaking Ball,Strike Swing and Miss,,72,38,Waste,
+62,4/30/2026,5:33:04 PM,15,3,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,3,Top,2,0,2,0 and 2,Fast Ball,Strike Foul,,85,19,Shadow,
+63,4/30/2026,5:33:40 PM,16,4,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,3,Top,2,0,2,0 and 2,Breaking Ball,Strike In Play,Fly Out,72,14,Shadow,
+64,4/30/2026,5:36:02 PM,1,1,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,3,Bottom,0,0,0,0 and 0,Change Up,Ball,,86,31,Waste,
+65,4/30/2026,5:36:15 PM,2,2,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,3,Bottom,0,1,0,1 and 0,Sinker,Ball,,89,27,Chase,
+66,4/30/2026,5:36:27 PM,3,3,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,3,Bottom,0,2,0,2 and 0,Slider,Strike Looking,,79,14,Shadow,
+67,4/30/2026,5:36:40 PM,4,4,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,3,Bottom,0,2,1,2 and 1,Sinker,Ball,,89,37,Waste,
+68,4/30/2026,5:36:54 PM,5,5,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,3,Bottom,0,3,1,3 and 1,Curve,Strike Swing and Miss,,78,16,Shadow,
+69,4/30/2026,5:37:09 PM,6,6,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,3,Bottom,0,3,2,3 and 2,Curve,Strike In Play,Ground Out,78,19,Shadow,
+70,4/30/2026,5:37:43 PM,7,1,Nathan McDowell,R,Moeller,Roger Waddell,L,Elder High School,3,Bottom,1,0,0,0 and 0,Sinker,Strike Swing and Miss,,91,11,Shadow,
+71,4/30/2026,5:37:57 PM,8,2,Nathan McDowell,R,Moeller,Roger Waddell,L,Elder High School,3,Bottom,1,0,1,0 and 1,Slider,Strike Foul,,79,18,Shadow,
+72,4/30/2026,5:38:31 PM,9,3,Nathan McDowell,R,Moeller,Roger Waddell,L,Elder High School,3,Bottom,1,0,2,0 and 2,Slider,Ball,,79,39,Waste,
+73,4/30/2026,5:38:45 PM,10,4,Nathan McDowell,R,Moeller,Roger Waddell,L,Elder High School,3,Bottom,1,1,2,1 and 2,Sinker,Strike Swing and Miss,Strike Out,90,11,Shadow,
+74,4/30/2026,5:39:13 PM,11,1,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,3,Bottom,2,0,0,0 and 0,Sinker,Strike Swing and Miss,,91,13,Shadow,
+75,4/30/2026,5:39:27 PM,12,2,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,3,Bottom,2,0,1,0 and 1,Sinker,Ball,,90,31,Waste,
+76,4/30/2026,5:39:42 PM,13,3,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,3,Bottom,2,1,1,1 and 1,Sinker,Strike Looking,,90,27,Chase,
+77,4/30/2026,5:39:57 PM,14,4,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,3,Bottom,2,1,2,1 and 2,Sinker,Ball,,90,17,Shadow,
+78,4/30/2026,5:40:12 PM,15,5,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,3,Bottom,2,2,2,2 and 2,Slider,Ball,,79,38,Waste,
+79,4/30/2026,5:40:32 PM,16,6,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,3,Bottom,2,3,2,3 and 2,Sinker,Ball,BB,90,19,Shadow,
+80,4/30/2026,5:41:03 PM,17,1,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,3,Bottom,2,0,0,0 and 0,Sinker,Strike Foul,,90,14,Shadow,
+81,4/30/2026,5:41:24 PM,18,2,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,3,Bottom,2,0,1,0 and 1,Sinker,Strike Foul,,90,19,Shadow,
+82,4/30/2026,5:41:47 PM,19,3,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,3,Bottom,2,0,2,0 and 2,Slider,Strike Swing and Miss,Strike Out,80,39,Waste,
+83,4/30/2026,5:43:41 PM,1,1,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,0,0,0 and 0,Fast Ball,Ball,,85,31,Waste,
+84,4/30/2026,5:43:56 PM,2,2,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,1,0,1 and 0,Fast Ball,Strike Foul,,84,16,Shadow,
+85,4/30/2026,5:44:17 PM,3,3,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,1,1,1 and 1,Fast Ball,Ball,,83,31,Waste,
+86,4/30/2026,5:44:27 PM,4,4,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,2,1,2 and 1,Fast Ball,Ball,,69,11,Shadow,
+87,4/30/2026,5:44:47 PM,5,5,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,3,1,3 and 1,Fast Ball,Strike Foul,,82,14,Shadow,
+88,4/30/2026,5:45:02 PM,6,6,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,3,2,3 and 2,Breaking Ball,Strike Foul,,69,19,Shadow,
+89,4/30/2026,5:45:07 PM,7,7,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,0,3,2,3 and 2,Fast Ball,Strike In Play,1B,85,5,Heart,
+90,4/30/2026,5:45:47 PM,8,1,Caleb McComas,R,Elder High School,Ronnie Allen,R,Moeller,4,Top,0,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,82,9,Heart,
+91,4/30/2026,5:46:34 PM,9,1,Caleb McComas,R,Elder High School,Zac Wittenauer,R,Moeller,4,Top,1,0,0,0 and 0,Fast Ball,Ball,,84,27,Chase,
+92,4/30/2026,5:47:26 PM,10,2,Caleb McComas,R,Elder High School,Zac Wittenauer,R,Moeller,4,Top,1,1,0,1 and 0,Fast Ball,Strike In Play,1B,84,18,Shadow,
+93,4/30/2026,5:48:34 PM,11,1,Caleb McComas,R,Elder High School,Connor Maupin,R,Moeller,4,Top,1,0,0,0 and 0,Fast Ball,Ball,,84,39,Waste,
+94,4/30/2026,5:48:55 PM,12,2,Caleb McComas,R,Elder High School,Connor Maupin,R,Moeller,4,Top,1,1,0,1 and 0,Fast Ball,Strike Foul,,83,29,Chase,
+95,4/30/2026,5:49:16 PM,13,3,Caleb McComas,R,Elder High School,Connor Maupin,R,Moeller,4,Top,1,1,1,1 and 1,Breaking Ball,Ball,HBP,70,31,Waste,
+96,4/30/2026,5:50:08 PM,14,1,Caleb McComas,R,Elder High School,Reggie Watson III,L,Moeller,4,Top,1,0,0,0 and 0,Fast Ball,Strike Looking,,82,4,Heart,
+97,4/30/2026,5:50:53 PM,15,2,Caleb McComas,R,Elder High School,Reggie Watson III,L,Moeller,4,Top,1,0,1,0 and 1,Fast Ball,Strike Swing and Miss,,82,32,Waste,
+98,4/30/2026,5:51:19 PM,16,3,Caleb McComas,R,Elder High School,Reggie Watson III,L,Moeller,4,Top,1,0,2,0 and 2,Fast Ball,Strike In Play,HR,82,2,Heart,
+99,4/30/2026,5:52:08 PM,17,1,Caleb McComas,R,Elder High School,Matt Ponatoski,L,Moeller,4,Top,1,0,0,0 and 0,Fast Ball,Strike In Play,1B,85,9,Heart,
+100,4/30/2026,5:52:52 PM,18,1,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,4,Top,1,0,0,0 and 0,Breaking Ball,Ball,,69,39,Waste,
+101,4/30/2026,5:53:08 PM,19,2,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,4,Top,1,1,0,1 and 0,Fast Ball,Strike Foul,,81,18,Shadow,
+102,4/30/2026,5:53:47 PM,20,3,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,4,Top,1,1,1,1 and 1,Breaking Ball,Ball,,70,29,Chase,
+103,4/30/2026,5:54:06 PM,21,4,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,4,Top,1,2,1,2 and 1,Fast Ball,Strike Swing and Miss,,82,14,Shadow,
+104,4/30/2026,5:54:37 PM,22,5,Caleb McComas,R,Elder High School,Conner Cuozzo,R,Moeller,4,Top,1,2,2,2 and 2,Fast Ball,Strike In Play,1B,82,11,Shadow,
+105,4/30/2026,5:55:23 PM,23,1,Caleb McComas,R,Elder High School,Donovan Glosser,R,Moeller,4,Top,1,0,0,0 and 0,Fast Ball,Strike In Play,Fly Out,82,7,Heart,
+106,4/30/2026,5:56:04 PM,24,1,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,4,Top,2,0,0,0 and 0,Breaking Ball,Strike Looking,,69,14,Shadow,
+107,4/30/2026,5:56:23 PM,25,2,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,4,Top,2,0,1,0 and 1,Fast Ball,Ball,,82,21,Chase,
+108,4/30/2026,5:56:41 PM,26,3,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,4,Top,2,1,1,1 and 1,Fast Ball,Strike Looking,,81,26,Chase,
+109,4/30/2026,5:57:00 PM,27,4,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,4,Top,2,1,2,1 and 2,Fast Ball,Strike Foul,,77,27,Chase,
+110,4/30/2026,5:57:38 PM,28,5,Caleb McComas,R,Elder High School,Adam Maybury,L,Moeller,4,Top,2,1,2,1 and 2,Change Up,Strike In Play,1B,74,17,Shadow,
+111,4/30/2026,5:58:25 PM,29,1,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,2,0,0,0 and 0,Fast Ball,Ball,,83,32,Waste,
+112,4/30/2026,5:58:43 PM,30,2,Caleb McComas,R,Elder High School,Teagan Cumberland,L,Moeller,4,Top,2,1,0,1 and 0,Breaking Ball,Strike In Play,Fly Out,70,19,Shadow,
+113,4/30/2026,6:01:05 PM,1,1,Nathan McDowell,R,Moeller,Dylan Wullenweber,R,Elder High School,4,Bottom,0,0,0,0 and 0,Sinker,Strike In Play,Ground Out,89,19,Shadow,
+114,4/30/2026,6:01:27 PM,2,1,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,0,0,0 and 0,Sinker,Ball,,89,17,Shadow,
+115,4/30/2026,6:01:41 PM,3,2,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,1,0,1 and 0,Slider,Strike Looking,,80,18,Shadow,
+116,4/30/2026,6:01:53 PM,4,3,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,1,1,1 and 1,Sinker,Strike Swing and Miss,,89,14,Shadow,
+117,4/30/2026,6:02:12 PM,5,4,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,1,2,1 and 2,Sinker,Strike Foul,,90,17,Shadow,
+118,4/30/2026,6:02:35 PM,6,5,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,1,2,1 and 2,Slider,Ball,,80,39,Waste,
+119,4/30/2026,6:02:47 PM,7,6,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,2,2,2 and 2,Sinker,Strike Foul,,89,18,Shadow,
+120,4/30/2026,6:03:14 PM,8,7,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,2,2,2 and 2,Slider,Ball,,80,39,Waste,
+121,4/30/2026,6:03:36 PM,9,8,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,4,Bottom,1,3,2,3 and 2,Curve,Strike Looking,Strike Out,77,9,Heart,
+122,4/30/2026,6:04:12 PM,10,1,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,4,Bottom,2,0,0,0 and 0,Sinker,Ball,,90,11,Shadow,
+123,4/30/2026,6:04:23 PM,11,2,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,4,Bottom,2,1,0,1 and 0,Curve,Strike In Play,Ground Out,77,19,Shadow,
+124,4/30/2026,6:07:23 PM,1,1,Luke Roell,R,Elder High School,Ronnie Allen,R,Moeller,5,Top,0,0,0,0 and 0,Fast Ball,Strike Swing and Miss,,78,14,Shadow,
+125,4/30/2026,6:07:38 PM,2,2,Luke Roell,R,Elder High School,Ronnie Allen,R,Moeller,5,Top,0,0,1,0 and 1,Breaking Ball,Ball,,68,38,Waste,
+126,4/30/2026,6:07:59 PM,3,3,Luke Roell,R,Elder High School,Ronnie Allen,R,Moeller,5,Top,0,1,1,1 and 1,Fast Ball,Strike Swing and Miss,,78,9,Heart,
+127,4/30/2026,6:08:15 PM,4,4,Luke Roell,R,Elder High School,Ronnie Allen,R,Moeller,5,Top,0,1,2,1 and 2,Fast Ball,Strike In Play,Fly Out,79,34,Waste,
+128,4/30/2026,6:08:48 PM,5,1,Luke Roell,R,Elder High School,Zac Wittenauer,R,Moeller,5,Top,1,0,0,0 and 0,Fast Ball,Ball,,78,32,Waste,
+129,4/30/2026,6:09:02 PM,6,2,Luke Roell,R,Elder High School,Zac Wittenauer,R,Moeller,5,Top,1,1,0,1 and 0,Fast Ball,Strike Foul,,79,18,Shadow,
+130,4/30/2026,6:09:22 PM,7,3,Luke Roell,R,Elder High School,Zac Wittenauer,R,Moeller,5,Top,1,1,1,1 and 1,Breaking Ball,Strike In Play,Ground Out,70,9,Heart,
+131,4/30/2026,6:09:56 PM,8,1,Luke Roell,R,Elder High School,Connor Maupin,R,Moeller,5,Top,2,0,0,0 and 0,Fast Ball,Strike Foul,,79,9,Heart,
+132,4/30/2026,6:10:23 PM,9,2,Luke Roell,R,Elder High School,Connor Maupin,R,Moeller,5,Top,2,0,1,0 and 1,Breaking Ball,Strike Looking,,69,24,Chase,
+133,4/30/2026,6:10:41 PM,10,3,Luke Roell,R,Elder High School,Connor Maupin,R,Moeller,5,Top,2,0,2,0 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,69,39,Waste,
+134,4/30/2026,6:12:48 PM,1,1,Nathan McDowell,R,Moeller,Tucker Veldhaus,R,Elder High School,5,Bottom,0,0,0,0 and 0,Sinker,Ball,,89,38,Waste,
+135,4/30/2026,6:13:08 PM,2,2,Nathan McDowell,R,Moeller,Tucker Veldhaus,R,Elder High School,5,Bottom,0,1,0,1 and 0,Sinker,Strike In Play,Ground Out,87,17,Shadow,
+136,4/30/2026,6:14:01 PM,3,1,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,5,Bottom,1,0,0,0 and 0,Sinker,Ball,,89,21,Chase,
+137,4/30/2026,6:14:13 PM,4,2,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,5,Bottom,1,1,0,1 and 0,Sinker,Strike Looking,,88,26,Chase,
+138,4/30/2026,6:14:26 PM,5,3,Nathan McDowell,R,Moeller,Jared Lammers,L,Elder High School,5,Bottom,1,1,1,1 and 1,Sinker,Strike In Play,1B,89,18,Shadow,
+139,4/30/2026,6:15:15 PM,6,1,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,5,Bottom,1,0,0,0 and 0,Change Up,Ball,,88,37,Waste,
+140,4/30/2026,6:15:45 PM,7,2,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,5,Bottom,1,1,0,1 and 0,Sinker,Ball,,89,27,Chase,
+141,4/30/2026,6:16:03 PM,8,3,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,5,Bottom,1,2,0,2 and 0,Curve,Strike Foul,,78,39,Waste,
+142,4/30/2026,6:16:28 PM,9,4,Nathan McDowell,R,Moeller,Ryan Smith,L,Elder High School,5,Bottom,1,2,1,2 and 1,Sinker,Strike In Play,Error,87,288,,
+143,4/30/2026,6:17:07 PM,10,1,Nathan McDowell,R,Moeller,Roger Waddell,L,Elder High School,5,Bottom,1,0,0,0 and 0,Slider,Strike In Play,Sacrifice,79,17,Shadow,
+144,4/30/2026,6:17:51 PM,11,1,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,5,Bottom,2,0,0,0 and 0,Sinker,Ball,,88,27,Chase,
+145,4/30/2026,6:18:08 PM,12,2,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,5,Bottom,2,1,0,1 and 0,Change Up,Ball,,88,38,Waste,
+146,4/30/2026,6:18:27 PM,13,3,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,5,Bottom,2,2,0,2 and 0,Curve,Strike Looking,,79,11,Shadow,
+147,4/30/2026,6:18:42 PM,14,4,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,5,Bottom,2,2,1,2 and 1,Sinker,Strike Swing and Miss,,87,17,Shadow,
+148,4/30/2026,6:19:00 PM,15,5,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,5,Bottom,2,2,2,2 and 2,Change Up,Ball,,81,38,Waste,
+149,4/30/2026,6:19:21 PM,16,6,Nathan McDowell,R,Moeller,Bradley Kammer,L,Elder High School,5,Bottom,2,3,2,3 and 2,Slider,Strike Swing and Miss,Strike Out,78,29,Chase,
+150,4/30/2026,6:21:33 PM,1,1,Luke Roell,R,Elder High School,Reggie Watson III,L,Moeller,6,Top,0,0,0,0 and 0,Fast Ball,Strike Looking,,79,11,Shadow,
+151,4/30/2026,6:21:48 PM,2,2,Luke Roell,R,Elder High School,Reggie Watson III,L,Moeller,6,Top,0,0,1,0 and 1,Breaking Ball,Strike Foul,,66,1,Heart,
+152,4/30/2026,6:22:08 PM,3,3,Luke Roell,R,Elder High School,Reggie Watson III,L,Moeller,6,Top,0,0,2,0 and 2,Fast Ball,Strike Foul,,78,18,Shadow,
+153,4/30/2026,6:22:27 PM,4,4,Luke Roell,R,Elder High School,Reggie Watson III,L,Moeller,6,Top,0,0,2,0 and 2,Breaking Ball,Strike In Play,Line Out,69,19,Shadow,
+154,4/30/2026,6:23:03 PM,5,1,Luke Roell,R,Elder High School,Matt Ponatoski,L,Moeller,6,Top,1,0,0,0 and 0,Fast Ball,Strike Looking,,79,29,Chase,
+155,4/30/2026,6:23:17 PM,6,2,Luke Roell,R,Elder High School,Matt Ponatoski,L,Moeller,6,Top,1,0,1,0 and 1,Fast Ball,Strike In Play,Ground Out,78,17,Shadow,
+156,4/30/2026,6:23:57 PM,7,1,Luke Roell,R,Elder High School,Conner Cuozzo,R,Moeller,6,Top,2,0,0,0 and 0,Fast Ball,Ball,,78,38,Waste,
+157,4/30/2026,6:24:22 PM,8,2,Luke Roell,R,Elder High School,Conner Cuozzo,R,Moeller,6,Top,2,1,0,1 and 0,Fast Ball,Ball,,79,39,Waste,
+158,4/30/2026,6:24:38 PM,9,3,Luke Roell,R,Elder High School,Conner Cuozzo,R,Moeller,6,Top,2,2,0,2 and 0,Breaking Ball,Strike In Play,Error,69,7,Heart,
+159,4/30/2026,6:25:20 PM,10,1,Luke Roell,R,Elder High School,Donovan Glosser,R,Moeller,6,Top,2,0,0,0 and 0,Fast Ball,Strike Looking,,78,38,Waste,
+160,4/30/2026,6:25:39 PM,11,2,Luke Roell,R,Elder High School,Donovan Glosser,R,Moeller,6,Top,2,0,1,0 and 1,Breaking Ball,Strike In Play,1B,69,5,Heart,
+161,4/30/2026,6:26:17 PM,12,1,Luke Roell,R,Elder High School,Adam Maybury,L,Moeller,6,Top,2,0,0,0 and 0,Fast Ball,Strike Foul,,78,8,Heart,
+162,4/30/2026,6:26:44 PM,13,2,Luke Roell,R,Elder High School,Adam Maybury,L,Moeller,6,Top,2,0,1,0 and 1,Fast Ball,Ball,,78,17,Shadow,
+163,4/30/2026,6:27:05 PM,14,3,Luke Roell,R,Elder High School,Adam Maybury,L,Moeller,6,Top,2,1,1,1 and 1,Fast Ball,Ball,,79,36,Waste,
+164,4/30/2026,6:27:35 PM,15,4,Luke Roell,R,Elder High School,Adam Maybury,L,Moeller,6,Top,2,2,1,2 and 1,Fast Ball,Strike Foul,,79,18,Shadow,
+165,4/30/2026,6:28:05 PM,16,5,Luke Roell,R,Elder High School,Adam Maybury,L,Moeller,6,Top,2,2,2,2 and 2,Breaking Ball,Strike In Play,1B,67,2,Heart,
+166,4/30/2026,6:28:46 PM,17,1,Luke Roell,R,Elder High School,Teagan Cumberland,L,Moeller,6,Top,2,0,0,0 and 0,Fast Ball,Strike Foul,,77,7,Heart,
+167,4/30/2026,6:29:15 PM,18,2,Luke Roell,R,Elder High School,Teagan Cumberland,L,Moeller,6,Top,2,0,1,0 and 1,Breaking Ball,Ball,,69,39,Waste,
+168,4/30/2026,6:31:46 PM,1,1,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,6,Bottom,0,0,0,0 and 0,Slider,Ball,,80,24,Chase,
+169,4/30/2026,6:31:59 PM,2,2,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,6,Bottom,0,1,0,1 and 0,Slider,Strike Foul,,80,14,Shadow,
+170,4/30/2026,6:32:15 PM,3,3,Nathan McDowell,R,Moeller,Mason Chumbley,R,Elder High School,6,Bottom,0,1,1,1 and 1,Change Up,Strike In Play,Ground Out,80,7,Heart,
+171,4/30/2026,6:32:52 PM,4,1,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,6,Bottom,1,0,0,0 and 0,Change Up,Ball,,88,38,Waste,
+172,4/30/2026,6:33:06 PM,5,2,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,6,Bottom,1,1,0,1 and 0,Curve,Strike Looking,,77,18,Shadow,
+173,4/30/2026,6:33:19 PM,6,3,Nathan McDowell,R,Moeller,Dylan Wullenweber,L,Elder High School,6,Bottom,1,1,1,1 and 1,Sinker,Strike In Play,Fly Out,88,19,Shadow,
+174,4/30/2026,6:33:55 PM,7,1,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,6,Bottom,2,0,0,0 and 0,Slider,Strike Looking,,80,18,Shadow,
+175,4/30/2026,6:34:08 PM,8,2,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,6,Bottom,2,0,1,0 and 1,Sinker,Ball,,89,29,Chase,
+176,4/30/2026,6:34:21 PM,9,3,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,6,Bottom,2,1,1,1 and 1,Sinker,Strike Swing and Miss,,88,18,Shadow,
+177,4/30/2026,6:34:38 PM,10,4,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,6,Bottom,2,1,2,1 and 2,Slider,Ball,,79,39,Waste,
+178,4/30/2026,6:35:01 PM,11,5,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,6,Bottom,2,2,2,2 and 2,Sinker,Ball,,88,27,Chase,
+179,4/30/2026,6:35:16 PM,12,6,Nathan McDowell,R,Moeller,Jack Rosenacker,R,Elder High School,6,Bottom,2,3,2,3 and 2,Slider,Strike In Play,1B,78,14,Shadow,
+180,4/30/2026,6:36:04 PM,13,1,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,6,Bottom,2,0,0,0 and 0,Slider,Strike Looking,,79,17,Shadow,
+181,4/30/2026,6:36:20 PM,14,2,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,6,Bottom,2,0,1,0 and 1,Slider,Strike Looking,,78,19,Shadow,
+182,4/30/2026,6:36:41 PM,15,3,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,6,Bottom,2,0,2,0 and 2,Sinker,Ball,,89,19,Shadow,
+183,4/30/2026,6:37:01 PM,16,4,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,6,Bottom,2,1,2,1 and 2,Slider,Ball,,77,27,Chase,
+184,4/30/2026,6:37:25 PM,17,5,Nathan McDowell,R,Moeller,Carson Smith,R,Elder High School,6,Bottom,2,2,2,2 and 2,Slider,Strike In Play,Fly Out,78,19,Shadow,
+185,4/30/2026,6:40:13 PM,1,1,Dylan Wullenweber,R,Elder High School,Adam Holstein,R,Moeller,7,Top,0,0,0,0 and 0,Breaking Ball,Strike Looking,,75,4,Heart,
+186,4/30/2026,6:40:24 PM,2,2,Dylan Wullenweber,R,Elder High School,Adam Holstein,R,Moeller,7,Top,0,0,1,0 and 1,Fast Ball,Ball,,74,21,Chase,
+187,4/30/2026,6:40:33 PM,3,3,Dylan Wullenweber,R,Elder High School,Adam Holstein,R,Moeller,7,Top,0,1,1,1 and 1,Fast Ball,Strike Looking,,75,5,Heart,
+188,4/30/2026,6:40:46 PM,4,4,Dylan Wullenweber,R,Elder High School,Adam Holstein,R,Moeller,7,Top,0,1,2,1 and 2,Fast Ball,Ball,,77,39,Waste,
+189,4/30/2026,6:40:56 PM,5,5,Dylan Wullenweber,R,Elder High School,Adam Holstein,R,Moeller,7,Top,0,2,2,2 and 2,Breaking Ball,Strike In Play,Ground Out,65,29,Chase,
+190,4/30/2026,6:41:31 PM,6,1,Dylan Wullenweber,R,Elder High School,Kendon Wilson,L,Moeller,7,Top,1,0,0,0 and 0,Breaking Ball,Strike In Play,3B,65,9,Heart,
+191,4/30/2026,6:42:22 PM,7,1,Dylan Wullenweber,R,Elder High School,Kayde Ridley,R,Moeller,7,Top,1,0,0,0 and 0,Breaking Ball,Strike Looking,,65,11,Shadow,
+192,4/30/2026,6:42:35 PM,8,2,Dylan Wullenweber,R,Elder High School,Kayde Ridley,R,Moeller,7,Top,1,0,1,0 and 1,Fast Ball,Strike Looking,,77,29,Chase,
+193,4/30/2026,6:42:50 PM,9,3,Dylan Wullenweber,R,Elder High School,Kayde Ridley,R,Moeller,7,Top,1,0,2,0 and 2,Breaking Ball,Strike In Play,Ground Out,70,18,Shadow,
+194,4/30/2026,6:43:28 PM,10,1,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,0,0,0 and 0,Breaking Ball,Ball,,68,24,Chase,
+195,4/30/2026,6:43:40 PM,11,2,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,1,0,1 and 0,Breaking Ball,Strike Looking,,66,14,Shadow,
+196,4/30/2026,6:43:51 PM,12,3,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,1,1,1 and 1,Breaking Ball,Ball,,69,39,Waste,
+197,4/30/2026,6:44:20 PM,13,4,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,2,1,2 and 1,Breaking Ball,Strike Looking,,69,19,Shadow,
+198,4/30/2026,6:44:32 PM,14,5,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,2,2,2 and 2,Fast Ball,Ball,,78,39,Waste,
+199,4/30/2026,6:44:43 PM,15,6,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,3,2,3 and 2,Breaking Ball,Strike Foul,,68,28,Chase,
+200,4/30/2026,6:44:59 PM,16,7,Dylan Wullenweber,R,Elder High School,Ricky Maschinot,R,Moeller,7,Top,2,3,2,3 and 2,Breaking Ball,Strike In Play,1B,69,7,Heart,
+201,4/30/2026,6:45:36 PM,17,1,Dylan Wullenweber,R,Elder High School,Gunnar Voellmecke,R,Moeller,7,Top,2,0,0,0 and 0,Change Up,Strike Looking,,69,7,Heart,
+202,4/30/2026,6:45:48 PM,18,2,Dylan Wullenweber,R,Elder High School,Gunnar Voellmecke,R,Moeller,7,Top,2,0,1,0 and 1,Breaking Ball,Strike In Play,1B,67,19,Shadow,
+203,4/30/2026,6:46:28 PM,19,1,Dylan Wullenweber,R,Elder High School,Matt Ponatoski,L,Moeller,7,Top,2,0,0,0 and 0,Fast Ball,Ball,,75,33,Waste,
+204,4/30/2026,6:46:45 PM,20,2,Dylan Wullenweber,R,Elder High School,Matt Ponatoski,L,Moeller,7,Top,2,1,0,1 and 0,Fast Ball,Ball,,75,33,Waste,
+205,4/30/2026,6:47:16 PM,21,3,Dylan Wullenweber,R,Elder High School,Matt Ponatoski,L,Moeller,7,Top,2,2,0,2 and 0,Breaking Ball,Strike Looking,,69,9,Heart,
+206,4/30/2026,6:47:28 PM,22,4,Dylan Wullenweber,R,Elder High School,Matt Ponatoski,L,Moeller,7,Top,2,2,1,2 and 1,Breaking Ball,Ball,,69,31,Waste,
+207,4/30/2026,6:48:08 PM,23,5,Dylan Wullenweber,R,Elder High School,Matt Ponatoski,L,Moeller,7,Top,2,3,1,3 and 1,Fast Ball,Strike Swing and Miss,,70,2,Heart,
+208,4/30/2026,6:48:24 PM,24,6,Dylan Wullenweber,R,Elder High School,Matt Ponatoski,L,Moeller,7,Top,2,3,2,3 and 2,Change Up,Ball,BB,70,32,Waste,
+209,4/30/2026,6:49:01 PM,25,1,Dylan Wullenweber,R,Elder High School,Conner Cuozzo,R,Moeller,7,Top,2,0,0,0 and 0,Breaking Ball,Strike In Play,2B,69,5,Heart,
+210,4/30/2026,6:49:48 PM,26,1,Dylan Wullenweber,R,Elder High School,Michael Weber,R,Moeller,7,Top,2,0,0,0 and 0,Fast Ball,Ball,,75,34,Waste,
+211,4/30/2026,6:50:00 PM,27,2,Dylan Wullenweber,R,Elder High School,Michael Weber,R,Moeller,7,Top,2,1,0,1 and 0,Fast Ball,Strike In Play,Fly Out,75,6,Heart,
+212,4/30/2026,6:52:52 PM,1,1,Rudy Glotfelty,R,Moeller,Tucker Veldhaus,R,Elder High School,7,Bottom,0,0,0,0 and 0,Change Up,Ball,,74,39,Waste,
+213,4/30/2026,6:53:03 PM,2,2,Rudy Glotfelty,R,Moeller,Tucker Veldhaus,R,Elder High School,7,Bottom,0,1,0,1 and 0,Breaking Ball,Ball,,74,37,Waste,
+214,4/30/2026,6:53:22 PM,3,3,Rudy Glotfelty,R,Moeller,Tucker Veldhaus,R,Elder High School,7,Bottom,0,2,0,2 and 0,Fast Ball,Ball,,84,38,Waste,
+215,4/30/2026,6:53:50 PM,4,4,Rudy Glotfelty,R,Moeller,Tucker Veldhaus,R,Elder High School,7,Bottom,0,3,0,3 and 0,Fast Ball,Strike Looking,,85,19,Shadow,
+216,4/30/2026,6:53:55 PM,5,5,Rudy Glotfelty,R,Moeller,Tucker Veldhaus,R,Elder High School,7,Bottom,0,3,1,3 and 1,Fast Ball,Strike Looking,,85,19,Shadow,
+217,4/30/2026,6:54:03 PM,6,6,Rudy Glotfelty,R,Moeller,Tucker Veldhaus,R,Elder High School,7,Bottom,0,3,2,3 and 2,Breaking Ball,Ball,BB,84,37,Waste,
+218,4/30/2026,6:54:34 PM,7,1,Rudy Glotfelty,R,Moeller,Brady Andriacco,R,Elder High School,7,Bottom,0,0,0,0 and 0,Change Up,Ball,,67,39,Waste,
+219,4/30/2026,6:55:20 PM,8,2,Rudy Glotfelty,R,Moeller,Brady Andriacco,R,Elder High School,7,Bottom,0,1,0,1 and 0,Fast Ball,Ball,,84,18,Shadow,
+220,4/30/2026,6:55:38 PM,9,3,Rudy Glotfelty,R,Moeller,Brady Andriacco,R,Elder High School,7,Bottom,0,2,0,2 and 0,Fast Ball,Strike Looking,,81,11,Shadow,
+221,4/30/2026,6:55:56 PM,10,4,Rudy Glotfelty,R,Moeller,Brady Andriacco,R,Elder High School,7,Bottom,0,2,1,2 and 1,Fast Ball,Ball,,83,27,Chase,
+222,4/30/2026,6:56:13 PM,11,5,Rudy Glotfelty,R,Moeller,Brady Andriacco,R,Elder High School,7,Bottom,0,3,1,3 and 1,Fast Ball,Ball,BB,86,37,Waste,
+223,4/30/2026,6:57:24 PM,12,1,Rudy Glotfelty,R,Moeller,Kyle Bien,R,Elder High School,7,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,86,39,Waste,
+224,4/30/2026,6:57:42 PM,13,2,Rudy Glotfelty,R,Moeller,Kyle Bien,R,Elder High School,7,Bottom,0,1,0,1 and 0,Change Up,Strike In Play,Fly Out,76,19,Shadow,
+225,4/30/2026,6:58:13 PM,14,1,Rudy Glotfelty,R,Moeller,Roger Waddell,L,Elder High School,7,Bottom,1,0,0,0 and 0,Breaking Ball,Strike Foul,,69,14,Shadow,
+226,4/30/2026,6:58:33 PM,15,2,Rudy Glotfelty,R,Moeller,Roger Waddell,L,Elder High School,7,Bottom,1,0,1,0 and 1,Fast Ball,Ball,,86,23,Chase,
+227,4/30/2026,6:58:52 PM,16,3,Rudy Glotfelty,R,Moeller,Roger Waddell,L,Elder High School,7,Bottom,1,1,1,1 and 1,Change Up,Ball,,80,39,Waste,
+228,4/30/2026,6:59:13 PM,17,4,Rudy Glotfelty,R,Moeller,Roger Waddell,L,Elder High School,7,Bottom,1,2,1,2 and 1,Fast Ball,Strike Swing and Miss,,86,29,Chase,
+229,4/30/2026,6:59:49 PM,18,5,Rudy Glotfelty,R,Moeller,Roger Waddell,L,Elder High School,7,Bottom,1,2,2,2 and 2,Fast Ball,Strike Swing and Miss,Strike Out,85,11,Shadow,
+230,4/30/2026,7:00:16 PM,19,1,Rudy Glotfelty,R,Moeller,Bradley Kammer,L,Elder High School,7,Bottom,2,0,0,0 and 0,Fast Ball,Strike Looking,,87,19,Shadow,
+231,4/30/2026,7:00:33 PM,20,2,Rudy Glotfelty,R,Moeller,Bradley Kammer,L,Elder High School,7,Bottom,2,0,1,0 and 1,Fast Ball,Strike Looking,,87,17,Shadow,
+232,4/30/2026,7:00:50 PM,21,3,Rudy Glotfelty,R,Moeller,Bradley Kammer,L,Elder High School,7,Bottom,2,0,2,0 and 2,Fast Ball,Strike Looking,Strike Out,87,14,Shadow,
+1,5/1/2026,5:03:44 PM,1,1,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,1,Top,0,0,0,0 and 0,Fast Ball,Strike Foul,,86,19,Shadow,Brian Fender
+2,5/1/2026,5:04:04 PM,2,2,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,1,Top,0,0,1,0 and 1,Fast Ball,Strike Foul,,88,11,Shadow,Brian Fender
+3,5/1/2026,5:04:39 PM,3,3,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,1,Top,0,0,2,0 and 2,Breaking Ball,Strike Looking,Strike Out,72,11,Shadow,Brian Fender
+4,5/1/2026,5:05:05 PM,4,1,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,1,Top,1,0,0,0 and 0,Fast Ball,Strike In Play,Fly Out,88,17,Shadow,Brian Fender
+5,5/1/2026,5:05:38 PM,5,1,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,0,0,0 and 0,Breaking Ball,Strike Foul,,74,16,Shadow,Brian Fender
+6,5/1/2026,5:06:09 PM,6,2,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,0,1,0 and 1,Breaking Ball,Ball,,74,38,Waste,Brian Fender
+7,5/1/2026,5:06:30 PM,7,3,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,1,1,1 and 1,Fast Ball,Ball,,89,17,Shadow,Brian Fender
+8,5/1/2026,5:06:45 PM,8,4,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,2,1,2 and 1,Fast Ball,Ball,,88,37,Waste,Brian Fender
+9,5/1/2026,5:07:01 PM,9,5,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,3,1,3 and 1,Fast Ball,Strike Looking,,88,9,Heart,Brian Fender
+10,5/1/2026,5:07:19 PM,10,6,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,3,2,3 and 2,Fast Ball,Strike Foul,,88,5,Heart,Brian Fender
+11,5/1/2026,5:07:42 PM,11,7,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,1,Top,2,3,2,3 and 2,Breaking Ball,Ball,BB,73,39,Waste,Brian Fender
+12,5/1/2026,5:08:18 PM,12,1,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,1,Top,2,0,0,0 and 0,Fast Ball,Strike Swing and Miss,,88,3,Heart,Brian Fender
+13,5/1/2026,5:08:35 PM,13,2,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,1,Top,2,0,1,0 and 1,Fast Ball,Strike Looking,,89,26,Chase,Brian Fender
+14,5/1/2026,5:08:52 PM,14,3,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,1,Top,2,0,2,0 and 2,Fast Ball,Ball,,90,39,Waste,Brian Fender
+15,5/1/2026,5:09:08 PM,15,4,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,1,Top,2,1,2,1 and 2,Breaking Ball,Strike Foul,,73,14,Shadow,Brian Fender
+16,5/1/2026,5:09:31 PM,16,5,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,1,Top,2,1,2,1 and 2,Fast Ball,Ball,,89,39,Waste,Brian Fender
+17,5/1/2026,5:09:49 PM,17,6,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,1,Top,2,2,2,2 and 2,Fast Ball,Strike Looking,Strike Out,89,18,Shadow,Brian Fender
+18,5/1/2026,5:12:32 PM,1,1,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,1,Bottom,0,0,0,0 and 0,Breaking Ball,Strike Looking,,72,14,Shadow,Brian Fender
+19,5/1/2026,5:12:46 PM,2,2,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,1,Bottom,0,0,1,0 and 1,Fast Ball,Strike Foul,,81,26,Chase,Brian Fender
+20,5/1/2026,5:13:14 PM,3,3,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,1,Bottom,0,0,2,0 and 2,Fast Ball,Strike In Play,Ground Out,84,39,Waste,Brian Fender
+21,5/1/2026,5:13:50 PM,4,1,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,1,Bottom,1,0,0,0 and 0,Breaking Ball,Ball,,72,29,Chase,Brian Fender
+22,5/1/2026,5:14:03 PM,5,2,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,1,Bottom,1,1,0,1 and 0,Fast Ball,Ball,,81,27,Chase,Brian Fender
+23,5/1/2026,5:14:19 PM,6,3,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,1,Bottom,1,2,0,2 and 0,Breaking Ball,Strike In Play,1B,72,17,Shadow,Brian Fender
+24,5/1/2026,5:15:02 PM,7,1,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,0,0,0 and 0,Fast Ball,Strike Looking,,81,18,Shadow,Brian Fender
+25,5/1/2026,5:15:18 PM,8,2,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,0,1,0 and 1,Breaking Ball,Ball,,72,39,Waste,Brian Fender
+26,5/1/2026,5:15:36 PM,9,3,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,1,1,1 and 1,Fast Ball,Ball,,82,19,Shadow,Brian Fender
+27,5/1/2026,5:16:20 PM,10,4,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,2,1,2 and 1,Breaking Ball,Strike Foul,,72,14,Shadow,Brian Fender
+28,5/1/2026,5:17:07 PM,11,5,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,2,2,2 and 2,Fast Ball,Strike Foul,,84,1,Heart,Brian Fender
+29,5/1/2026,5:17:33 PM,12,6,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,2,2,2 and 2,Breaking Ball,Strike Foul,,72,18,Shadow,Brian Fender
+30,5/1/2026,5:18:00 PM,13,7,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,2,2,2 and 2,Fast Ball,Ball,,77,39,Waste,Brian Fender
+31,5/1/2026,5:18:42 PM,14,8,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,1,Bottom,1,3,2,3 and 2,Breaking Ball,Strike In Play,2B,73,18,Shadow,Brian Fender
+32,5/1/2026,5:19:28 PM,15,1,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,1,Bottom,1,0,0,0 and 0,Fast Ball,Strike Foul,,82,19,Shadow,Brian Fender
+33,5/1/2026,5:20:00 PM,16,2,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,1,Bottom,1,0,1,0 and 1,Fast Ball,Strike In Play,Ground Out,83,18,Shadow,Brian Fender
+34,5/1/2026,5:20:34 PM,17,1,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,1,Bottom,2,0,0,0 and 0,Fast Ball,Strike Looking,,82,16,Shadow,Brian Fender
+35,5/1/2026,5:20:46 PM,18,2,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,1,Bottom,2,0,1,0 and 1,Change Up,Strike Swing and Miss,,72,27,Chase,Brian Fender
+36,5/1/2026,5:21:02 PM,19,3,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,1,Bottom,2,0,2,0 and 2,Fast Ball,Ball,,82,39,Waste,Brian Fender
+37,5/1/2026,5:21:32 PM,20,4,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,1,Bottom,2,1,2,1 and 2,Breaking Ball,Strike In Play,1B,73,1,Heart,Brian Fender
+38,5/1/2026,5:22:18 PM,21,1,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,1,Bottom,2,0,0,0 and 0,Fast Ball,Strike Foul,,80,2,Heart,Brian Fender
+39,5/1/2026,5:22:36 PM,22,2,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,1,Bottom,2,0,1,0 and 1,Breaking Ball,Ball,,72,11,Shadow,Brian Fender
+40,5/1/2026,5:24:50 PM,1,1,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,2,Top,0,0,0,0 and 0,Breaking Ball,Strike Looking,,71,14,Shadow,Brian Fender
+41,5/1/2026,5:25:02 PM,2,2,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,2,Top,0,0,1,0 and 1,Fast Ball,Strike Looking,,88,29,Chase,Brian Fender
+42,5/1/2026,5:25:30 PM,3,3,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,2,Top,0,0,2,0 and 2,Fast Ball,Ball,,88,9,Heart,Brian Fender
+43,5/1/2026,5:25:35 PM,4,4,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,2,Top,0,1,2,1 and 2,Breaking Ball,Strike In Play,Ground Out,73,8,Heart,Brian Fender
+44,5/1/2026,5:26:03 PM,5,1,Carson Fuhrer,R,Moeller,James Arbaugh,L,Conner High School,2,Top,1,0,0,0 and 0,Fast Ball,Ball,,88,27,Chase,Brian Fender
+45,5/1/2026,5:26:17 PM,6,2,Carson Fuhrer,R,Moeller,James Arbaugh,L,Conner High School,2,Top,1,1,0,1 and 0,Fast Ball,Strike In Play,1B,89,39,Waste,Brian Fender
+46,5/1/2026,5:26:52 PM,7,1,Carson Fuhrer,R,Moeller,Everret Hall,R,Conner High School,2,Top,1,0,0,0 and 0,Breaking Ball,Ball,,70,21,Chase,Brian Fender
+47,5/1/2026,5:27:07 PM,8,2,Carson Fuhrer,R,Moeller,Everret Hall,R,Conner High School,2,Top,1,1,0,1 and 0,Fast Ball,Strike Looking,,88,17,Shadow,Brian Fender
+48,5/1/2026,5:27:23 PM,9,3,Carson Fuhrer,R,Moeller,Everret Hall,R,Conner High School,2,Top,1,1,1,1 and 1,Fast Ball,Strike Foul,,88,29,Chase,Brian Fender
+49,5/1/2026,5:27:46 PM,10,4,Carson Fuhrer,R,Moeller,Everret Hall,R,Conner High School,2,Top,1,1,2,1 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,72,39,Waste,Brian Fender
+50,5/1/2026,5:28:26 PM,11,1,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,2,Top,2,0,0,0 and 0,Fast Ball,Strike Swing and Miss,,89,11,Shadow,Brian Fender
+51,5/1/2026,5:28:43 PM,12,2,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,2,Top,2,0,1,0 and 1,Fast Ball,Strike Looking,,88,29,Chase,Brian Fender
+52,5/1/2026,5:28:59 PM,13,3,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,2,Top,2,0,2,0 and 2,Fast Ball,Ball,,89,37,Waste,Brian Fender
+53,5/1/2026,5:29:16 PM,14,4,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,2,Top,2,1,2,1 and 2,Fast Ball,Strike Foul,,88,18,Shadow,Brian Fender
+54,5/1/2026,5:29:41 PM,15,5,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,2,Top,2,1,2,1 and 2,Breaking Ball,Ball,,72,33,Waste,Brian Fender
+55,5/1/2026,5:29:57 PM,16,6,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,2,Top,2,2,2,2 and 2,Fast Ball,Strike Swing and Miss,Strike Out,88,13,Shadow,Brian Fender
+56,5/1/2026,5:32:10 PM,1,1,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,2,Bottom,0,0,0,0 and 0,Breaking Ball,Strike Looking,,72,4,Heart,Brian Fender
+57,5/1/2026,5:32:23 PM,2,2,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,2,Bottom,0,0,1,0 and 1,Fast Ball,Strike Foul,,82,29,Chase,Brian Fender
+58,5/1/2026,5:32:44 PM,3,3,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,2,Bottom,0,0,2,0 and 2,Breaking Ball,Ball,,70,37,Waste,Brian Fender
+59,5/1/2026,5:33:22 PM,4,4,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,2,Bottom,0,1,2,1 and 2,Fast Ball,Strike Swing and Miss,Strike Out,83,27,Chase,Brian Fender
+60,5/1/2026,5:33:54 PM,5,1,Cooper Kelly,R,Conner High School,Ricky Maschinot,R,Moeller,2,Bottom,1,0,0,0 and 0,Breaking Ball,Ball,,73,7,Heart,Brian Fender
+61,5/1/2026,5:34:10 PM,6,2,Cooper Kelly,R,Conner High School,Ricky Maschinot,R,Moeller,2,Bottom,1,1,0,1 and 0,Breaking Ball,Ball,,71,39,Waste,Brian Fender
+62,5/1/2026,5:34:25 PM,7,3,Cooper Kelly,R,Conner High School,Ricky Maschinot,R,Moeller,2,Bottom,1,2,0,2 and 0,Fast Ball,Strike Swing and Miss,,80,19,Shadow,Brian Fender
+63,5/1/2026,5:34:41 PM,8,4,Cooper Kelly,R,Conner High School,Ricky Maschinot,R,Moeller,2,Bottom,1,2,1,2 and 1,Breaking Ball,Ball,,72,39,Waste,Brian Fender
+64,5/1/2026,5:34:57 PM,9,5,Cooper Kelly,R,Conner High School,Ricky Maschinot,R,Moeller,2,Bottom,1,3,1,3 and 1,Fast Ball,Ball,BB,81,24,Chase,Brian Fender
+65,5/1/2026,5:36:17 PM,10,1,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,0,0,0 and 0,Fast Ball,Strike Looking,,79,14,Shadow,Brian Fender
+66,5/1/2026,5:36:30 PM,11,2,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,0,1,0 and 1,Fast Ball,Ball,,79,27,Chase,Brian Fender
+67,5/1/2026,5:36:46 PM,12,3,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,1,1,1 and 1,Breaking Ball,Strike Looking,,72,17,Shadow,Brian Fender
+68,5/1/2026,5:37:05 PM,13,4,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,1,2,1 and 2,Breaking Ball,Strike Foul,,72,26,Chase,Brian Fender
+69,5/1/2026,5:37:25 PM,14,5,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,1,2,1 and 2,Fast Ball,Ball,,83,27,Chase,Brian Fender
+70,5/1/2026,5:37:41 PM,15,6,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,2,2,2 and 2,Breaking Ball,Strike Foul,,72,17,Shadow,Brian Fender
+71,5/1/2026,5:38:03 PM,16,7,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,2,2,2 and 2,Fast Ball,Ball,,81,36,Waste,Brian Fender
+72,5/1/2026,5:38:17 PM,17,8,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,2,Bottom,2,3,2,3 and 2,Breaking Ball,Ball,BB,76,1,Heart,Brian Fender
+73,5/1/2026,5:39:04 PM,18,1,Cooper Kelly,R,Conner High School,Connor Maupin,R,Moeller,2,Bottom,2,0,0,0 and 0,Fast Ball,Ball,,79,31,Waste,Brian Fender
+74,5/1/2026,5:41:44 PM,1,1,Carson Fuhrer,R,Moeller,Brandt Ammon,R,Conner High School,3,Top,0,0,0,0 and 0,Fast Ball,Ball,,86,21,Chase,Brian Fender
+75,5/1/2026,5:41:58 PM,2,2,Carson Fuhrer,R,Moeller,Brandt Ammon,R,Conner High School,3,Top,0,1,0,1 and 0,Fast Ball,Ball,,86,39,Waste,Brian Fender
+76,5/1/2026,5:42:34 PM,3,3,Carson Fuhrer,R,Moeller,Brandt Ammon,R,Conner High School,3,Top,0,2,0,2 and 0,Fast Ball,Strike In Play,1B,85,7,Heart,Brian Fender
+77,5/1/2026,5:42:59 PM,4,1,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,3,Top,0,0,0,0 and 0,Breaking Ball,Ball,,74,28,Chase,Brian Fender
+78,5/1/2026,5:43:15 PM,5,2,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,3,Top,0,1,0,1 and 0,Fast Ball,Strike Swing and Miss,,88,38,Waste,Brian Fender
+79,5/1/2026,5:43:33 PM,6,3,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,3,Top,0,1,1,1 and 1,Fast Ball,Strike Looking,,89,17,Shadow,Brian Fender
+80,5/1/2026,5:43:49 PM,7,4,Carson Fuhrer,R,Moeller,Brady Bushman,L,Conner High School,3,Top,0,1,2,1 and 2,Breaking Ball,Strike In Play,1B,75,28,Chase,Brian Fender
+81,5/1/2026,5:44:24 PM,8,1,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,3,Top,0,0,0,0 and 0,Breaking Ball,Ball,,68,21,Chase,Brian Fender
+82,5/1/2026,5:44:38 PM,9,2,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,3,Top,0,1,0,1 and 0,Fast Ball,Strike In Play,Fly Out,88,16,Shadow,Brian Fender
+83,5/1/2026,5:45:23 PM,10,1,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,3,Top,1,0,0,0 and 0,Fast Ball,Strike Looking,,88,33,Waste,Brian Fender
+84,5/1/2026,5:45:55 PM,11,2,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,3,Top,1,0,1,0 and 1,Fast Ball,Ball,,84,36,Waste,Brian Fender
+85,5/1/2026,5:46:17 PM,12,3,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,3,Top,1,1,1,1 and 1,Fast Ball,Strike Foul,,89,9,Heart,Brian Fender
+86,5/1/2026,5:46:51 PM,13,4,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,3,Top,1,1,2,1 and 2,Breaking Ball,Ball,,72,39,Waste,Brian Fender
+87,5/1/2026,5:47:11 PM,14,5,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,3,Top,1,2,2,2 and 2,Fast Ball,Ball,,88,31,Waste,Brian Fender
+88,5/1/2026,5:47:30 PM,15,6,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,3,Top,1,3,2,3 and 2,Fast Ball,Ball,BB,88,29,Chase,Brian Fender
+89,5/1/2026,5:48:14 PM,16,1,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,3,Top,1,0,0,0 and 0,Breaking Ball,Ball,,70,21,Chase,Brian Fender
+90,5/1/2026,5:48:28 PM,17,2,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,3,Top,1,1,0,1 and 0,Fast Ball,Strike Looking,,88,26,Chase,Brian Fender
+91,5/1/2026,5:48:43 PM,18,3,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,3,Top,1,1,1,1 and 1,Fast Ball,Ball,,89,27,Chase,Brian Fender
+92,5/1/2026,5:49:03 PM,19,4,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,3,Top,1,2,1,2 and 1,Fast Ball,Ball,,89,39,Waste,Brian Fender
+93,5/1/2026,5:49:27 PM,20,5,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,3,Top,1,3,1,3 and 1,Fast Ball,Strike In Play,Ground Out,86,21,Chase,Brian Fender
+94,5/1/2026,5:50:00 PM,21,1,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,3,Top,2,0,0,0 and 0,Fast Ball,Strike Foul,,88,23,Chase,Brian Fender
+95,5/1/2026,5:50:28 PM,22,2,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,3,Top,2,0,1,0 and 1,Breaking Ball,Ball,,73,29,Chase,Brian Fender
+96,5/1/2026,5:50:44 PM,23,3,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,3,Top,2,1,1,1 and 1,Breaking Ball,Strike Looking,,72,7,Heart,Brian Fender
+97,5/1/2026,5:50:58 PM,24,4,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,3,Top,2,1,2,1 and 2,Change Up,Ball,,73,39,Waste,Brian Fender
+98,5/1/2026,5:51:25 PM,25,5,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,3,Top,2,2,2,2 and 2,Fast Ball,Strike Foul,,89,36,Waste,Brian Fender
+99,5/1/2026,5:51:49 PM,26,6,Carson Fuhrer,R,Moeller,Cooper Kelly,R,Conner High School,3,Top,2,2,2,2 and 2,Breaking Ball,Strike In Play,Ground Out,74,39,Waste,Brian Fender
+100,5/1/2026,5:54:11 PM,1,1,Cooper Kelly,R,Conner High School,Connor Maupin,R,Moeller,3,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,82,31,Waste,Brian Fender
+101,5/1/2026,5:54:37 PM,2,2,Cooper Kelly,R,Conner High School,Connor Maupin,R,Moeller,3,Bottom,0,1,0,1 and 0,Fast Ball,Strike In Play,Line Out,82,24,Chase,Brian Fender
+102,5/1/2026,5:55:10 PM,3,1,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,3,Bottom,1,0,0,0 and 0,Fast Ball,Ball,,80,36,Waste,Brian Fender
+103,5/1/2026,5:55:28 PM,4,2,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,3,Bottom,1,1,0,1 and 0,Breaking Ball,Ball,,71,31,Waste,Brian Fender
+104,5/1/2026,5:55:42 PM,5,3,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,3,Bottom,1,2,0,2 and 0,Fast Ball,Strike In Play,1B,81,8,Heart,Brian Fender
+105,5/1/2026,5:56:46 PM,6,1,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,3,Bottom,1,0,0,0 and 0,Fast Ball,Ball,,80,37,Waste,Brian Fender
+106,5/1/2026,5:56:59 PM,7,2,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,3,Bottom,1,1,0,1 and 0,Fast Ball,Ball,,78,27,Chase,Brian Fender
+107,5/1/2026,5:57:35 PM,8,3,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,3,Bottom,1,2,0,2 and 0,Fast Ball,Ball,,79,24,Chase,Brian Fender
+108,5/1/2026,5:57:49 PM,9,4,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,3,Bottom,1,3,0,3 and 0,Fast Ball,Strike In Play,Fly Out,80,9,Heart,Brian Fender
+109,5/1/2026,5:58:34 PM,10,1,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,3,Bottom,2,0,0,0 and 0,Breaking Ball,Strike Foul,,73,4,Heart,Brian Fender
+110,5/1/2026,5:59:04 PM,11,2,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,3,Bottom,2,0,1,0 and 1,Fast Ball,Strike In Play,Ground Out,81,17,Shadow,Brian Fender
+111,5/1/2026,6:01:24 PM,1,1,Carson Fuhrer,R,Moeller,James Arbaugh,L,Conner High School,4,Top,0,0,0,0 and 0,Fast Ball,Strike Foul,,87,7,Heart,Brian Fender
+112,5/1/2026,6:01:43 PM,2,2,Carson Fuhrer,R,Moeller,James Arbaugh,L,Conner High School,4,Top,0,0,1,0 and 1,Breaking Ball,Strike In Play,Fly Out,74,13,Shadow,Brian Fender
+113,5/1/2026,6:02:16 PM,3,1,Carson Fuhrer,R,Moeller,Everret Hall,R,Conner High School,4,Top,1,0,0,0 and 0,Fast Ball,Strike In Play,Ground Out,88,19,Shadow,Brian Fender
+114,5/1/2026,6:02:54 PM,4,1,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,4,Top,2,0,0,0 and 0,Change Up,Ball,,70,21,Chase,Brian Fender
+115,5/1/2026,6:03:07 PM,5,2,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,4,Top,2,1,0,1 and 0,Fast Ball,Ball,,88,39,Waste,Brian Fender
+116,5/1/2026,6:03:20 PM,6,3,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,4,Top,2,2,0,2 and 0,Fast Ball,Ball,,88,39,Waste,Brian Fender
+117,5/1/2026,6:03:37 PM,7,4,Carson Fuhrer,R,Moeller,Jagger Sheanshang,R,Conner High School,4,Top,2,3,0,3 and 0,Fast Ball,Ball,BB,86,27,Chase,Brian Fender
+118,5/1/2026,6:04:11 PM,8,1,Carson Fuhrer,R,Moeller,Brandt Ammon,R,Conner High School,4,Top,2,0,0,0 and 0,Fast Ball,Strike In Play,Line Out,87,1,Heart,Brian Fender
+119,5/1/2026,6:06:35 PM,1,1,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,4,Bottom,0,0,0,0 and 0,Breaking Ball,Strike Looking,,72,11,Shadow,Brian Fender
+120,5/1/2026,6:06:50 PM,2,2,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,4,Bottom,0,0,1,0 and 1,Breaking Ball,Ball,,72,24,Chase,Brian Fender
+121,5/1/2026,6:07:06 PM,3,3,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,4,Bottom,0,1,1,1 and 1,Fast Ball,Ball,,79,33,Waste,Brian Fender
+122,5/1/2026,6:07:21 PM,4,4,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,4,Bottom,0,2,1,2 and 1,Breaking Ball,Strike Swing and Miss,,71,19,Shadow,Brian Fender
+123,5/1/2026,6:07:48 PM,5,5,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,4,Bottom,0,2,2,2 and 2,Breaking Ball,Ball,,72,27,Chase,Brian Fender
+124,5/1/2026,6:08:05 PM,6,6,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,4,Bottom,0,3,2,3 and 2,Breaking Ball,Strike Swing and Miss,Strike Out,72,38,Waste,Brian Fender
+125,5/1/2026,6:08:46 PM,7,1,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,4,Bottom,1,0,0,0 and 0,Fast Ball,Ball,,80,39,Waste,Brian Fender
+126,5/1/2026,6:08:59 PM,8,2,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,4,Bottom,1,1,0,1 and 0,Breaking Ball,Ball,,73,27,Chase,Brian Fender
+127,5/1/2026,6:09:18 PM,9,3,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,4,Bottom,1,2,0,2 and 0,Fast Ball,Ball,,83,28,Chase,Brian Fender
+128,5/1/2026,6:09:31 PM,10,4,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,4,Bottom,1,3,0,3 and 0,Fast Ball,Ball,BB,82,37,Waste,Brian Fender
+129,5/1/2026,6:10:12 PM,11,1,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,4,Bottom,1,0,0,0 and 0,Fast Ball,Strike In Play,Line Out,80,5,Heart,Brian Fender
+130,5/1/2026,6:11:20 PM,12,1,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,4,Bottom,2,0,0,0 and 0,Fast Ball,Strike Looking,,79,16,Shadow,Brian Fender
+131,5/1/2026,6:11:50 PM,13,2,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,4,Bottom,2,0,1,0 and 1,Breaking Ball,Ball,,73,21,Chase,Brian Fender
+132,5/1/2026,6:12:21 PM,14,3,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,4,Bottom,2,1,1,1 and 1,Fast Ball,Strike In Play,1B,80,27,Chase,Brian Fender
+133,5/1/2026,6:13:11 PM,15,1,Cooper Kelly,R,Conner High School,Zac Wittenauer,R,Moeller,4,Bottom,2,0,0,0 and 0,Fast Ball,Strike In Play,Fly Out,82,7,Heart,Brian Fender
+134,5/1/2026,6:15:33 PM,1,1,Carson Fuhrer,R,Moeller,Brady Bushman,R,Conner High School,5,Top,0,0,0,0 and 0,Change Up,Ball,,76,39,Waste,Brian Fender
+135,5/1/2026,6:15:46 PM,2,2,Carson Fuhrer,R,Moeller,Brady Bushman,R,Conner High School,5,Top,0,1,0,1 and 0,Fast Ball,Strike Foul,,87,17,Shadow,Brian Fender
+136,5/1/2026,6:16:06 PM,3,3,Carson Fuhrer,R,Moeller,Brady Bushman,R,Conner High School,5,Top,0,1,1,1 and 1,Fast Ball,Strike Looking,,87,14,Shadow,Brian Fender
+137,5/1/2026,6:16:27 PM,4,4,Carson Fuhrer,R,Moeller,Jacob Myers,L,Conner High School,5,Top,0,1,2,1 and 2,Breaking Ball,Ball,,69,31,Waste,Brian Fender
+138,5/1/2026,6:16:41 PM,5,5,Carson Fuhrer,R,Moeller,Jacob Myers,L,Conner High School,5,Top,0,2,2,2 and 2,Fast Ball,Ball,,88,31,Waste,Brian Fender
+139,5/1/2026,6:16:58 PM,6,6,Carson Fuhrer,R,Moeller,Jacob Myers,L,Conner High School,5,Top,0,3,2,3 and 2,Change Up,Ball,BB,85,39,Waste,Brian Fender
+140,5/1/2026,6:17:30 PM,7,1,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,5,Top,0,0,0,0 and 0,Fast Ball,Strike Foul,,87,14,Shadow,Brian Fender
+141,5/1/2026,6:17:55 PM,8,2,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,5,Top,0,0,1,0 and 1,Breaking Ball,Ball,,69,31,Waste,Brian Fender
+142,5/1/2026,6:18:21 PM,9,3,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,5,Top,0,1,1,1 and 1,Breaking Ball,Ball,,69,21,Chase,Brian Fender
+143,5/1/2026,6:18:36 PM,10,4,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,5,Top,0,2,1,2 and 1,Fast Ball,Ball,,89,38,Waste,Brian Fender
+144,5/1/2026,6:19:04 PM,11,5,Carson Fuhrer,R,Moeller,Case Testerman,R,Conner High School,5,Top,0,3,1,3 and 1,Fast Ball,Ball,BB,86,39,Waste,Brian Fender
+145,5/1/2026,6:20:10 PM,12,1,Carson Fuhrer,R,Moeller,Grayson Wagner,R,Conner High School,5,Top,0,0,0,0 and 0,Breaking Ball,Strike In Play,Ground Out,70,7,Heart,Brian Fender
+146,5/1/2026,6:20:52 PM,13,1,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,5,Top,2,0,0,0 and 0,Fast Ball,Strike Looking,,88,39,Waste,Brian Fender
+147,5/1/2026,6:21:07 PM,14,2,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,5,Top,2,0,1,0 and 1,Fast Ball,Ball,,88,37,Waste,Brian Fender
+148,5/1/2026,6:21:24 PM,15,3,Carson Fuhrer,R,Moeller,Max Brunkel,R,Conner High School,5,Top,2,1,1,1 and 1,Breaking Ball,Strike In Play,Ground Out,72,9,Heart,Brian Fender
+149,5/1/2026,6:23:42 PM,1,1,Cooper Kelly,R,Conner High School,Connor Maupin,R,Moeller,5,Bottom,0,0,0,0 and 0,Breaking Ball,Strike Swing and Miss,,70,5,Heart,Brian Fender
+150,5/1/2026,6:24:02 PM,2,2,Cooper Kelly,R,Conner High School,Connor Maupin,R,Moeller,5,Bottom,0,0,1,0 and 1,Breaking Ball,Ball,,71,27,Chase,Brian Fender
+151,5/1/2026,6:24:30 PM,3,3,Cooper Kelly,R,Conner High School,Connor Maupin,R,Moeller,5,Bottom,0,1,1,1 and 1,Fast Ball,Strike In Play,Error,79,19,Shadow,Brian Fender
+152,5/1/2026,6:25:22 PM,4,1,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,5,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,78,21,Chase,Brian Fender
+153,5/1/2026,6:25:51 PM,5,2,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,5,Bottom,0,1,0,1 and 0,Fast Ball,Ball,,78,37,Waste,Brian Fender
+154,5/1/2026,6:26:12 PM,6,3,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,5,Bottom,0,2,0,2 and 0,Fast Ball,Strike Foul,,81,19,Shadow,Brian Fender
+155,5/1/2026,6:26:51 PM,7,4,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,5,Bottom,0,2,1,2 and 1,Fast Ball,Strike Foul,,78,7,Heart,Brian Fender
+156,5/1/2026,6:27:43 PM,8,5,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,5,Bottom,0,2,2,2 and 2,Fast Ball,Ball,,79,12,Shadow,Brian Fender
+157,5/1/2026,6:28:00 PM,9,6,Cooper Kelly,R,Conner High School,Reggie Watson III,L,Moeller,5,Bottom,0,3,2,3 and 2,Change Up,Strike Looking,Strike Out,73,24,Chase,Brian Fender
+158,5/1/2026,6:28:37 PM,10,1,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,5,Bottom,1,0,0,0 and 0,Fast Ball,Ball,,81,31,Waste,Brian Fender
+159,5/1/2026,6:28:54 PM,11,2,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,5,Bottom,1,1,0,1 and 0,Fast Ball,Strike Foul,,78,2,Heart,Brian Fender
+160,5/1/2026,6:29:19 PM,12,3,Cooper Kelly,R,Conner High School,Matt Ponatoski,L,Moeller,5,Bottom,1,1,1,1 and 1,Fast Ball,Strike In Play,1B,81,8,Heart,Brian Fender
+161,5/1/2026,6:31:03 PM,13,1,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,5,Bottom,1,0,0,0 and 0,Breaking Ball,Ball,,71,34,Waste,Brian Fender
+162,5/1/2026,6:31:20 PM,14,2,Cooper Kelly,R,Conner High School,Conner Cuozzo,R,Moeller,5,Bottom,1,1,0,1 and 0,Breaking Ball,Strike In Play,Fly Out,70,29,Chase,Brian Fender
+163,5/1/2026,6:32:03 PM,15,1,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,5,Bottom,2,0,0,0 and 0,Fast Ball,Strike Looking,,80,11,Shadow,Brian Fender
+164,5/1/2026,6:32:31 PM,16,2,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,5,Bottom,2,0,1,0 and 1,Breaking Ball,Ball,,73,11,Shadow,Brian Fender
+165,5/1/2026,6:32:58 PM,17,3,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,5,Bottom,2,1,1,1 and 1,Breaking Ball,Ball,,73,11,Shadow,Brian Fender
+166,5/1/2026,6:33:13 PM,18,4,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,5,Bottom,2,2,1,2 and 1,Fast Ball,Ball,,81,39,Waste,Brian Fender
+167,5/1/2026,6:33:30 PM,19,5,Cooper Kelly,R,Conner High School,Donovan Glosser,R,Moeller,5,Bottom,2,3,1,3 and 1,Fast Ball,Ball,BB,81,21,Chase,Brian Fender
+168,5/1/2026,6:33:58 PM,20,1,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,5,Bottom,2,0,0,0 and 0,Fast Ball,Strike Foul,,80,17,Shadow,Brian Fender
+169,5/1/2026,6:34:27 PM,21,2,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,5,Bottom,2,0,1,0 and 1,Breaking Ball,Ball,,75,39,Waste,Brian Fender
+170,5/1/2026,6:34:58 PM,22,3,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,5,Bottom,2,1,1,1 and 1,Fast Ball,Strike Foul,,81,18,Shadow,Brian Fender
+171,5/1/2026,6:35:21 PM,23,4,Cooper Kelly,R,Conner High School,Teagan Cumberland,L,Moeller,5,Bottom,2,1,2,1 and 2,Breaking Ball,Strike In Play,Fly Out,74,1,Heart,Brian Fender
+172,5/1/2026,6:37:53 PM,1,1,Cooper Homoelle,R,Moeller,Cooper Kelly,R,Conner High School,6,Top,0,0,0,0 and 0,Breaking Ball,Ball,,75,39,Waste,Brian Fender
+173,5/1/2026,6:38:10 PM,2,2,Cooper Homoelle,R,Moeller,Cooper Kelly,R,Conner High School,6,Top,0,1,0,1 and 0,Fast Ball,Strike In Play,Fly Out,83,5,Heart,Brian Fender
+174,5/1/2026,6:38:38 PM,3,1,Cooper Homoelle,R,Moeller,James Arbaugh,L,Conner High School,6,Top,1,0,0,0 and 0,Fast Ball,Strike Looking,,85,14,Shadow,Brian Fender
+175,5/1/2026,6:39:01 PM,4,2,Cooper Homoelle,R,Moeller,James Arbaugh,L,Conner High School,6,Top,1,0,1,0 and 1,Fast Ball,Strike Swing and Miss,,84,14,Shadow,Brian Fender
+176,5/1/2026,6:39:15 PM,5,3,Cooper Homoelle,R,Moeller,James Arbaugh,L,Conner High School,6,Top,1,0,2,0 and 2,Breaking Ball,Strike In Play,Ground Out,73,28,Chase,Brian Fender
+177,5/1/2026,6:39:47 PM,6,1,Cooper Homoelle,R,Moeller,Everret Hall,R,Conner High School,6,Top,2,0,0,0 and 0,Breaking Ball,Strike Swing and Miss,,73,19,Shadow,Brian Fender
+178,5/1/2026,6:39:59 PM,7,2,Cooper Homoelle,R,Moeller,Everret Hall,R,Conner High School,6,Top,2,0,1,0 and 1,Fast Ball,Strike Foul,,84,16,Shadow,Brian Fender
+179,5/1/2026,6:40:16 PM,8,3,Cooper Homoelle,R,Moeller,Everret Hall,R,Conner High School,6,Top,2,0,2,0 and 2,Breaking Ball,Strike In Play,Ground Out,76,18,Shadow,Brian Fender
+180,5/1/2026,6:42:24 PM,1,1,Cooper Kelly,R,Conner High School,Ronnie Allen,R,Moeller,6,Bottom,0,0,0,0 and 0,Breaking Ball,Strike In Play,1B,71,19,Shadow,Brian Fender
+181,5/1/2026,6:43:01 PM,2,1,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,6,Bottom,0,0,0,0 and 0,Fast Ball,Strike Looking,,80,26,Chase,Brian Fender
+182,5/1/2026,6:43:16 PM,3,2,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,6,Bottom,0,0,1,0 and 1,Fast Ball,Ball,,80,33,Waste,Brian Fender
+183,5/1/2026,6:43:59 PM,4,3,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,6,Bottom,0,1,1,1 and 1,Fast Ball,Ball,,78,31,Waste,Brian Fender
+184,5/1/2026,6:44:29 PM,5,4,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,6,Bottom,0,2,1,2 and 1,Fast Ball,Strike Foul,,81,13,Shadow,Brian Fender
+185,5/1/2026,6:45:28 PM,6,5,Cooper Kelly,R,Conner High School,Kendon Wilson,L,Moeller,6,Bottom,0,2,2,2 and 2,Breaking Ball,Ball,HBP,72,31,Waste,Brian Fender
+186,5/1/2026,6:48:32 PM,1,1,Everret Hall,R,Conner High School,Zac Wittenauer,R,Moeller,6,Bottom,0,0,0,0 and 0,Breaking Ball,Strike In Play,1B,65,16,Shadow,Brian Fender
+187,5/1/2026,6:49:23 PM,2,1,Everret Hall,R,Conner High School,Connor Maupin,R,Moeller,6,Bottom,0,0,0,0 and 0,Fast Ball,Ball,,81,39,Waste,Brian Fender
+188,5/1/2026,6:49:39 PM,3,2,Everret Hall,R,Conner High School,Connor Maupin,R,Moeller,6,Bottom,0,1,0,1 and 0,Breaking Ball,Ball,,72,39,Waste,Brian Fender
+189,5/1/2026,6:50:02 PM,4,3,Everret Hall,R,Conner High School,Connor Maupin,R,Moeller,6,Bottom,0,2,0,2 and 0,Fast Ball,Strike Foul,,81,14,Shadow,Brian Fender
+190,5/1/2026,6:50:29 PM,5,4,Everret Hall,R,Conner High School,Connor Maupin,R,Moeller,6,Bottom,0,2,1,2 and 1,Breaking Ball,Strike Swing and Miss,,73,39,Waste,Brian Fender
+191,5/1/2026,6:50:50 PM,6,5,Everret Hall,R,Conner High School,Connor Maupin,R,Moeller,6,Bottom,0,2,2,2 and 2,Breaking Ball,Ball,,71,39,Waste,Brian Fender
+192,5/1/2026,6:51:33 PM,7,6,Everret Hall,R,Conner High School,Connor Maupin,R,Moeller,6,Bottom,0,3,2,3 and 2,Fast Ball,Ball,BB,78,39,Waste,Brian Fender
+193,5/1/2026,6:52:06 PM,8,1,Everret Hall,R,Conner High School,Reggie Watson III,L,Moeller,6,Bottom,0,0,0,0 and 0,Change Up,Strike In Play,Ground Out,72,17,Shadow,Brian Fender
+194,5/1/2026,6:52:34 PM,9,2,Everret Hall,R,Conner High School,Reggie Watson III,L,Moeller,6,Bottom,0,0,1,0 and 1,Fast Ball,Strike In Play,Fielders Choice,78,8,Heart,Brian Fender
+195,5/1/2026,6:52:54 PM,10,1,Everret Hall,R,Conner High School,Matt Ponatoski,L,Moeller,6,Bottom,1,0,0,0 and 0,Fast Ball,Strike Foul,,78,8,Heart,Brian Fender
+196,5/1/2026,6:53:01 PM,11,2,Everret Hall,R,Conner High School,Matt Ponatoski,L,Moeller,6,Bottom,1,0,1,0 and 1,Breaking Ball,Ball,,71,38,Waste,Brian Fender
+197,5/1/2026,6:53:21 PM,12,3,Everret Hall,R,Conner High School,Matt Ponatoski,L,Moeller,6,Bottom,1,1,1,1 and 1,Breaking Ball,Strike In Play,Infield Fly,69,4,Heart,Brian Fender
+198,5/1/2026,6:53:59 PM,13,1,Everret Hall,R,Conner High School,Conner Cuozzo,R,Moeller,6,Bottom,2,0,0,0 and 0,Breaking Ball,Strike In Play,2B,73,4,Heart,Brian Fender
+199,5/1/2026,6:54:43 PM,14,1,Everret Hall,R,Conner High School,Donovan Glosser,R,Moeller,6,Bottom,2,0,0,0 and 0,Breaking Ball,Ball,,71,39,Waste,Brian Fender
+200,5/1/2026,6:55:07 PM,15,2,Everret Hall,R,Conner High School,Donovan Glosser,R,Moeller,6,Bottom,2,1,0,1 and 0,Breaking Ball,Strike In Play,Line Out,71,7,Heart,Brian Fender
+201,5/1/2026,6:57:11 PM,1,1,Cooper Homoelle,R,Moeller,Jagger Sheanshang,R,Conner High School,7,Top,0,0,0,0 and 0,Fast Ball,Strike In Play,Line Out,85,17,Shadow,Brian Fender
+202,5/1/2026,6:57:40 PM,2,1,Cooper Homoelle,R,Moeller,Brandt Ammon,R,Conner High School,7,Top,1,0,0,0 and 0,Breaking Ball,Strike Looking,,75,7,Heart,Brian Fender
+203,5/1/2026,6:57:54 PM,3,2,Cooper Homoelle,R,Moeller,Brandt Ammon,R,Conner High School,7,Top,1,0,1,0 and 1,Breaking Ball,Strike Looking,,76,19,Shadow,Brian Fender
+204,5/1/2026,6:58:07 PM,4,3,Cooper Homoelle,R,Moeller,Brandt Ammon,R,Conner High School,7,Top,1,0,2,0 and 2,Fast Ball,Ball,,83,39,Waste,Brian Fender
+205,5/1/2026,6:58:38 PM,5,4,Cooper Homoelle,R,Moeller,Brandt Ammon,R,Conner High School,7,Top,1,1,2,1 and 2,Breaking Ball,Strike In Play,Ground Out,73,1,Heart,Brian Fender
+206,5/1/2026,6:59:11 PM,6,1,Cooper Homoelle,R,Moeller,Jacob Myers,L,Conner High School,7,Top,2,0,0,0 and 0,Fast Ball,Ball,,77,39,Waste,Brian Fender
+207,5/1/2026,6:59:21 PM,7,2,Cooper Homoelle,R,Moeller,Jacob Myers,L,Conner High School,7,Top,2,1,0,1 and 0,Breaking Ball,Ball,,75,21,Chase,Brian Fender
+208,5/1/2026,6:59:32 PM,8,3,Cooper Homoelle,R,Moeller,Jacob Myers,L,Conner High School,7,Top,2,2,0,2 and 0,Fast Ball,Ball,,84,21,Chase,Brian Fender
+209,5/1/2026,6:59:53 PM,9,4,Cooper Homoelle,R,Moeller,Jacob Myers,L,Conner High School,7,Top,2,3,0,3 and 0,Fast Ball,Ball,BB,83,28,Chase,Brian Fender
+210,5/1/2026,7:00:28 PM,10,1,Cooper Homoelle,R,Moeller,Case Testerman,R,Conner High School,7,Top,2,0,0,0 and 0,Breaking Ball,Ball,,69,38,Waste,Brian Fender
+211,5/1/2026,7:00:49 PM,11,2,Cooper Homoelle,R,Moeller,Case Testerman,R,Conner High School,7,Top,2,1,0,1 and 0,Fast Ball,Ball,,83,29,Chase,Brian Fender
+212,5/1/2026,7:01:06 PM,12,3,Cooper Homoelle,R,Moeller,Case Testerman,R,Conner High School,7,Top,2,2,0,2 and 0,Change Up,Ball,,75,32,Waste,Brian Fender
+213,5/1/2026,7:01:21 PM,13,4,Cooper Homoelle,R,Moeller,Case Testerman,R,Conner High School,7,Top,2,3,0,3 and 0,Fast Ball,Ball,BB,83,11,Shadow,Brian Fender
+214,5/1/2026,7:01:46 PM,14,1,Cooper Homoelle,R,Moeller,Grayson Wagner,R,Conner High School,7,Top,2,0,0,0 and 0,Breaking Ball,Strike Swing and Miss,,71,6,Heart,Brian Fender
+215,5/1/2026,7:01:59 PM,15,2,Cooper Homoelle,R,Moeller,Grayson Wagner,R,Conner High School,7,Top,2,0,1,0 and 1,Change Up,Ball,,75,39,Waste,Brian Fender
+216,5/1/2026,7:02:25 PM,16,3,Cooper Homoelle,R,Moeller,Grayson Wagner,R,Conner High School,7,Top,2,1,1,1 and 1,Breaking Ball,Strike Swing and Miss,,75,6,Heart,Brian Fender
+217,5/1/2026,7:02:39 PM,17,4,Cooper Homoelle,R,Moeller,Grayson Wagner,R,Conner High School,7,Top,2,1,2,1 and 2,Breaking Ball,Strike Looking,Strike Out,75,17,Shadow,Brian Fender
