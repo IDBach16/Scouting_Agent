@@ -2,15 +2,25 @@
 Moeller Game Prep Agent V3 — Python Backend
 """
 import os
+# Skip Flask's automatic dotenv loading — our .env may be a OneDrive cloud-only
+# placeholder which python-dotenv cannot read. We load .env ourselves below
+# with proper error handling.
+os.environ.setdefault("FLASK_SKIP_DOTENV", "1")
+
 import subprocess
 from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from anthropic import Anthropic
 
-# Load .env file if it exists
+# Load .env file if it exists (tolerate OneDrive cloud-only placeholders / locks)
 _env_path = Path(__file__).resolve().parent / ".env"
 if _env_path.exists():
-    for line in _env_path.read_text().splitlines():
+    try:
+        _env_text = _env_path.read_text()
+    except OSError as _e:
+        print(f"  [warn] could not read .env ({_e}); skipping")
+        _env_text = ""
+    for line in _env_text.splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
@@ -470,22 +480,88 @@ def awre_hls_proxy():
 # ── AWRE Pitcher PDF Report ────────────────────────────────────────
 from pitcher_pdf import list_pitchers as awre_list_pitchers, generate_pitcher_pdf
 
+# ── Career stats vs Moeller (year-aware) ──────────────────────────
+import career_stats
+
+
+@app.route("/api/awre/years", methods=["GET"])
+def awre_years():
+    """Distinct seasons present in awre_data.csv (e.g. ['2025','2026'])."""
+    return jsonify({"years": career_stats.get_years()})
+
 
 @app.route("/api/awre/teams", methods=["GET"])
 def awre_teams():
-    """List all teams with AWRE data."""
-    import pandas as pd
-    df = pd.read_csv(os.path.join(STATIC_DIR, "awre_data.csv"), low_memory=False, usecols=["pitcher_team"])
-    teams = sorted(df["pitcher_team"].dropna().unique().tolist())
-    return jsonify({"teams": teams})
+    """Opposing teams from AWRE data. Optional ?year= filter."""
+    year = request.args.get("year") or None
+    teams = career_stats.list_teams(year=year)
+    return jsonify({"teams": teams, "year": year or "all"})
 
 
 @app.route("/api/awre/pitchers-list", methods=["GET"])
 def awre_pitchers_list():
-    """List all pitchers with AWRE data. Optional ?team= filter."""
-    team = request.args.get("team")
-    pitchers = awre_list_pitchers(team=team if team else None)
-    return jsonify({"pitchers": pitchers, "count": len(pitchers)})
+    """Pitchers with AWRE data. Optional ?team= and ?year= filters."""
+    team = request.args.get("team") or None
+    year = request.args.get("year") or None
+    pitchers = career_stats.list_pitchers(team=team, year=year)
+    return jsonify({"pitchers": pitchers, "count": len(pitchers), "year": year or "all"})
+
+
+@app.route("/api/awre/hitters-list", methods=["GET"])
+def awre_hitters_list():
+    """Opposing hitters who faced Moeller. Optional ?team= and ?year= filters."""
+    team = request.args.get("team") or None
+    year = request.args.get("year") or None
+    hitters = career_stats.list_hitters(team=team, year=year)
+    return jsonify({"hitters": hitters, "count": len(hitters), "year": year or "all"})
+
+
+@app.route("/api/awre/pitcher-zone", methods=["GET"])
+def awre_pitcher_zone():
+    """Strike-zone PNG for an opposing pitcher's pitches to Moeller hitters."""
+    from flask import Response
+    name = request.args.get("name", "").strip()
+    year = request.args.get("year") or None
+    if not name:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    png = career_stats.pitcher_zone_png(name, year=year)
+    if not png:
+        return jsonify({"error": f"No pitch-location data for '{name}' vs Moeller"}), 404
+    return Response(png, mimetype="image/png")
+
+
+@app.route("/api/awre/hitter-spray", methods=["GET"])
+def awre_hitter_spray():
+    """Spray-chart PNG for an opposing hitter's batted balls against Moeller."""
+    from flask import Response
+    name = request.args.get("name", "").strip()
+    year = request.args.get("year") or None
+    if not name:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    png = career_stats.hitter_spray_png(name, year=year)
+    if not png:
+        return jsonify({"error": f"No batted-ball data for '{name}' vs Moeller"}), 404
+    return Response(png, mimetype="image/png")
+
+
+@app.route("/api/awre/career-vs-moeller", methods=["GET"])
+def awre_career_vs_moeller():
+    """Career stat-line for an opposing pitcher or hitter vs Moeller.
+    Query params: name (required), type ('pitcher'|'hitter'), year (optional)."""
+    name = request.args.get("name", "").strip()
+    ptype = request.args.get("type", "pitcher").lower()
+    year = request.args.get("year") or None
+    if not name:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    if ptype not in ("pitcher", "hitter"):
+        return jsonify({"error": "type must be 'pitcher' or 'hitter'"}), 400
+    if ptype == "pitcher":
+        data = career_stats.pitcher_vs_moeller(name, year=year)
+    else:
+        data = career_stats.hitter_vs_moeller(name, year=year)
+    if data is None:
+        return jsonify({"error": f"No PA-level data for '{name}' vs Moeller"}), 404
+    return jsonify(data)
 
 
 @app.route("/api/awre/pitcher-pdf", methods=["GET"])

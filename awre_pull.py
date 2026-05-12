@@ -5,6 +5,7 @@ Run this after games to update the data. Double-click update_awre.bat on desktop
 
 import os
 import csv
+import time
 import requests
 
 API_KEY = os.environ.get("AWRE_API_KEY", "gM6K9SFn.tPP3vQBNYTbSXx8wX2zNcipPGT24EkNA")
@@ -37,25 +38,35 @@ def main():
             date = g["date"]
             print(f"  [{i+1}/{len(with_data)}] {date} vs {opp} ({key})...", end=" ")
 
-            try:
-                resp2 = requests.get(
-                    f"{BASE}/event/{key}", headers=headers, timeout=15
-                )
-                resp2.raise_for_status()
-                event = resp2.json().get("data", {})
-                pitches = event.get("pitch_events", [])
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    resp2 = requests.get(
+                        f"{BASE}/event/{key}", headers=headers, timeout=30
+                    )
+                    resp2.raise_for_status()
+                    event = resp2.json().get("data", {})
+                    pitches = event.get("pitch_events", [])
 
-                # Add game-level context to each pitch
-                for p in pitches:
-                    p["game_date"] = date
-                    p["opponent"] = opp
-                    p["game_key"] = key
-                    p["venue"] = event.get("venue", "")
+                    for p in pitches:
+                        p["game_date"] = date
+                        p["opponent"] = opp
+                        p["game_key"] = key
+                        p["venue"] = event.get("venue", "")
 
-                all_pitches.extend(pitches)
-                print(f"{len(pitches)} pitches")
-            except Exception as e:
-                print(f"ERROR: {e}")
+                    all_pitches.extend(pitches)
+                    print(f"{len(pitches)} pitches")
+                    break
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                    if attempt < max_retries - 1:
+                        wait = 5 * (attempt + 1)
+                        print(f"TIMEOUT, retrying in {wait}s ({attempt+2}/{max_retries})...", end=" ")
+                        time.sleep(wait)
+                    else:
+                        print(f"FAILED after {max_retries} attempts: {e}")
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    break
 
     if not all_pitches:
         print("\nNo pitches found.")
