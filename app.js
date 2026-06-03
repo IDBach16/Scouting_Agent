@@ -1359,6 +1359,12 @@ function routeQuestion(question) {
     ctx.type='opponent_batters'; ctx.data.teamSummary=computeTeamSummary(team);
     ctx.data.opponentBatters=getTeamBatterProfiles(team); return ctx;
   }
+  // Team PITCHING scouting — "pitching analysis for X", "scout their pitchers/staff/arms".
+  // Focused payload (just that team's pitchers) so detail survives the size trim.
+  if ((q.includes('pitching')||q.includes('pitcher')||q.includes('their staff')||q.includes('their arms'))&&team&&!oppP&&!oppB&&!moeP&&!moeH) {
+    ctx.type='opponent_team'; ctx.data.teamSummary=computeTeamSummary(team);
+    ctx.data.opponentPitchers=getTeamPitcherProfiles(team); return ctx;
+  }
   if (team&&!oppP&&!oppB&&!moeP&&!moeH) {
     ctx.type='opponent_team'; ctx.data.teamSummary=computeTeamSummary(team);
     ctx.data.opponentPitchers=getTeamPitcherProfiles(team); ctx.data.opponentBatters=getTeamBatterProfiles(team); ctx.data.moellerHitters=getAllMoellerHitterProfiles(); return ctx;

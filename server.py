@@ -173,7 +173,10 @@ conversation_histories = {}
 _client = None
 if API_KEY:
     try:
-        _client = Anthropic(api_key=API_KEY)
+        # max_retries=0: fail fast instead of the SDK silently retrying an
+        # overloaded model (default 2 + backoff) past the frontend's 180s abort,
+        # which surfaces as a "timed out" hang. The frontend retries once itself.
+        _client = Anthropic(api_key=API_KEY, max_retries=0)
     except Exception as e:
         print(f"  Failed to create Anthropic client: {e}")
 
@@ -229,7 +232,7 @@ def chat():
                 "cache_control": {"type": "ephemeral"}
             }],
             messages=msgs,
-            timeout=120.0,
+            timeout=90.0,
         )
         reply = response.content[0].text
         history.append({"role": "assistant", "content": reply})
@@ -242,6 +245,8 @@ def chat():
             return jsonify({"error": "Invalid API key. Check your ANTHROPIC_API_KEY."}), 401
         if "overloaded" in error_msg.lower() or "529" in error_msg:
             return jsonify({"error": "Claude is overloaded. Try again in a moment."}), 503
+        if "timeout" in error_msg.lower() or "timed out" in error_msg.lower():
+            return jsonify({"error": "That analysis took too long. Try a narrower question (one pitcher) or use Dugout mode for instant cards."}), 504
         return jsonify({"error": f"API error: {error_msg}"}), 500
 
 
