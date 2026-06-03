@@ -232,7 +232,7 @@ def chat():
                 "cache_control": {"type": "ephemeral"}
             }],
             messages=msgs,
-            timeout=90.0,
+            timeout=240.0,   # allow long full-staff analyses to finish (gunicorn is 300s)
         )
         reply = response.content[0].text
         history.append({"role": "assistant", "content": reply})
@@ -246,7 +246,7 @@ def chat():
         if "overloaded" in error_msg.lower() or "529" in error_msg:
             return jsonify({"error": "Claude is overloaded. Try again in a moment."}), 503
         if "timeout" in error_msg.lower() or "timed out" in error_msg.lower():
-            return jsonify({"error": "That analysis took too long. Try a narrower question (one pitcher) or use Dugout mode for instant cards."}), 504
+            return jsonify({"error": "The analysis is taking longer than usual — Claude may be busy. Please try again in a moment."}), 504
         return jsonify({"error": f"API error: {error_msg}"}), 500
 
 

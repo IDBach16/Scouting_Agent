@@ -4063,7 +4063,7 @@ async function sendMessage() {
     let data;
     for (let attempt = 0; attempt < 2; attempt++) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 180000); // 3 min timeout
+      const timer = setTimeout(() => controller.abort(), 270000); // 4.5 min — let full analyses finish
       try {
         const res = await fetch('/api/chat', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -4075,7 +4075,7 @@ async function sendMessage() {
         try { data = JSON.parse(rawText); } catch(parseErr) {
           console.error('Response not JSON (attempt ' + (attempt+1) + '):', rawText.substring(0, 300));
           if (attempt === 0) continue; // retry once
-          throw new Error('Server timed out. Try a simpler question or use Dugout mode.');
+          throw new Error('Claude is taking longer than usual — please try again in a moment.');
         }
         if (!res.ok) throw new Error(data.error || `Server error (${res.status})`);
         break;
@@ -4083,7 +4083,7 @@ async function sendMessage() {
         clearTimeout(timer);
         if (fetchErr.name === 'AbortError') {
           if (attempt === 0) continue;
-          throw new Error('Request timed out. Try a simpler question or use Dugout mode.');
+          throw new Error('Claude is taking longer than usual — please try again in a moment.');
         }
         throw fetchErr;
       }
