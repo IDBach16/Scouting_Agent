@@ -1,1 +1,6 @@
 .env
+synergy_token.json
+*.log
+__pycache__/
+*.pyc
+*.pt

@@ -191,6 +191,10 @@ def chat():
     if not body or "message" not in body:
         return jsonify({"error": "Missing 'message' in request body."}), 400
     user_message = body["message"]
+    if not isinstance(user_message, str) or not user_message.strip():
+        return jsonify({"error": "Empty message."}), 400
+    if len(user_message) > 250000:
+        return jsonify({"error": "Message too long."}), 413
     session_id = body.get("session_id", "default")
     mode = body.get("mode", "full")
     if session_id not in conversation_histories:
@@ -203,6 +207,19 @@ def chat():
     prompt = SYSTEM_PROMPT_DUGOUT if mode == "dugout" else SYSTEM_PROMPT_FULL
     try:
         model = MODEL_DUGOUT if mode == "dugout" else MODEL_FULL
+        # Cache the conversation prefix (incl. the large per-question data
+        # context) so multi-turn follow-ups reuse it instead of re-billing
+        # every token. Breakpoint goes on the latest message.
+        msgs = [dict(m) for m in history]
+        if msgs:
+            msgs[-1] = {
+                "role": msgs[-1]["role"],
+                "content": [{
+                    "type": "text",
+                    "text": msgs[-1]["content"],
+                    "cache_control": {"type": "ephemeral"},
+                }],
+            }
         response = c.messages.create(
             model=model,
             max_tokens=4096 if mode == "full" else 1024,
@@ -211,7 +228,7 @@ def chat():
                 "text": prompt,
                 "cache_control": {"type": "ephemeral"}
             }],
-            messages=history,
+            messages=msgs,
             timeout=120.0,
         )
         reply = response.content[0].text
@@ -415,7 +432,7 @@ def awre_video(ph_key):
         return jsonify(_video_cache[ph_key]["data"])
     try:
         import requests as _req
-        api_key = os.environ.get("AWRE_API_KEY", "gM6K9SFn.tPP3vQBNYTbSXx8wX2zNcipPGT24EkNA")
+        api_key = os.environ.get("AWRE_API_KEY", "")
         team_id = os.environ.get("AWRE_TEAM_ID", "58177")
         resp = _req.get(
             f"https://www.pitchaware.com/api/exchange/v2/team/{team_id}/clip/{ph_key}/angles",

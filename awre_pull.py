@@ -8,7 +8,7 @@ import csv
 import time
 import requests
 
-API_KEY = os.environ.get("AWRE_API_KEY", "gM6K9SFn.tPP3vQBNYTbSXx8wX2zNcipPGT24EkNA")
+API_KEY = os.environ.get("AWRE_API_KEY", "")
 TEAM_ID = os.environ.get("AWRE_TEAM_ID", "58177")
 BASE = "https://www.pitchaware.com/api/exchange/v2"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
