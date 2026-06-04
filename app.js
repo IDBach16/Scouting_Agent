@@ -1219,7 +1219,7 @@ function findBestMatch(query, candidates, excludeWords) {
     }
     // Significant word matching (score=2-2.5)
     if (bestScore<2) {
-      const significantWords = normName.split(/\s+/).filter(w => w.length > 3 && !['high','school'].includes(w));
+      const significantWords = normName.split(/\s+/).filter(w => w.length > 3 && !['high','school'].includes(w) && !excl.includes(w));
       const matchCount = significantWords.filter(w => {
         const wRegex = new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b');
         return wRegex.test(normQ);
