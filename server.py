@@ -173,10 +173,12 @@ conversation_histories = {}
 _client = None
 if API_KEY:
     try:
-        # max_retries=0: fail fast instead of the SDK silently retrying an
-        # overloaded model (default 2 + backoff) past the frontend's 180s abort,
-        # which surfaces as a "timed out" hang. The frontend retries once itself.
-        _client = Anthropic(api_key=API_KEY, max_retries=0)
+        # max_retries=2: recover from transient 529/429 overload responses (these
+        # fail fast, so retries cost only short backoff — not a full timeout). The
+        # earlier max_retries=0 made a single overload hard-fail large analyses;
+        # the slow heavy-bundle calls that motivated fail-fast are now avoided by
+        # routing pitching-staff requests to a focused pitcher-only payload.
+        _client = Anthropic(api_key=API_KEY, max_retries=2)
     except Exception as e:
         print(f"  Failed to create Anthropic client: {e}")
 
@@ -225,7 +227,7 @@ def chat():
             }
         response = c.messages.create(
             model=model,
-            max_tokens=4096 if mode == "full" else 1024,
+            max_tokens=8192 if mode == "full" else 1024,
             system=[{
                 "type": "text",
                 "text": prompt,
