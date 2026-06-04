@@ -8,6 +8,7 @@ import os
 os.environ.setdefault("FLASK_SKIP_DOTENV", "1")
 
 import subprocess
+import time
 from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from anthropic import Anthropic
@@ -173,12 +174,13 @@ conversation_histories = {}
 _client = None
 if API_KEY:
     try:
-        # max_retries=2: recover from transient 529/429 overload responses (these
-        # fail fast, so retries cost only short backoff — not a full timeout). The
-        # earlier max_retries=0 made a single overload hard-fail large analyses;
-        # the slow heavy-bundle calls that motivated fail-fast are now avoided by
-        # routing pitching-staff requests to a focused pitcher-only payload.
-        _client = Anthropic(api_key=API_KEY, max_retries=2)
+        # max_retries=0: the SDK's automatic retries also retry TIMEOUTS, so a slow
+        # full-analysis call would be retried (up to 3x240s) past the frontend's abort
+        # and gunicorn's 300s worker timeout — surfacing as a silent multi-minute hang
+        # with no error. Fail fast instead: a timeout returns a clean 504 immediately.
+        # Transient 529/503 overloads (which fail fast) are retried MANUALLY below so
+        # we get overload resilience without ever retrying a timeout.
+        _client = Anthropic(api_key=API_KEY, max_retries=0)
     except Exception as e:
         print(f"  Failed to create Anthropic client: {e}")
 
@@ -225,17 +227,31 @@ def chat():
                     "cache_control": {"type": "ephemeral"},
                 }],
             }
-        response = c.messages.create(
-            model=model,
-            max_tokens=8192 if mode == "full" else 1024,
-            system=[{
-                "type": "text",
-                "text": prompt,
-                "cache_control": {"type": "ephemeral"}
-            }],
-            messages=msgs,
-            timeout=240.0,   # allow long full-staff analyses to finish (gunicorn is 300s)
-        )
+        # Manual retry on OVERLOAD ONLY (529/503). Overloads fail fast, so a couple of
+        # short-backoff retries cost ~seconds — unlike timeouts, which we never retry
+        # (see max_retries=0 above) to avoid silent multi-minute hangs.
+        response = None
+        for attempt in range(3):
+            try:
+                response = c.messages.create(
+                    model=model,
+                    max_tokens=8192 if mode == "full" else 1024,
+                    system=[{
+                        "type": "text",
+                        "text": prompt,
+                        "cache_control": {"type": "ephemeral"}
+                    }],
+                    messages=msgs,
+                    timeout=180.0,   # < frontend abort (270s) & gunicorn (300s) so a stuck call surfaces a 504 in time
+                )
+                break
+            except Exception as e:
+                m = str(e).lower()
+                is_overload = "overloaded" in m or "529" in m or "503" in m
+                if is_overload and attempt < 2:
+                    time.sleep(1.5 * (attempt + 1))
+                    continue
+                raise
         reply = response.content[0].text
         history.append({"role": "assistant", "content": reply})
         return jsonify({"reply": reply})
