@@ -1,2 +1,8 @@
 [phases.setup]
 nixPkgs = ["python312"]
+
+# Explicit start command so Railway/nixpacks doesn't fall back to a bare
+# `gunicorn server:app` with stock defaults (sync worker, 30s timeout) that
+# killed long full-analysis requests. Settings live in gunicorn.conf.py.
+[start]
+cmd = "gunicorn server:app -c gunicorn.conf.py"
