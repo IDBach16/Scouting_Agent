@@ -10,7 +10,8 @@ os.environ.setdefault("FLASK_SKIP_DOTENV", "1")
 import subprocess
 import time
 from pathlib import Path
-from flask import Flask, request, jsonify, send_from_directory
+from datetime import timedelta
+from flask import Flask, request, jsonify, send_from_directory, session, redirect
 from anthropic import Anthropic
 
 # Load .env file if it exists (tolerate OneDrive cloud-only placeholders / locks)
@@ -169,6 +170,73 @@ Do NOT provide any scouting data or stats in your response to these questions.""
 
 app = Flask(__name__)
 conversation_histories = {}
+
+# ---------------------------------------------------------------------------
+# PASSWORD GATE
+# ---------------------------------------------------------------------------
+app.secret_key = os.environ.get("SECRET_KEY", "moeller-scouting-2027-secret")
+app.permanent_session_lifetime = timedelta(days=30)
+GATE_PASSWORD = os.environ.get("HUB_PASSWORD", "Held_2027")
+_PUBLIC_PATHS = {"/login", "/favicon.ico", "/moeller-logo.png"}
+
+_LOGIN_HTML = """<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Moeller Baseball — Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;
+  align-items:center;justify-content:center;background:#0f0f1e;color:#fff}
+.card{width:min(400px,90vw);background:rgba(26,26,46,.85);border:1px solid rgba(197,165,90,.25);
+  border-radius:16px;padding:2.5rem 2rem;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card img{width:80px;height:80px;object-fit:contain;margin-bottom:1rem;
+  filter:drop-shadow(0 0 25px rgba(197,165,90,.4))}
+h1{font-size:1.05rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+  color:#C5A55A;margin-bottom:.4rem}
+.sub{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6);
+  margin-bottom:1.8rem}
+input{width:100%;padding:.85rem 1rem;background:rgba(15,15,30,.7);
+  border:1px solid rgba(197,165,90,.25);border-radius:8px;color:#fff;font-size:1rem;
+  outline:none;margin-bottom:1rem}
+input:focus{border-color:#C5A55A}
+button{width:100%;padding:.85rem 1rem;background:transparent;border:1.5px solid #C5A55A;
+  border-radius:8px;color:#C5A55A;font-size:.85rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer}
+button:hover{background:#C5A55A;color:#1a1a2e}
+.err{color:#e37f7f;font-size:.8rem;margin-bottom:1rem}
+</style></head><body>
+<form class="card" method="POST" action="/login">
+  <img src="/moeller-logo.png" alt="Moeller"/>
+  <h1>Moeller Baseball</h1>
+  <div class="sub">Scouting Agent</div>
+  {ERROR}
+  <input type="password" name="password" placeholder="Password" autofocus required/>
+  <button type="submit">Enter</button>
+</form></body></html>"""
+
+@app.before_request
+def _require_login():
+    if request.path in _PUBLIC_PATHS:
+        return None
+    if not session.get("authed"):
+        return redirect("/login")
+    return None
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = ""
+    if request.method == "POST":
+        if request.form.get("password") == GATE_PASSWORD:
+            session.permanent = True
+            session["authed"] = True
+            return redirect("/")
+        error = '<div class="err">Incorrect password</div>'
+    return _LOGIN_HTML.replace("{ERROR}", error)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
 # Initialize client at module load time
 _client = None
