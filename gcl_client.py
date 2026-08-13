@@ -5,6 +5,7 @@ Server-rendered HTML tables, no API. Uses requests + BeautifulSoup.
 Uses bsTeamStats.aspx which shows hitting + pitching + fielding for a single team.
 """
 
+import datetime
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -23,7 +24,16 @@ SCHOOLS = {
 
 def _gcl_year(display_year):
     """Year offset: GCL year param = display_year - 1."""
-    return display_year - 1
+    return int(display_year) - 1
+
+
+def current_season():
+    """Default season for GCL lookups.
+
+    These used to default to a hardcoded 2025, which silently went stale as soon
+    as the calendar moved on -- by 2026 it was fetching a two-year-old season.
+    """
+    return datetime.date.today().year
 
 
 def _int(s):
@@ -124,10 +134,13 @@ def _parse_team_table(table, stat_type):
     return rows
 
 
-def get_team_stats(school_name, year=2025):
+def get_team_stats(school_name, year=None):
     """Get all stats (hitting, pitching, fielding) for a GCL team.
     Uses the bsTeamStats.aspx page which has all three tables.
+
+    year defaults to the current season rather than a hardcoded one.
     """
+    year = year or current_season()
     school_id = SCHOOLS.get(school_name.lower())
     if not school_id:
         return {"error": f"Unknown school: {school_name}. Valid: {list(SCHOOLS.keys())}"}
@@ -177,16 +190,16 @@ def get_team_stats(school_name, year=2025):
     }
 
 
-def get_team_hitting(school_name, year=2025):
-    """Convenience: just the hitting stats."""
+def get_team_hitting(school_name, year=None):
+    """Convenience: just the hitting stats. year defaults to the current season."""
     data = get_team_stats(school_name, year)
     if "error" in data:
         return data
     return data["hitting"]
 
 
-def get_team_pitching(school_name, year=2025):
-    """Convenience: just the pitching stats."""
+def get_team_pitching(school_name, year=None):
+    """Convenience: just the pitching stats. year defaults to the current season."""
     data = get_team_stats(school_name, year)
     if "error" in data:
         return data

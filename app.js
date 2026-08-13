@@ -15,6 +15,9 @@ let allNames = []; // for autocomplete
 
 // GCL Conference player IDs — links to https://gcls.gclsports.com/bsPlayerStats.aspx?player={ID}
 const GCL_BASE = 'https://gcls.gclsports.com/';
+// Season used for GCL links and lookups. Derived from the clock rather than
+// hardcoded -- this was pinned to 2025 and quietly went stale a season ago.
+const GCL_DISPLAY_YEAR = new Date().getFullYear();
 const GCL_PLAYERS = {
   // Moeller
   "Reggie Watson": "884406", "Kayde Ridley": "880249", "Teagan Cumberland": "880255",
@@ -68,7 +71,9 @@ function injectGCLLinks(html) {
   // Also inject team links
   for (const [teamName, info] of Object.entries(GCL_TEAMS)) {
     if (teamName === 'Moeller') continue; // skip linking Moeller itself
-    const url = GCL_BASE + 'bsTeamStats.aspx?sat=21&schoolid=' + info.id + '&year=2025';
+    // GCL's URL param runs one behind the display year, and this used to be
+    // hardcoded to 2025 so every team link silently pointed at a stale season.
+    const url = GCL_BASE + 'bsTeamStats.aspx?sat=21&schoolid=' + info.id + '&year=' + (GCL_DISPLAY_YEAR - 1);
     const regex = new RegExp('(?<!<a[^>]*>)\\b(' + teamName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b(?![^<]*<\\/a>)', 'g');
     html = html.replace(regex, `<a href="${url}" target="_blank" style="color:#4a90d9; text-decoration:underline;" title="View ${info.name} on GCL">$1</a>`);
   }
@@ -78,7 +83,7 @@ function injectGCLLinks(html) {
 // ── GCL Stats Integration ──────────────────────────────────────
 const _gclCache = {};
 
-async function fetchGCLStats(teamName, year = 2025) {
+async function fetchGCLStats(teamName, year = GCL_DISPLAY_YEAR) {
   const key = `${teamName.toLowerCase()}_${year}`;
   if (_gclCache[key]) return _gclCache[key];
   // Find matching GCL team
