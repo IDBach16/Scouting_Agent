@@ -4,3 +4,8 @@ synergy_token.json
 __pycache__/
 *.pyc
 *.pt
+
+# Safety backup written by awre_pull.py on every run — regenerates itself,
+# and it is a full copy of awre_data.csv so committing it would double the repo.
+*.bak
+*.tmp
