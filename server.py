@@ -35,7 +35,11 @@ PORT = 3000
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Convert Excel source to data.csv on startup so the frontend (PapaParse) stays happy
-EXCEL_SOURCE = os.path.join(STATIC_DIR, "Moeller_2024_2025_2026_Final_Season.xlsx")
+# Prefer the combined all-seasons file the pipeline builds; fall back to the
+# original when absent, so this is a no-op until distribute.py has run.
+_COMBINED_SOURCE = os.path.join(STATIC_DIR, "Moeller_All_Seasons.xlsx")
+EXCEL_SOURCE = _COMBINED_SOURCE if os.path.exists(_COMBINED_SOURCE) else os.path.join(
+    STATIC_DIR, "Moeller_2024_2025_2026_Final_Season.xlsx")
 CSV_TARGET = os.path.join(STATIC_DIR, "data.csv")
 
 def _refresh_csv():
