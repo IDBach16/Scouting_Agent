@@ -180,7 +180,8 @@ conversation_histories = {}
 # ---------------------------------------------------------------------------
 app.secret_key = os.environ.get("SECRET_KEY", "moeller-scouting-2027-secret")
 app.permanent_session_lifetime = timedelta(days=30)
-GATE_PASSWORD = os.environ.get("HUB_PASSWORD", "Held_2027")
+# Empty = no gate. To require a password again, set HUB_PASSWORD on Railway.
+GATE_PASSWORD = os.environ.get("HUB_PASSWORD", "")
 _PUBLIC_PATHS = {"/login", "/favicon.ico", "/moeller-logo.png"}
 
 _LOGIN_HTML = """<!DOCTYPE html>
@@ -220,6 +221,8 @@ button:hover{background:#C5A55A;color:#1a1a2e}
 
 @app.before_request
 def _require_login():
+    if not GATE_PASSWORD:
+        return None
     if request.path in _PUBLIC_PATHS:
         return None
     if not session.get("authed"):
@@ -228,6 +231,8 @@ def _require_login():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if not GATE_PASSWORD:
+        return redirect("/")
     error = ""
     if request.method == "POST":
         if request.form.get("password") == GATE_PASSWORD:
@@ -355,6 +360,10 @@ def status():
 @app.route("/api/git-push", methods=["POST"])
 def git_push():
     """Stage all changes, commit with a timestamp, and push to origin."""
+    # The password gate is what kept this endpoint private. With the gate off,
+    # it must not be reachable at all.
+    if not GATE_PASSWORD:
+        return jsonify({"error": "disabled while the password gate is off"}), 403
     try:
         from datetime import datetime
         ts = datetime.now().strftime("%a %m/%d/%Y %H:%M")
