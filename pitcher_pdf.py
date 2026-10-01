@@ -14,6 +14,8 @@ from matplotlib.patches import FancyBboxPatch, Arc, Wedge
 from matplotlib.collections import PathCollection
 import matplotlib.patheffects as pe
 
+from awre_paths import csv_path as _awre_csv_path
+
 # ── Color palette ──────────────────────────────────────────────────
 BG_DARK = "#1a1a2e"
 BG_CARD = "#16213e"
@@ -42,10 +44,18 @@ HIT_COLORS = {
 }
 
 
-def _load_data(csv_path: str) -> pd.DataFrame:
+def _resolve_csv(csv_path: str) -> str:
+    """Absolute paths win. The default awre_data.csv follows AWRE_DATA_DIR."""
+    if csv_path and os.path.isabs(csv_path):
+        return csv_path
+    if not csv_path or csv_path == "awre_data.csv":
+        return _awre_csv_path()
     base = os.path.dirname(os.path.abspath(__file__))
-    full = os.path.join(base, csv_path)
-    return pd.read_csv(full, low_memory=False)
+    return os.path.join(base, csv_path)
+
+
+def _load_data(csv_path: str) -> pd.DataFrame:
+    return pd.read_csv(_resolve_csv(csv_path), low_memory=False)
 
 
 def list_pitchers(csv_path: str = "awre_data.csv", team: str = None) -> list[str]:

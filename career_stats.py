@@ -4,10 +4,12 @@ career_stats.py — Career stat-lines for opposing players vs Moeller.
 Reads from awre_data.csv (pitch-by-pitch charting data) and produces traditional
 stat lines (pitcher: IP/H/K/BB/HR/AVG-against; hitter: AB/H/HR/AVG/OBP/SLG) for
 any opposing player who has faced Moeller, optionally filtered by year.
+
+The CSV lives in AWRE_DATA_DIR when that env var is set, otherwise next to
+this file (desktop).
 """
 
 import io
-import os
 import math
 import numpy as np
 import pandas as pd
@@ -17,8 +19,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Wedge
 from matplotlib.lines import Line2D
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(SCRIPT_DIR, "awre_data.csv")
+from awre_paths import csv_path, file_signature
 
 MOELLER_TEAM = "Moeller"
 
@@ -28,26 +29,37 @@ OUT_RESULTS = {
 }
 # Double Play is special — it produces 2 outs from a single PA-ending event
 
+# Dropped when the CSV path, mtime, or size changes so each gunicorn worker
+# sees an overnight pull without a process restart.
 _df_cache = None
+_cache_sig = None
+_cache_path = None
 
 
 def _load() -> pd.DataFrame:
-    global _df_cache
-    if _df_cache is not None:
+    global _df_cache, _cache_sig, _cache_path
+    path = csv_path()
+    sig = file_signature(path)
+    if _df_cache is not None and _cache_path == path and _cache_sig == sig:
         return _df_cache
-    if not os.path.exists(CSV_PATH):
+    _cache_path = path
+    if sig is None:
         _df_cache = pd.DataFrame()
+        _cache_sig = None
         return _df_cache
-    df = pd.read_csv(CSV_PATH, low_memory=False)
+    df = pd.read_csv(path, low_memory=False)
     # Year tag derived from game_date (YYYY-MM-DD format)
     df["year"] = df["game_date"].astype(str).str[:4]
     _df_cache = df
+    _cache_sig = file_signature(path)
     return df
 
 
 def reload():
-    global _df_cache
+    global _df_cache, _cache_sig, _cache_path
     _df_cache = None
+    _cache_sig = None
+    _cache_path = None
     return _load()
 
 

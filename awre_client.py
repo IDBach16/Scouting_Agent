@@ -1,9 +1,9 @@
 """
 awre_client.py — Generate spray charts from local AWRE CSV data.
-Data is pre-pulled by awre_pull.py (run Update AWRE Data.bat on desktop).
+Data is pre-pulled by awre_pull.py (run Update AWRE Data.bat on desktop,
+or POST /api/awre/pull on Railway). CSV path follows AWRE_DATA_DIR.
 """
 
-import os
 import csv
 import math
 import io
@@ -13,11 +13,13 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Arc
 from matplotlib.lines import Line2D
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(SCRIPT_DIR, "awre_data.csv")
+from awre_paths import csv_path, file_signature
 
-# In-memory cache
+# In-memory cache. Dropped when the CSV path, mtime, or size changes so each
+# gunicorn worker sees an overnight pull without a process restart.
 _data_cache = None
+_cache_sig = None
+_cache_path = None
 
 # Theme
 BG = "#1a1a2e"
@@ -36,25 +38,32 @@ HIT_COLORS = {
 
 
 def _load_data():
-    """Load AWRE CSV into memory (cached)."""
-    global _data_cache
-    if _data_cache is not None:
+    """Load AWRE CSV into memory (cached until the file changes)."""
+    global _data_cache, _cache_sig, _cache_path
+    path = csv_path()
+    sig = file_signature(path)
+    if _data_cache is not None and _cache_path == path and _cache_sig == sig:
         return _data_cache
-    if not os.path.exists(CSV_PATH):
-        print(f"AWRE CSV not found: {CSV_PATH}")
-        print("Run 'Update AWRE Data.bat' on desktop to pull data.")
+    _cache_path = path
+    if sig is None:
+        print(f"AWRE CSV not found: {path}")
+        print("Run 'Update AWRE Data.bat' on desktop, or POST /api/awre/pull.")
         _data_cache = []
+        _cache_sig = None
         return _data_cache
-    with open(CSV_PATH, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         _data_cache = list(csv.DictReader(f))
+    _cache_sig = file_signature(path)
     print(f"Loaded {len(_data_cache)} pitches from AWRE CSV")
     return _data_cache
 
 
 def reload_data():
     """Force reload from CSV."""
-    global _data_cache
+    global _data_cache, _cache_sig, _cache_path
     _data_cache = None
+    _cache_sig = None
+    _cache_path = None
     return _load_data()
 
 
