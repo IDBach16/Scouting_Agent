@@ -1,6 +1,10 @@
 """
 awre_pull.py — Pull all AWRE game data to local CSV.
 Run this after games to update the data. Double-click update_awre.bat on desktop.
+
+The CSV is $AWRE_DATA_DIR/awre_data.csv, or this script's directory when
+AWRE_DATA_DIR is unset (desktop ritual). AWRE_API_KEY and AWRE_TEAM_ID
+are unchanged.
 """
 
 import datetime
@@ -11,11 +15,11 @@ import sys
 import time
 import requests
 
+from awre_paths import csv_path, seed_if_missing
+
 API_KEY = os.environ.get("AWRE_API_KEY", "")
 TEAM_ID = os.environ.get("AWRE_TEAM_ID", "58177")
 BASE = "https://www.pitchaware.com/api/exchange/v2"
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OUT_CSV = os.path.join(SCRIPT_DIR, "awre_data.csv")
 
 # Every season from the first tracked year through today. Previously this was
 # hardcoded to [2025, 2026], which would have silently pulled nothing in 2027.
@@ -28,14 +32,112 @@ YEARS = list(range(FIRST_SEASON, datetime.date.today().year + 1))
 MIN_KEEP_RATIO = 0.90
 
 
-def existing_row_count():
-    if not os.path.exists(OUT_CSV):
+def existing_row_count(path=None):
+    path = path or csv_path()
+    if not os.path.exists(path):
         return 0
-    with open(OUT_CSV, "r", encoding="utf-8", newline="") as f:
+    with open(path, "r", encoding="utf-8", newline="") as f:
         return max(sum(1 for _ in f) - 1, 0)
 
 
+def _result(status, pitches, rows, abort_reason):
+    return {
+        "status": status,
+        "pitches": pitches,
+        "rows": rows,
+        "abort_reason": abort_reason,
+        "path": csv_path(),
+    }
+
+
+def save_pull(all_pitches):
+    """Apply the 90% guard and atomically replace awre_data.csv.
+
+    Same rules as the desktop script: write a temp file, keep a .bak, and
+    refuse to overwrite when the new pull is below MIN_KEEP_RATIO of the
+    rows already on disk. Returns a result dict and does not touch the network.
+    """
+    path = csv_path()
+    if not all_pitches:
+        print("\nNo pitches found. Existing file left untouched.")
+        return _result(
+            "empty", 0, existing_row_count(path),
+            "No pitches found. Existing file left untouched.",
+        )
+
+    # Safety net: never replace a good file with a much smaller one.
+    had = existing_row_count(path)
+    if had and len(all_pitches) < had * MIN_KEEP_RATIO:
+        pct = 100 * len(all_pitches) / had
+        reason = (
+            f"pull has {len(all_pitches)} rows vs {had} existing "
+            f"({pct:.0f}% < {MIN_KEEP_RATIO:.0%} MIN_KEEP_RATIO)"
+        )
+        print(f"\n{'='*50}")
+        print("ABORTED — NOT OVERWRITING")
+        print(f"  existing file : {had:,} rows")
+        print(f"  this pull     : {len(all_pitches):,} rows "
+              f"({pct:.0f}% of existing)")
+        print("  That is a big enough drop that something is probably wrong upstream.")
+        print(f"  {path} was left exactly as it was.")
+        print(f"{'='*50}")
+        return _result("aborted", len(all_pitches), had, reason)
+
+    # Write CSV
+    # Collect all unique keys across all pitches
+    all_keys = set()
+    for p in all_pitches:
+        all_keys.update(p.keys())
+    # Put important columns first
+    priority = [
+        "game_date", "opponent", "venue", "inning_number", "top_or_bottom",
+        "pitcher_name", "pitcher_team", "pitcher_lefty",
+        "batter_name", "batter_team", "batter_lefty",
+        "balls", "strikes", "outs_before",
+        "pitch_type_name", "pitch_result", "atbat_result", "velo",
+        "pitch_locheight", "pitch_locside",
+        "ball_in_play_direction", "ball_in_play_distance", "inplay_value",
+    ]
+    remaining = sorted(all_keys - set(priority))
+    fieldnames = priority + remaining
+
+    # Write to a temp file and only swap it in once it is complete, so a crash
+    # mid-write can never leave a truncated awre_data.csv behind.
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(all_pitches)
+    if os.path.exists(path):
+        shutil.copy2(path, path + ".bak")
+    os.replace(tmp, path)
+
+    print(f"\n{'='*50}")
+    print(f"Saved: {path}")
+    print(f"Total pitches: {len(all_pitches)}")
+    print(f"Columns: {len(fieldnames)}")
+    if had:
+        print(f"Previous file: {had:,} rows  ({len(all_pitches)-had:+,})  "
+              f"backup at awre_data.csv.bak")
+
+    # Quick summary
+    games_set = set()
+    for p in all_pitches:
+        games_set.add(f"{p.get('game_date','')} vs {p.get('opponent','')}")
+    print(f"Games: {len(games_set)}")
+    print(f"{'='*50}")
+    return _result("ok", len(all_pitches), len(all_pitches), None)
+
+
 def main():
+    # Empty volume: start from the baked-in CSV so the 90% guard has a baseline.
+    seed_if_missing()
+    if not API_KEY:
+        reason = "AWRE_API_KEY is not set"
+        print(f"\n{reason}. Existing file left untouched.")
+        return _result("error", 0, existing_row_count(), reason)
+
     headers = {"Authorization": f"Api-Key {API_KEY}"}
     all_pitches = []
     problems = []
@@ -109,75 +211,18 @@ def main():
                 p["venue"] = got.get("venue", "")
             all_pitches.extend(pitches)
 
-    if not all_pitches:
-        print("\nNo pitches found. Existing file left untouched.")
-        return
-
-    # Safety net: never replace a good file with a much smaller one.
-    had = existing_row_count()
-    if had and len(all_pitches) < had * MIN_KEEP_RATIO:
-        print(f"\n{'='*50}")
-        print("ABORTED — NOT OVERWRITING")
-        print(f"  existing file : {had:,} rows")
-        print(f"  this pull     : {len(all_pitches):,} rows "
-              f"({100*len(all_pitches)/had:.0f}% of existing)")
-        print("  That is a big enough drop that something is probably wrong upstream.")
-        print(f"  {OUT_CSV} was left exactly as it was.")
-        print(f"{'='*50}")
-        return
-
-    # Write CSV
-    # Collect all unique keys across all pitches
-    all_keys = set()
-    for p in all_pitches:
-        all_keys.update(p.keys())
-    # Put important columns first
-    priority = [
-        "game_date", "opponent", "venue", "inning_number", "top_or_bottom",
-        "pitcher_name", "pitcher_team", "pitcher_lefty",
-        "batter_name", "batter_team", "batter_lefty",
-        "balls", "strikes", "outs_before",
-        "pitch_type_name", "pitch_result", "atbat_result", "velo",
-        "pitch_locheight", "pitch_locside",
-        "ball_in_play_direction", "ball_in_play_distance", "inplay_value",
-    ]
-    remaining = sorted(all_keys - set(priority))
-    fieldnames = priority + remaining
-
-    # Write to a temp file and only swap it in once it is complete, so a crash
-    # mid-write can never leave a truncated awre_data.csv behind.
-    tmp = OUT_CSV + ".tmp"
-    with open(tmp, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-        writer.writeheader()
-        writer.writerows(all_pitches)
-    if os.path.exists(OUT_CSV):
-        shutil.copy2(OUT_CSV, OUT_CSV + ".bak")
-    os.replace(tmp, OUT_CSV)
-
-    print(f"\n{'='*50}")
-    print(f"Saved: {OUT_CSV}")
-    print(f"Total pitches: {len(all_pitches)}")
-    print(f"Columns: {len(fieldnames)}")
-    if had:
-        print(f"Previous file: {had:,} rows  ({len(all_pitches)-had:+,})  "
-              f"backup at awre_data.csv.bak")
-
-    # Quick summary
-    games_set = set()
-    for p in all_pitches:
-        games_set.add(f"{p.get('game_date','')} vs {p.get('opponent','')}")
-    print(f"Games: {len(games_set)}")
-    print(f"{'='*50}")
-
-    if problems:
-        print(f"\n*** {len(problems)} scheduled game(s) returned no data ***")
-        for date, opp, why in problems:
-            print(f"    {date}  vs {opp}  ({why})")
-        print("These are on the AWRE schedule but produced nothing. If one is a real")
-        print("game you charted, the data exists in your export but not here.")
-    else:
-        print("\nEvery scheduled game returned data.")
+    result = save_pull(all_pitches)
+    result["problems"] = len(problems)
+    if result["status"] == "ok":
+        if problems:
+            print(f"\n*** {len(problems)} scheduled game(s) returned no data ***")
+            for date, opp, why in problems:
+                print(f"    {date}  vs {opp}  ({why})")
+            print("These are on the AWRE schedule but produced nothing. If one is a real")
+            print("game you charted, the data exists in your export but not here.")
+        else:
+            print("\nEvery scheduled game returned data.")
+    return result
 
 
 if __name__ == "__main__":

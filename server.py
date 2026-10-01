@@ -28,6 +28,14 @@ if _env_path.exists():
             k, v = line.split("=", 1)
             os.environ.setdefault(k.strip(), v.strip())
 
+# If AWRE_DATA_DIR points at a volume and awre_data.csv is not there yet,
+# copy the baked-in repo file once. Desktop (env unset) is a no-op.
+try:
+    from awre_paths import seed_if_missing as _seed_awre_csv
+    _seed_awre_csv()
+except Exception as _seed_err:
+    print(f"  [warn] AWRE CSV seed skipped ({_seed_err})")
+
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 MODEL_FULL = "claude-haiku-4-5-20251001"   # Haiku for full analysis (fast with big data)
 MODEL_DUGOUT = "claude-sonnet-4-6"        # Sonnet for dugout mode (better quick analysis)
@@ -405,7 +413,10 @@ def gcl_team():
 
 
 # ── AWRE Spray Chart Endpoints (reads from local CSV) ───────────
+import hmac
 from awre_client import generate_spray_chart, list_hitters as awre_list_hitters, reload_data as awre_reload
+from awre_paths import csv_path as awre_csv_path
+import career_stats
 
 
 @app.route("/api/awre/spray-chart", methods=["GET"])
@@ -428,11 +439,92 @@ def awre_hitters():
     return jsonify({"hitters": hitters, "count": len(hitters)})
 
 
+@app.route("/api/awre/health", methods=["GET"])
+def awre_health():
+    """Deploy/cron check: is awre_data.csv readable, and how fresh is it?"""
+    from awre_client import get_all_pitches
+    path = awre_csv_path()
+    try:
+        mtime = os.path.getmtime(path)
+    except OSError:
+        return jsonify({"ok": False, "rows": 0, "mtime": None, "path": path})
+    rows = len(get_all_pitches())
+    return jsonify({"ok": rows > 0, "rows": rows, "mtime": mtime, "path": path})
+
+
 @app.route("/api/awre/refresh", methods=["POST"])
 def awre_refresh():
-    """Reload AWRE data from CSV (after running awre_pull.py)."""
+    """Reload AWRE data from CSV into both in-process caches."""
     data = awre_reload()
-    return jsonify({"status": "ok", "pitches": len(data)})
+    df = career_stats.reload()
+    return jsonify({"status": "ok", "pitches": len(data), "rows": int(len(df))})
+
+
+def _awre_cron_authorized():
+    """Match CRON_SECRET against X-Cron-Secret or Authorization: Bearer.
+
+    Returns True/False, or None when CRON_SECRET is unset (fail closed).
+    """
+    secret = os.environ.get("CRON_SECRET", "").strip()
+    if not secret:
+        return None
+    candidates = []
+    header = request.headers.get("X-Cron-Secret", "").strip()
+    if header:
+        candidates.append(header)
+    auth = request.headers.get("Authorization", "")
+    if auth.lower().startswith("bearer "):
+        token = auth[7:].strip()
+        if token:
+            candidates.append(token)
+    for candidate in candidates:
+        if hmac.compare_digest(candidate, secret):
+            return True
+    return False
+
+
+def _awre_pull_error(status, reason, code):
+    return jsonify({
+        "status": status,
+        "pitches": 0,
+        "rows": 0,
+        "abort_reason": reason,
+        "path": awre_csv_path(),
+    }), code
+
+
+@app.route("/api/awre/pull", methods=["POST"])
+def awre_pull_endpoint():
+    """Run the full AWRE pull. Requires CRON_SECRET (X-Cron-Secret or Bearer).
+
+    On success both awre_client and career_stats caches are reloaded. A pull
+    under 90% of the rows already on disk is refused and the CSV is left as-is.
+    The call is synchronous and shares the gunicorn request timeout.
+    """
+    auth = _awre_cron_authorized()
+    if auth is None:
+        return _awre_pull_error("error", "CRON_SECRET is not set", 503)
+    if not auth:
+        print("AWRE pull rejected: CRON_SECRET mismatch")
+        return _awre_pull_error("unauthorized", "CRON_SECRET mismatch", 401)
+
+    import awre_pull
+    try:
+        result = awre_pull.main()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return _awre_pull_error("error", str(e), 500)
+
+    if result.get("status") == "ok":
+        data = awre_reload()
+        df = career_stats.reload()
+        result["pitches"] = len(data)
+        result["rows"] = int(len(df))
+    code = {"ok": 200, "aborted": 409, "empty": 502, "error": 500}.get(
+        result.get("status"), 500
+    )
+    return jsonify(result), code
 
 
 @app.route("/api/awre/pitches", methods=["GET"])
@@ -602,9 +694,6 @@ def awre_hls_proxy():
 from pitcher_pdf import list_pitchers as awre_list_pitchers, generate_pitcher_pdf
 
 # ── Career stats vs Moeller (year-aware) ──────────────────────────
-import career_stats
-
-
 @app.route("/api/awre/years", methods=["GET"])
 def awre_years():
     """Distinct seasons present in awre_data.csv (e.g. ['2025','2026'])."""

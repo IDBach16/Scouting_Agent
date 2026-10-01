@@ -9,3 +9,8 @@ __pycache__/
 # and it is a full copy of awre_data.csv so committing it would double the repo.
 *.bak
 *.tmp
+
+# Future hygiene for a volume-backed CSV. The committed awre_data.csv stays
+# tracked (it is the baked-in seed for an empty Railway volume). This line
+# does nothing until a later `git rm --cached awre_data.csv`.
+awre_data.csv
