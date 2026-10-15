@@ -37,8 +37,8 @@ except Exception as _seed_err:
     print(f"  [warn] AWRE CSV seed skipped ({_seed_err})")
 
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-MODEL_FULL = "claude-haiku-4-5-20251001"   # Haiku for full analysis (fast with big data)
-MODEL_DUGOUT = "claude-sonnet-4-6"        # Sonnet for dugout mode (better quick analysis)
+MODEL_FULL = "claude-haiku-5-5"            # Haiku for full analysis (fast with big data)
+MODEL_DUGOUT = "claude-sonnet-5-5"        # Sonnet for dugout mode (better quick analysis)
 PORT = 3000
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -318,9 +318,18 @@ def chat():
         response = None
         for attempt in range(3):
             try:
+                # Both models think by default and max_tokens covers thinking +
+                # reply, so dugout's old 1024 cap could be spent before any text.
+                # Dugout runs at low effort to stay quick. Sonnet 5.5 also gets the
+                # server-side refusal fallback (Haiku 5.5 has none).
+                extra = ({"extra_headers": {"anthropic-beta": "server-side-fallback-2026-07-01"},
+                          "extra_body": {"fallbacks": "default"}}
+                         if model == MODEL_DUGOUT else {})
                 response = c.messages.create(
                     model=model,
-                    max_tokens=8192 if mode == "full" else 1024,
+                    max_tokens=8192 if mode == "full" else 4096,
+                    output_config={"effort": "medium" if mode == "full" else "low"},
+                    **extra,
                     system=[{
                         "type": "text",
                         "text": prompt,
@@ -337,7 +346,11 @@ def chat():
                     time.sleep(1.5 * (attempt + 1))
                     continue
                 raise
-        reply = response.content[0].text
+        if response.stop_reason == "refusal":
+            history.pop()
+            return jsonify({"reply": "I can't help with that one - try rephrasing the question."})
+        # A response can open with a thinking block, so read text blocks by type.
+        reply = "".join(b.text for b in response.content if b.type == "text").strip()
         history.append({"role": "assistant", "content": reply})
         return jsonify({"reply": reply})
     except Exception as e:
