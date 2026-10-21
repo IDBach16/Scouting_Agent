@@ -4684,24 +4684,69 @@ function showAutocomplete() {
 function hideAC() { acList.classList.add('hidden'); }
 
 // ===== MARKDOWN =====
+// Inline formatting only -- used for table cells as well as running text.
+function mdInline(s) {
+  s=s.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>');
+  s=s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+  return s;
+}
+// GitHub-style pipe tables. The full-analysis prompt asks for "markdown tables for
+// stat breakdowns", and this renderer used to have no table support at all, so
+// they came out as raw | a | b | text. Tables are lifted out FIRST (into
+// placeholders) so the list/emphasis/paragraph passes below can't mangle them.
+const MD_NUM = /^[-+]?\$?[\d,]*\.?\d+%?$|^[-+]?\.\d+$|^\d+-\d+$/;
+function mdTable(rows, aligns) {
+  const cells = r => r.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c => c.trim());
+  const head = cells(rows[0]), body = rows.slice(1).map(cells);
+  const numCol = head.map((_, i) => body.length && body.every(r => !r[i] || r[i] === '-' || r[i] === '—' || MD_NUM.test(r[i])));
+  const al = i => aligns[i] || (numCol[i] ? 'right' : 'left');
+  let h = '<div class="md-table-wrap"><table class="md-table"><thead><tr>'
+    + head.map((c, i) => `<th style="text-align:${al(i)}">${mdInline(c)}</th>`).join('') + '</tr></thead><tbody>';
+  body.forEach(r => {
+    h += '<tr>' + head.map((_, i) => `<td class="${numCol[i] ? 'num' : ''}" style="text-align:${al(i)}">${mdInline(r[i] || '')}</td>`).join('') + '</tr>';
+  });
+  return h + '</tbody></table></div>';
+}
 function renderMarkdown(text) {
   let h=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // 1. tables -> placeholders
+  const tables=[], lines=h.split('\n'), out=[];
+  const isRow = l => /^\s*\|.*\|\s*$/.test(l);
+  const isSep = l => /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$/.test(l);
+  for (let i=0; i<lines.length; i++) {
+    if (isRow(lines[i]) && i+1<lines.length && isSep(lines[i+1])) {
+      const aligns = lines[i+1].trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c => {
+        c=c.trim(); return c.startsWith(':') && c.endsWith(':') ? 'center' : c.endsWith(':') ? 'right' : c.startsWith(':') ? 'left' : '';
+      });
+      const rows=[lines[i]]; i+=2;
+      while (i<lines.length && isRow(lines[i])) rows.push(lines[i++]);
+      i--;
+      tables.push(mdTable(rows, aligns));
+      out.push('', `@@MDTABLE${tables.length-1}@@`, '');
+    } else out.push(lines[i]);
+  }
+  h=out.join('\n');
+  // 2. block + inline formatting
   h=h.replace(/^#### (.+)$/gm,'<h4>$1</h4>');
   h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
   h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
   h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
-  h=h.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>');
-  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-  h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
-  h=h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h=mdInline(h);
   h=h.replace(/^---$/gm,'<hr>');
   h=h.replace(/^[\t ]*[-*] (.+)$/gm,'<li>$1</li>');
-  h=h.replace(/((?:<li>.*<\/li>\n?)+)/g,'<ul>$1</ul>');
-  h=h.replace(/^[\t ]*\d+\. (.+)$/gm,'<li>$1</li>');
+  // the trailing \n keeps a paragraph after a list its own block (it used to be glued on)
+  h=h.replace(/((?:<li>.*<\/li>\n?)+)/g,'\n<ul>$1</ul>\n');
+  // numbered lists get their own <ol> (they used to fall into a paragraph as bare <li>s)
+  h=h.replace(/^[\t ]*\d+\. (.+)$/gm,'<li class="ol">$1</li>');
+  h=h.replace(/((?:<li class="ol">.*<\/li>\n?)+)/g,'\n<ol>$1</ol>\n');
   h=h.split(/\n\n+/).map(b=>{
     b=b.trim(); if(!b) return '';
-    if (b.startsWith('<h')||b.startsWith('<ul')||b.startsWith('<ol')||b.startsWith('<hr')) return b;
+    if (b.startsWith('<h')||b.startsWith('<ul')||b.startsWith('<ol')||b.startsWith('<hr')||b.startsWith('@@MDTABLE')) return b;
     return '<p>'+b.replace(/\n/g,'<br>')+'</p>';
   }).join('\n');
+  // 3. tables back in
+  h=h.replace(/@@MDTABLE(\d+)@@/g,(_,i)=>tables[+i]);
   return h;
 }

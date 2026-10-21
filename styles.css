@@ -99,6 +99,18 @@ body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,
 .msg-bubble em{color:var(--text-sec)}
 .msg-bubble code{background:rgba(0,0,0,.25);padding:1px 4px;border-radius:4px;font-family:var(--mono);font-size:.85em}
 .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:10px 0}
+/* Markdown tables in the analysis (renderMarkdown -> .md-table) */
+.md-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:rgba(0,0,0,.12)}
+.md-table{width:100%;border-collapse:collapse;font-size:.8rem;line-height:1.35}
+.md-table th{background:var(--navy-dark);color:var(--gold);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border-strong);white-space:nowrap;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+.md-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+.md-table tr:last-child td{border-bottom:none}
+.md-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.025)}
+.md-table tbody tr:hover td{background:var(--gold-dim)}
+.md-table td.num{font-family:var(--mono);font-size:.78rem;white-space:nowrap}
+.md-table td:first-child{font-weight:600;color:#fff;white-space:nowrap}
+.md-table strong{color:var(--gold)}
+.msg-bubble ol{padding-left:20px}
 
 /* Copy/Action btns */
 .msg-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
